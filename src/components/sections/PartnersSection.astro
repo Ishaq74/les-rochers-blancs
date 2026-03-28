@@ -37,7 +37,7 @@ const logoSurfaceStyle = 'background-color: var(--background);';
       <h2 class="heading-section mb-3">
         {t('partners.title', lang)}
       </h2>
-      <div class="heading-accent-bar"></div>
+      <div class="heading-accent-bar"><span class="heading-accent-bar-diamond"></span></div>
       <p class="section-subtitle max-w-2xl mx-auto">
         {t('partners.description', lang)}
       </p>
@@ -47,17 +47,17 @@ const logoSurfaceStyle = 'background-color: var(--background);';
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-item">
       {partners.map((partner, i) => (
         <div
-          class="p-3 bg-card border border-border/50 rounded-xl hover:border-accent/40 hover:shadow-soft transition-all aspect-[3/2] animate-fade-up"
+          class="partner-logo card-elevated p-3 aspect-[3/2] animate-fade-up"
           style={`animation-delay: ${i * 0.07}s;`}
         >
           <div
-            class="w-full h-full rounded-lg border border-border/40 flex items-center justify-center p-3"
+            class="w-full h-full rounded-lg flex items-center justify-center p-3"
             style={logoSurfaceStyle}
           >
             <img
               src={partner.src}
               alt={partner.alt}
-              class="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(0,0,0,0.28)] dark:drop-shadow-[0_2px_10px_rgba(255,255,255,0.18)]"
+              class="w-full h-full object-contain"
               loading="lazy"
             />
           </div>

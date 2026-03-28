@@ -42,7 +42,7 @@ const carouselImages = [
       <h2 class="heading-section mb-3">
         {t('hotel.title', lang)}
       </h2>
-      <div class="heading-accent-bar"></div>
+      <div class="heading-accent-bar"><span class="heading-accent-bar-diamond"></span></div>
       <p class="font-serif text-xl text-muted-foreground italic">
         {t('hotel.subtitle', lang)}
       </p>
@@ -56,11 +56,11 @@ const carouselImages = [
           <CarouselContent>
             {carouselImages.map((img) => (
               <CarouselItem>
-                <div class="relative w-full aspect-[3/4] overflow-hidden rounded-xl shadow-elegant">
+                <div class="relative w-full aspect-[3/4] overflow-hidden rounded-xl shadow-large">
                   <Image
                     src={img.src}
                     alt={img.alt}
-                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-700 ease-out"
                     widths={[400, 640, 800]}
                     sizes="(max-width: 1024px) 100vw, 50vw"
                   />
@@ -103,7 +103,7 @@ const carouselImages = [
           </h3>
           <div class="grid grid-cols-2 gap-item">
             {roomKeys.map((key) => (
-              <div class="p-4 bg-card rounded-lg border border-border/50 hover:border-accent/50 hover:bg-accent/5 transition-all">
+              <div class="card-elevated p-4">
                 <div class="flex items-center gap-2 mb-2">
                   <div class="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
                     <Icon name="mdi:account-group" class="size-4 text-accent" />
@@ -112,7 +112,7 @@ const carouselImages = [
                 <p class="text-sm font-medium text-foreground mb-2">
                   {t(`hotel.rooms.${key}.name`, lang)}
                 </p>
-                <p class="text-lg font-bold text-accent font-serif">
+                <p class="text-lg font-bold text-gradient-gold font-serif">
                   {t(`hotel.rooms.${key}.price`, lang)}€
                 </p>
               </div>

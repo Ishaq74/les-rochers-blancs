@@ -21,7 +21,7 @@ const { lang } = Astro.props;
         <h2 id="contact-heading" class="heading-section mb-3">
           {t('contact.title', lang)}
         </h2>
-        <div class="heading-accent-bar !mx-0"></div>
+        <div class="heading-accent-bar !mx-0"><span class="heading-accent-bar-diamond"></span></div>
         <p class="section-subtitle mb-section">
           {t('contact.subtitle', lang)}
         </p>
@@ -70,13 +70,13 @@ const { lang } = Astro.props;
       </div>
 
       <!-- Form -->
-      <div class="bg-card p-8 lg:p-10 rounded-lg shadow-medium animate-fade-up" style="animation-delay: 0.2s;">
+      <div class="card-elevated p-8 lg:p-10 animate-fade-up" style="animation-delay: 0.2s;">
         <form class="space-y-6" aria-label={t('contact.formLabel', lang)}>
           <div>
             <input
               type="text"
               placeholder={t('contact.form.name', lang)}
-              class="flex h-12 w-full rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              class="input-elegant flex h-12 w-full rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none"
               aria-label={t('contact.form.name', lang)}
             />
           </div>
@@ -84,20 +84,20 @@ const { lang } = Astro.props;
             <input
               type="email"
               placeholder={t('contact.form.email', lang)}
-              class="flex h-12 w-full rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              class="input-elegant flex h-12 w-full rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none"
               aria-label={t('contact.form.email', lang)}
             />
           </div>
           <div>
             <textarea
               placeholder={t('contact.form.message', lang)}
-              class="flex min-h-[150px] w-full rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
+              class="input-elegant flex min-h-[150px] w-full rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none resize-none"
               aria-label={t('contact.form.message', lang)}
             ></textarea>
           </div>
           <button
             type="submit"
-            class="inline-flex items-center justify-center h-12 bg-accent text-accent-foreground hover:bg-gold-light font-semibold px-8 rounded-md transition-colors"
+            class="btn-gold inline-flex items-center justify-center h-12 font-semibold px-8 rounded-md w-full sm:w-auto"
           >
             {t('contact.form.send', lang)}
           </button>

@@ -40,6 +40,13 @@ const { lang } = Astro.props;
         {t('hero.title', lang)}
       </h1>
 
+      <!-- Ornamental divider under title -->
+      <div class="flex items-center justify-center gap-3 mb-4 animate-fade-up" style="animation-delay: 0.5s;">
+        <span class="block w-12 h-px bg-gradient-to-r from-transparent to-gold/80"></span>
+        <span class="block w-2 h-2 rotate-45 bg-gold"></span>
+        <span class="block w-12 h-px bg-gradient-to-l from-transparent to-gold/80"></span>
+      </div>
+
       <p class="type-heading text-snow/90 mb-2 animate-fade-up" style="animation-delay: 0.6s; font-size: clamp(1.25rem, 2.5vw, 1.75rem);">
         {t('hero.subtitle', lang)}
       </p>
@@ -51,13 +58,13 @@ const { lang } = Astro.props;
       <div class="flex flex-col items-center sm:flex-row gap-4 justify-center animate-fade-up" style="animation-delay: 1s;">
         <a
           href={`mailto:${t('contact.emailValue', lang)}`}
-          class="inline-flex items-center justify-center h-12 bg-accent text-accent-foreground hover:bg-gold-light font-semibold px-8 py-6 text-lg rounded-md transition-colors"
+          class="btn-gold inline-flex items-center justify-center h-12 font-semibold px-8 py-6 text-lg rounded-md"
         >
           {t('hero.book', lang)}
         </a>
         <a
           href="#rooms"
-          class="inline-flex items-center justify-center h-12 border border-snow/50 text-snow bg-transparent hover:bg-snow/10 font-semibold px-8 py-6 text-lg rounded-md transition-colors"
+          class="inline-flex items-center justify-center h-12 border border-snow/30 text-snow bg-snow/5 hover:bg-snow/15 font-semibold px-8 py-6 text-lg rounded-md transition-all backdrop-blur-sm"
         >
           {t('hero.cta', lang)}
         </a>

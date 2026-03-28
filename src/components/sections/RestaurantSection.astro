@@ -34,7 +34,7 @@ const carouselImages = [
       <h2 class="heading-section mb-3">
         {t('restaurant.title', lang)}
       </h2>
-      <div class="heading-accent-bar"></div>
+      <div class="heading-accent-bar"><span class="heading-accent-bar-diamond"></span></div>
       <p class="font-serif text-xl text-muted-foreground italic">
         {t('restaurant.subtitle', lang)}
       </p>
@@ -48,11 +48,11 @@ const carouselImages = [
           <CarouselContent>
             {carouselImages.map((img) => (
               <CarouselItem>
-                <div class="relative w-full aspect-[3/4] overflow-hidden rounded-xl shadow-elegant">
+                <div class="relative w-full aspect-[3/4] overflow-hidden rounded-xl shadow-large">
                   <Image
                     src={img.src}
                     alt={img.alt}
-                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-700 ease-out"
                     widths={[400, 640, 800]}
                     sizes="(max-width: 1024px) 100vw, 50vw"
                   />
@@ -96,7 +96,7 @@ const carouselImages = [
           </h3>
           <div class="grid grid-cols-2 gap-item mb-6">
             {pricingKeys.map((key) => (
-              <div class="p-4 bg-card rounded-lg border border-border/50 hover:border-accent/50 hover:bg-accent/5 transition-all">
+              <div class="card-elevated p-4">
                 <p class="text-xs text-muted-foreground leading-snug">
                   {t(`restaurant.pricing.${key}`, lang)}
                 </p>

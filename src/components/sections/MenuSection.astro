@@ -148,7 +148,7 @@ if (menus.length === 0) return;
       <h2 class="heading-section mb-3">
         {t('menuSection.title', lang)}
       </h2>
-      <div class="heading-accent-bar"></div>
+      <div class="heading-accent-bar"><span class="heading-accent-bar-diamond"></span></div>
       <p class="section-subtitle max-w-2xl mx-auto">
         {t('menuSection.subtitle', lang)}
       </p>
@@ -244,13 +244,13 @@ if (menus.length === 0) return;
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {categoryItems.map((item: any) => (
-                        <div class="group bg-card rounded-xl overflow-hidden border border-border/50 hover:border-accent/50 hover:shadow-elegant transition-all">
+                        <div class="group card-elevated overflow-hidden">
                           {item.image_url && (
                             <div class="h-44 overflow-hidden">
                               <img
                                 src={item.image_url}
                                 alt={item.name}
-                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                                 loading="lazy"
                               />
                             </div>

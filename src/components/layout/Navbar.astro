@@ -85,7 +85,7 @@ const currentLanguage = languages.find((l) => l.code === lang) || languages[0];
         <ThemeToggle class="navbar-action-btn text-snow hover:bg-snow/10 border-0" />
 
         <!-- Book Button (desktop) -->
-        <Button href={`mailto:${contactEmail}`} variant="primary" size="sm" class="hidden md:inline-flex bg-accent text-accent-foreground hover:bg-gold-light font-semibold">
+        <Button href={`mailto:${contactEmail}`} variant="primary" size="sm" class="hidden md:inline-flex btn-gold">
           {bookLabel}
         </Button>
 
@@ -108,7 +108,7 @@ const currentLanguage = languages.find((l) => l.code === lang) || languages[0];
                   {item.label}
                 </a>
               ))}
-              <Button href={`mailto:${contactEmail}`} variant="primary" class="mt-4 bg-accent text-accent-foreground hover:bg-gold-light font-semibold text-center">
+              <Button href={`mailto:${contactEmail}`} variant="primary" class="mt-4 btn-gold text-center">
                 {bookLabel}
               </Button>
             </div>
@@ -125,7 +125,7 @@ const currentLanguage = languages.find((l) => l.code === lang) || languages[0];
   if (navbar) {
     const update = () => {
       const scrolled = window.scrollY > 50;
-      navbar.classList.toggle('bg-primary', scrolled);
+      navbar.classList.toggle('navbar-glass', scrolled);
       navbar.classList.toggle('shadow-medium', scrolled);
       navbar.classList.toggle('bg-transparent', !scrolled);
     };
