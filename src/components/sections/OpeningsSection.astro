@@ -1,0 +1,225 @@
+---
+import { t } from '@/lib/i18n';
+import type { Locale } from '@/lib/i18n';
+import { Badge } from '@/components/starwind/badge';
+import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+import summerImage from '@/assets/season-summer.jpg';
+import winterImage from '@/assets/season-winter.jpg';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+
+// ------- Date parsing helpers (server-side) -------
+function parseDateFromText(text: string): Date | null {
+  const match = text.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+  if (!match) return null;
+  const day = parseInt(match[1], 10);
+  const month = parseInt(match[2], 10) - 1;
+  let year = parseInt(match[3], 10);
+  if (year < 100) year += 2000;
+  return new Date(year, month, day);
+}
+
+function extractDateRange(text: string): { start: Date | null; end: Date | null } {
+  const dates = text.match(/\d{1,2}\/\d{1,2}\/\d{2,4}/g);
+  if (!dates || dates.length === 0) return { start: null, end: null };
+  return {
+    start: parseDateFromText(dates[0]),
+    end: parseDateFromText(dates[dates.length - 1]),
+  };
+}
+
+function isCurrentlyOpen(dateText: string): boolean | null {
+  const { start, end } = extractDateRange(dateText);
+  if (!start || !end) return null;
+  const now = new Date();
+  return now >= start && now <= end;
+}
+
+// ------- Season data -------
+interface SeasonData {
+  key: 'summer' | 'winter';
+  variant: 'primary' | 'light';
+  icon: string;
+  image: ImageMetadata;
+  title: string;
+  restaurantLabel: string;
+  restaurantDates: string;
+  restaurantOpen: boolean | null;
+  hotelLabel: string;
+  hotelDates: string;
+  hotelOpen: boolean | null;
+  closedDays: string;
+  isSeasonActive: boolean;
+}
+
+function buildSeason(key: 'summer' | 'winter', variant: 'primary' | 'light', icon: string, image: ImageMetadata): SeasonData {
+  const restaurantDates = t(`openings.${key}.restaurantDates`, lang);
+  const hotelDates = t(`openings.${key}.hotelDates`, lang);
+  const restaurantOpen = isCurrentlyOpen(restaurantDates);
+  const hotelOpen = isCurrentlyOpen(hotelDates);
+  return {
+    key,
+    variant,
+    icon,
+    image,
+    title: t(`openings.${key}.title`, lang),
+    restaurantLabel: t(`openings.${key}.restaurantLabel`, lang),
+    restaurantDates,
+    restaurantOpen,
+    hotelLabel: t(`openings.${key}.hotelLabel`, lang),
+    hotelDates,
+    hotelOpen,
+    closedDays: t(`openings.${key}.closedDays`, lang),
+    isSeasonActive: restaurantOpen === true || hotelOpen === true,
+  };
+}
+
+const seasons: SeasonData[] = [
+  buildSeason('summer', 'primary', 'mdi:weather-sunny', summerImage),
+  buildSeason('winter', 'light', 'mdi:snowflake', winterImage),
+];
+
+const openLabel = t('openings.statusOpen', lang);
+const closedLabel = t('openings.statusClosed', lang);
+const openingLabel = t('openings.openingLabel', lang);
+---
+
+<section id="openings" class="relative overflow-hidden section-padding bg-secondary" aria-labelledby="openings-heading">
+  <div class="container-wide mx-auto">
+    <!-- Watermark -->
+    <Icon name="mdi:calendar-clock" size={280} class="section-watermark top-right text-foreground" aria-hidden="true" />
+
+    <div class="text-center mb-section animate-fade-up">
+      <h2 id="openings-heading" class="heading-section">
+        {t('openings.title', lang)}
+      </h2>
+      <div class="heading-accent-bar"></div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-section">
+      {seasons.map((season) => {
+        const isPrimary = season.variant === 'primary';
+        const cardClasses = isPrimary
+          ? 'bg-primary text-primary-foreground'
+          : 'bg-muted text-foreground border border-border/50';
+        const badgeBg = isPrimary ? 'bg-accent text-accent-foreground' : 'bg-primary text-primary-foreground';
+        const textMuted = isPrimary ? 'text-primary-foreground/85' : 'text-muted-foreground';
+        const alertBg = isPrimary ? 'bg-accent/20' : 'bg-primary/10';
+        const alertIcon = isPrimary ? 'text-accent' : 'text-primary';
+
+        return (
+          <div
+            class={`${cardClasses} rounded-2xl overflow-hidden shadow-lg border-2 animate-fade-up ${
+              season.isSeasonActive ? 'ring-2 ring-green-400/50 border-green-400/40' : 'border-border/30'
+            }`}
+          >
+            {/* Image */}
+            <div class="relative h-48 overflow-hidden">
+              <Image
+                src={season.image}
+                alt={season.title}
+                class="w-full h-full object-cover"
+                loading="lazy"
+                widths={[400, 640]}
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+              <div class={`absolute inset-0 ${isPrimary ? 'bg-primary/30' : 'bg-foreground/10'}`}></div>
+              <div class="absolute bottom-3 left-4 flex items-center gap-2">
+                <Icon name={season.icon} class={`size-7 ${isPrimary ? 'text-accent' : 'text-primary'}`} aria-hidden="true" />
+                <h3 class={`heading-subsection ${isPrimary ? 'text-primary-foreground' : 'text-foreground'} drop-shadow-md`}>
+                  {season.title}
+                </h3>
+              </div>
+              <div class="absolute top-3 right-3">
+                <span
+                  class={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                    season.isSeasonActive
+                      ? 'bg-green-500/90 text-white'
+                      : isPrimary
+                        ? 'bg-black/30 text-primary-foreground'
+                        : 'bg-background/90 text-muted-foreground'
+                  }`}
+                >
+                  {season.isSeasonActive ? (
+                    <Icon name="mdi:check-circle" class="size-3.5" aria-hidden="true" />
+                  ) : (
+                    <Icon name="mdi:close-circle" class="size-3.5" aria-hidden="true" />
+                  )}
+                  {season.isSeasonActive ? openLabel : closedLabel}
+                </span>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div class="p-6 space-y-4">
+              <p class={`font-semibold tracking-wider uppercase text-xs ${isPrimary ? 'text-accent' : 'text-primary'}`}>
+                {openingLabel}
+              </p>
+
+              {/* Restaurant */}
+              <div>
+                <div class="flex items-center gap-2 mb-1.5">
+                  <span class={`inline-flex items-center gap-1.5 ${badgeBg} px-2.5 py-0.5 rounded text-xs font-semibold`}>
+                    <Icon name="mdi:silverware-fork-knife" class="size-3.5" aria-hidden="true" />
+                    {season.restaurantLabel}
+                  </span>
+                  {season.restaurantOpen !== null && (
+                    season.restaurantOpen ? (
+                      <span class="inline-flex items-center gap-1 text-xs font-medium text-green-400" role="status">
+                        <Icon name="mdi:check-circle" class="size-3.5" aria-hidden="true" />
+                        {openLabel}
+                      </span>
+                    ) : (
+                      <span class={`inline-flex items-center gap-1 text-xs font-medium ${isPrimary ? 'text-primary-foreground/50' : 'text-muted-foreground/70'}`} role="status">
+                        <Icon name="mdi:close-circle" class="size-3.5" aria-hidden="true" />
+                        {closedLabel}
+                      </span>
+                    )
+                  )}
+                </div>
+                <p class={`${textMuted} text-sm`}>{season.restaurantDates}</p>
+              </div>
+
+              {/* Hotel */}
+              <div>
+                <div class="flex items-center gap-2 mb-1.5">
+                  <span class={`inline-flex items-center gap-1.5 ${badgeBg} px-2.5 py-0.5 rounded text-xs font-semibold`}>
+                    <Icon name="mdi:bed" class="size-3.5" aria-hidden="true" />
+                    {season.hotelLabel}
+                  </span>
+                  {season.hotelOpen !== null && (
+                    season.hotelOpen ? (
+                      <span class="inline-flex items-center gap-1 text-xs font-medium text-green-400" role="status">
+                        <Icon name="mdi:check-circle" class="size-3.5" aria-hidden="true" />
+                        {openLabel}
+                      </span>
+                    ) : (
+                      <span class={`inline-flex items-center gap-1 text-xs font-medium ${isPrimary ? 'text-primary-foreground/50' : 'text-muted-foreground/70'}`} role="status">
+                        <Icon name="mdi:close-circle" class="size-3.5" aria-hidden="true" />
+                        {closedLabel}
+                      </span>
+                    )
+                  )}
+                </div>
+                <p class={`${textMuted} text-sm`}>{season.hotelDates}</p>
+              </div>
+
+              {/* Closed days warning */}
+              <div class={`flex items-start gap-2 ${alertBg} rounded-lg p-3`} role="alert">
+                <Icon name="mdi:alert" class={`size-4 ${alertIcon} mt-0.5 shrink-0`} aria-hidden="true" />
+                <p class={`${textMuted} text-sm font-medium`}>
+                  {season.closedDays}
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</section>

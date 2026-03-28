@@ -1,0 +1,331 @@
+---
+import { t, isRtl } from '@/lib/i18n';
+import type { Locale } from '@/lib/i18n';
+import { db } from '@/db';
+import { restaurantMenus, restaurantMenuTranslations, menuCategories, menuCategoryTranslations, menuItems, menuItemTranslations } from '@/db/schema';
+import { eq, asc } from 'drizzle-orm';
+import { format } from 'date-fns';
+import { getDateFnsLocale } from '@/lib/i18n-utils';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/starwind/tabs';
+import { Badge } from '@/components/starwind/badge';
+import { Button } from '@/components/starwind/button';
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const rtl = isRtl(lang);
+
+// ------- SSR: Direct DB fetch (replaces useMenu React hook) -------
+let menus: any[] = [];
+let categories: any[] = [];
+let items: any[] = [];
+
+try {
+  const [menusRows, menuTrans, catsRows, catTrans, itemsRows, itemTrans] = await Promise.all([
+    db.select().from(restaurantMenus).where(eq(restaurantMenus.isActive, true)).orderBy(asc(restaurantMenus.sortOrder)),
+    db.select().from(restaurantMenuTranslations).where(eq(restaurantMenuTranslations.locale, lang)),
+    db.select().from(menuCategories).where(eq(menuCategories.isActive, true)).orderBy(asc(menuCategories.sortOrder)),
+    db.select().from(menuCategoryTranslations).where(eq(menuCategoryTranslations.locale, lang)),
+    db.select().from(menuItems).where(eq(menuItems.isActive, true)).orderBy(asc(menuItems.sortOrder)),
+    db.select().from(menuItemTranslations).where(eq(menuItemTranslations.locale, lang)),
+  ]);
+
+  const menuTransMap = new Map(menuTrans.map((tr: any) => [tr.menuId, tr]));
+  const catTransMap = new Map(catTrans.map((tr: any) => [tr.categoryId, tr]));
+  const itemTransMap = new Map(itemTrans.map((tr: any) => [tr.itemId, tr]));
+
+  menus = menusRows.map((menu: any) => {
+    const tr = menuTransMap.get(menu.id);
+    return {
+      id: menu.id,
+      slug: menu.slug,
+      price: menu.price ? parseFloat(menu.price) : null,
+      year: menu.year,
+      start_date: menu.startDate,
+      end_date: menu.endDate,
+      image_url: menu.imageUrl,
+      is_active: menu.isActive,
+      sort_order: menu.sortOrder,
+      name: tr?.name ?? menu.slug,
+      description: tr?.description ?? null,
+    };
+  });
+
+  categories = catsRows.map((cat: any) => {
+    const tr = catTransMap.get(cat.id);
+    return {
+      id: cat.id,
+      menu_id: cat.menuId,
+      slug: cat.slug,
+      sort_order: cat.sortOrder,
+      name: tr?.name ?? cat.slug,
+      description: tr?.description ?? null,
+    };
+  });
+
+  items = itemsRows.map((item: any) => {
+    const tr = itemTransMap.get(item.id);
+    return {
+      id: item.id,
+      category_id: item.categoryId,
+      slug: item.slug,
+      price: parseFloat(item.price),
+      image_url: item.imageUrl,
+      is_vegetarian: item.isVegetarian,
+      is_vegan: item.isVegan,
+      is_gluten_free: item.isGlutenFree,
+      is_signature: item.isSignature,
+      sort_order: item.sortOrder,
+      name: tr?.name ?? item.slug,
+      description: tr?.description ?? null,
+    };
+  });
+} catch (err) {
+  console.error('MenuSection SSR error:', err);
+}
+
+// ------- Helpers -------
+function getCategoriesByMenu(menuId: string) {
+  return categories.filter((cat: any) => cat.menu_id === menuId);
+}
+
+function getItemsByCategory(categoryId: string) {
+  return items.filter((item: any) => item.category_id === categoryId);
+}
+
+function formatMenuDate(startDate: string | null, endDate: string | null): string | null {
+  if (!startDate) return null;
+  const locale = getDateFnsLocale(lang);
+  const start = new Date(startDate);
+  if (!endDate || startDate === endDate) {
+    return format(start, 'd MMMM yyyy', { locale });
+  }
+  const end = new Date(endDate);
+  if (start.getMonth() === end.getMonth()) {
+    return `${format(start, 'd', { locale })} - ${format(end, 'd MMMM yyyy', { locale })}`;
+  }
+  return `${format(start, 'd MMMM', { locale })} - ${format(end, 'd MMMM yyyy', { locale })}`;
+}
+
+function isMenuActive(startDate: string | null, endDate: string | null): boolean | null {
+  if (!startDate) return null;
+  const start = new Date(startDate);
+  const end = endDate ? new Date(endDate) : start;
+  const now = new Date();
+  return now >= start && now <= end;
+}
+
+function normalize(value: string) {
+  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+
+function isChefMenu(name: string) {
+  const n = normalize(name);
+  return n.includes('chef') || n.includes('signature');
+}
+
+const activeMenus = menus.filter((m: any) => isMenuActive(m.start_date, m.end_date) === true);
+const defaultMenuId =
+  activeMenus.find((m: any) => isChefMenu(m.name))?.id ||
+  activeMenus[0]?.id ||
+  menus.find((m: any) => isChefMenu(m.name))?.id ||
+  menus[0]?.id;
+
+// Don't render if no menus
+if (menus.length === 0) return;
+---
+
+<section id="menu" class="relative overflow-hidden section-padding bg-secondary" dir={rtl ? 'rtl' : 'ltr'}>
+  <div class="max-w-6xl mx-auto">
+    <!-- Watermark -->
+    <Icon name="mdi:book-open-variant" size={280} class="section-watermark top-right text-foreground" aria-hidden="true" />
+
+    <!-- Header -->
+    <div class="text-center mb-section animate-fade-up">
+      <h2 class="heading-section mb-3">
+        {t('menuSection.title', lang)}
+      </h2>
+      <div class="heading-accent-bar"></div>
+      <p class="section-subtitle max-w-2xl mx-auto">
+        {t('menuSection.subtitle', lang)}
+      </p>
+      <div class="mt-6">
+        <Button variant="outline" class="font-semibold print-btn" data-print-menu>
+          <Icon name="mdi:printer" class="size-4" />
+          {t('menuSection.print', lang)}
+        </Button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <Tabs defaultValue={defaultMenuId} class="w-full">
+      <TabsList class="flex flex-wrap justify-center gap-2 bg-transparent h-auto mb-8 w-full">
+        {menus.map((menu: any) => {
+          const activeNow = isMenuActive(menu.start_date, menu.end_date);
+          const extraClass = activeNow === true
+            ? 'border-green-500/50 bg-green-500/10'
+            : activeNow === false
+              ? 'border-border/70 bg-background/70'
+              : 'border-border';
+          return (
+            <TabsTrigger
+              value={menu.id}
+              class={`px-6 py-3 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-full border data-[state=active]:border-accent transition-all ${extraClass}`}
+            >
+              <span class="flex items-center gap-2">
+                {menu.name}
+                {activeNow === true && (
+                  <Badge variant="success" size="sm" class="gap-1">
+                    <Icon name="mdi:check-circle" class="size-3.5" />
+                    {t('openings.statusOpen', lang)}
+                  </Badge>
+                )}
+                {activeNow === false && (
+                  <Badge variant="secondary" size="sm" class="gap-1">
+                    <Icon name="mdi:close-circle" class="size-3.5" />
+                    {t('openings.statusClosed', lang)}
+                  </Badge>
+                )}
+                {menu.price && (
+                  <span class="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                    {menu.price}€
+                  </span>
+                )}
+              </span>
+            </TabsTrigger>
+          );
+        })}
+      </TabsList>
+
+      {menus.map((menu: any) => {
+        const menuCategories = getCategoriesByMenu(menu.id);
+        return (
+          <TabsContent value={menu.id}>
+            <div class="space-y-8">
+              <!-- Menu header with price and dates -->
+              <div class="text-center pb-6 border-b border-border">
+                {menu.description && (
+                  <p class="text-muted-foreground italic mb-4 max-w-2xl mx-auto">
+                    {menu.description}
+                  </p>
+                )}
+                <div class="flex items-center justify-center gap-6 text-sm">
+                  {menu.price && (
+                    <div class="flex items-center gap-2 text-accent font-semibold text-lg">
+                      <Icon name="mdi:currency-eur" class="size-5" />
+                      <span>{menu.price}€ / {t('menuSection.person', lang)}</span>
+                    </div>
+                  )}
+                  {menu.start_date && (
+                    <div class="flex items-center gap-2 text-muted-foreground">
+                      <Icon name="mdi:calendar" class="size-4" />
+                      <span>{formatMenuDate(menu.start_date, menu.end_date)}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <!-- Categories and items -->
+              {menuCategories.map((category: any) => {
+                const categoryItems = getItemsByCategory(category.id);
+                return (
+                  <div class="space-y-4">
+                    <h3 class="heading-subsection text-center">
+                      {category.name}
+                    </h3>
+                    {category.description && (
+                      <p class="text-center text-muted-foreground text-sm italic">
+                        {category.description}
+                      </p>
+                    )}
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {categoryItems.map((item: any) => (
+                        <div class="group bg-card rounded-xl overflow-hidden border border-border/50 hover:border-accent/50 hover:shadow-elegant transition-all">
+                          {item.image_url && (
+                            <div class="h-44 overflow-hidden">
+                              <img
+                                src={item.image_url}
+                                alt={item.name}
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                loading="lazy"
+                              />
+                            </div>
+                          )}
+                          <div class="p-5">
+                            <div class="flex justify-between items-start gap-4">
+                              <div class="flex-1">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                  <h4 class="heading-card group-hover:text-accent transition-colors">
+                                    {item.name}
+                                  </h4>
+                                  {item.is_signature && (
+                                    <Icon name="mdi:star" class="size-4 text-accent" />
+                                  )}
+                                  {item.is_vegetarian && (
+                                    <Icon name="mdi:leaf" class="size-4 text-primary" aria-label={t('menuSection.vegetarian', lang)} />
+                                  )}
+                                  {item.is_vegan && (
+                                    <span class="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full">V</span>
+                                  )}
+                                  {item.is_gluten_free && (
+                                    <Icon name="mdi:barley-off" class="size-4 text-accent" aria-label={t('menuSection.glutenFree', lang)} />
+                                  )}
+                                </div>
+                                {item.description && (
+                                  <p class="text-muted-foreground mt-1 text-sm leading-relaxed">
+                                    {item.description}
+                                  </p>
+                                )}
+                              </div>
+                              {!menu.price && item.price > 0 && (
+                                <div class="text-accent font-serif text-lg font-bold whitespace-nowrap">
+                                  {item.price.toFixed(0)}€
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {menuCategories.length === 0 && (
+                <div class="text-center py-12 text-muted-foreground">
+                  {t('menuSection.comingSoon', lang)}
+                </div>
+              )}
+            </div>
+          </TabsContent>
+        );
+      })}
+    </Tabs>
+
+    <!-- Legend -->
+    <div class="text-center mt-12 pt-8 border-t border-border animate-fade-up">
+      <div class="flex items-center justify-center gap-6 text-sm text-muted-foreground flex-wrap">
+        <div class="flex items-center gap-2">
+          <Icon name="mdi:leaf" class="size-4 text-primary" />
+          <span>{t('menuSection.vegetarian', lang)}</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <Icon name="mdi:barley-off" class="size-4 text-accent" />
+          <span>{t('menuSection.glutenFree', lang)}</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <Icon name="mdi:star" class="size-4 text-accent" />
+          <span>{t('menuSection.chefSignature', lang)}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelector('[data-print-menu]')?.addEventListener('click', () => window.print());
+</script>

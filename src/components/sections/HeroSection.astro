@@ -1,0 +1,97 @@
+---
+import { Icon } from 'astro-icon/components';
+import { t } from '@/lib/i18n';
+import type { Locale } from '@/lib/i18n';
+import heroImage from '@/assets/hero-mountain.jpg';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+---
+
+<section id="hero" class="relative h-screen min-h-[700px] flex items-center justify-center overflow-hidden">
+  <!-- Background Video -->
+  <div class="absolute inset-0">
+    <video
+      class="w-full h-full object-cover"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      poster={heroImage.src}
+      aria-hidden="true"
+    >
+      <source src="/videos/video.mp4" type="video/mp4" />
+    </video>
+    <div class="absolute inset-0 bg-gradient-hero"></div>
+  </div>
+
+  <!-- Content -->
+  <div class="relative z-10 w-full">
+    <div class="container-wide mx-auto px-[clamp(1.25rem,5vw,4rem)] text-center text-snow">
+      <p class="inline-block text-gold font-medium tracking-[0.3em] uppercase text-sm mb-4 animate-fade-up" style="animation-delay: 0.2s;">
+        {t('hero.location', lang)}
+      </p>
+
+      <h1 class="heading-hero mb-4 text-snow animate-fade-up" style="animation-delay: 0.4s;">
+        {t('hero.title', lang)}
+      </h1>
+
+      <p class="type-heading text-snow/90 mb-2 animate-fade-up" style="animation-delay: 0.6s; font-size: clamp(1.25rem, 2.5vw, 1.75rem);">
+        {t('hero.subtitle', lang)}
+      </p>
+
+      <p class="text-snow/70 max-w-4xl mx-auto mb-10 animate-fade-up" style="animation-delay: 0.8s; font-size: clamp(1rem, 1.5vw, 1.125rem);">
+        {t('hero.tagline', lang)}
+      </p>
+
+      <div class="flex flex-col items-center sm:flex-row gap-4 justify-center animate-fade-up" style="animation-delay: 1s;">
+        <a
+          href={`mailto:${t('contact.emailValue', lang)}`}
+          class="inline-flex items-center justify-center h-12 bg-accent text-accent-foreground hover:bg-gold-light font-semibold px-8 py-6 text-lg rounded-md transition-colors"
+        >
+          {t('hero.book', lang)}
+        </a>
+        <a
+          href="#rooms"
+          class="inline-flex items-center justify-center h-12 border border-snow/50 text-snow bg-transparent hover:bg-snow/10 font-semibold px-8 py-6 text-lg rounded-md transition-colors"
+        >
+          {t('hero.cta', lang)}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll Indicator -->
+  <a
+    href="#rooms"
+    class="absolute bottom-8 left-1/2 -translate-x-1/2 text-snow/70 hover:text-snow transition-colors animate-fade-in"
+    style="animation-delay: 1.5s;"
+  >
+    <div class="animate-bounce">
+      <Icon name="mdi:chevron-down" size={32} />
+    </div>
+  </a>
+</section>
+
+<style>
+  .animate-fade-up {
+    opacity: 0;
+    animation: fadeUp 0.8s ease-out forwards;
+  }
+  .animate-fade-in {
+    opacity: 0;
+    animation: fadeIn 1s ease-out forwards;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+</style>

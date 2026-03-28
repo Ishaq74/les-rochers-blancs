@@ -1,0 +1,110 @@
+---
+import { t } from '@/lib/i18n';
+import type { Locale } from '@/lib/i18n';
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/starwind/carousel';
+import { Button } from '@/components/starwind/button';
+import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+import restaurantImage from '@/assets/restaurant.jpg';
+import summerImage from '@/assets/season-summer.jpg';
+import heroImage from '@/assets/hero-mountain.jpg';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+
+const pricingKeys = ['dailySpecial', 'specialty', 'menu', 'childMenu'] as const;
+
+const carouselImages = [
+  { src: restaurantImage, alt: t('restaurant.title', lang) },
+  { src: summerImage, alt: t('restaurant.title', lang) },
+  { src: heroImage, alt: t('restaurant.title', lang) },
+];
+---
+
+<section id="restaurant" class="relative overflow-hidden section-padding bg-secondary">
+  <div class="container-wide mx-auto">
+    <!-- Watermark -->
+    <Icon name="mdi:silverware-fork-knife" size={280} class="section-watermark top-right text-foreground" aria-hidden="true" />
+
+    <!-- Header -->
+    <div class="text-center mb-section animate-fade-up">
+      <h2 class="heading-section mb-3">
+        {t('restaurant.title', lang)}
+      </h2>
+      <div class="heading-accent-bar"></div>
+      <p class="font-serif text-xl text-muted-foreground italic">
+        {t('restaurant.subtitle', lang)}
+      </p>
+    </div>
+
+    <!-- Main Grid: Carousel Left + Content Right -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-section items-stretch">
+      <!-- Carousel Left -->
+      <div class="flex items-center animate-fade-up">
+        <Carousel class="w-full" opts={{ loop: true }}>
+          <CarouselContent>
+            {carouselImages.map((img) => (
+              <CarouselItem>
+                <div class="relative w-full aspect-[3/4] overflow-hidden rounded-xl shadow-elegant">
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    widths={[400, 640, 800]}
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious class="absolute left-4 top-1/2 -translate-y-1/2 size-10 bg-black/40 hover:bg-black/60 border-white/30 text-white" />
+          <CarouselNext class="absolute right-4 top-1/2 -translate-y-1/2 size-10 bg-black/40 hover:bg-black/60 border-white/30 text-white" />
+        </Carousel>
+      </div>
+
+      <!-- Content Right -->
+      <div class="flex flex-col justify-between animate-fade-up" style="animation-delay: 0.2s;">
+        <!-- Description -->
+        <div class="mb-8">
+          <p class="text-muted-foreground leading-relaxed mb-6 text-base">
+            {t('restaurant.description', lang)}
+          </p>
+
+          <!-- Group / Seminars -->
+          <div class="bg-accent/10 rounded-lg p-5">
+            <h3 class="heading-card mb-2 flex items-center gap-2">
+              <Icon name="mdi:account-group" class="size-4 text-accent" />
+              {t('restaurant.groupTitle', lang)}
+            </h3>
+            <p class="text-sm text-muted-foreground mb-3">
+              {t('restaurant.groupDescription', lang)}
+            </p>
+            <Button href={`mailto:${t('contact.emailValue', lang)}`} variant="outline" size="sm" class="font-semibold">
+              {t('restaurant.contactUs', lang)}
+            </Button>
+          </div>
+        </div>
+
+        <!-- Pricing - 2 Column Grid -->
+        <div>
+          <h3 class="heading-subsection mb-6 flex items-center gap-2">
+            <Icon name="mdi:silverware-fork-knife" class="size-5 text-accent" />
+            {t('restaurant.pricingTitle', lang)}
+          </h3>
+          <div class="grid grid-cols-2 gap-item mb-6">
+            {pricingKeys.map((key) => (
+              <div class="p-4 bg-card rounded-lg border border-border/50 hover:border-accent/50 hover:bg-accent/5 transition-all">
+                <p class="text-xs text-muted-foreground leading-snug">
+                  {t(`restaurant.pricing.${key}`, lang)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

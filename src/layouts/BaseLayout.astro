@@ -1,0 +1,41 @@
+---
+import "@/styles/starwind.css";
+import { Font } from 'astro:assets';
+import { isRtl, type Locale } from '@/lib/i18n';
+
+interface Props {
+  title?: string;
+  description?: string;
+  lang?: Locale;
+}
+
+const { lang = 'fr', title = 'Les Rochers Blancs', description = '' } = Astro.props;
+const dir = isRtl(lang) ? 'rtl' : 'ltr';
+---
+
+<!doctype html>
+<html lang={lang} dir={dir} class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    {description && <meta name="description" content={description} />}
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <Font cssVariable="--font-playfair" />
+    <Font cssVariable="--font-cormorant" />
+    <Font cssVariable="--font-manrope" />
+  </head>
+  <body class="bg-background text-foreground antialiased">
+    <slot />
+    <script is:inline>
+      // Theme: apply saved preference or system default before paint
+      (function () {
+        const saved = localStorage.getItem('colorTheme') || localStorage.getItem('theme');
+        if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,143 @@
+---
+import { t } from '@/lib/i18n';
+import type { Locale } from '@/lib/i18n';
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/starwind/carousel';
+import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+import roomImage from '@/assets/room-suite.jpg';
+import summerImage from '@/assets/season-summer.jpg';
+import winterImage from '@/assets/season-winter.jpg';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+
+const roomKeys = ['single', 'double1', 'double2', 'triple', 'quad', 'five'] as const;
+const extraKeys = [
+  'breakfast',
+  'halfBoard',
+  'halfBoardChild',
+  'fullBoard',
+  'singleSupplement',
+  'fullBoardChild',
+  'taxAndDog',
+] as const;
+
+const carouselImages = [
+  { src: roomImage, alt: t('hotel.title', lang) },
+  { src: summerImage, alt: t('hotel.title', lang) },
+  { src: winterImage, alt: t('hotel.title', lang) },
+];
+---
+
+<section id="rooms" class="relative overflow-hidden section-padding bg-background">
+  <div class="container-wide mx-auto">
+    <!-- Watermark -->
+    <Icon name="mdi:bed" size={280} class="section-watermark top-right text-foreground" aria-hidden="true" />
+
+    <!-- Header -->
+    <div class="text-center mb-section animate-fade-up">
+      <h2 class="heading-section mb-3">
+        {t('hotel.title', lang)}
+      </h2>
+      <div class="heading-accent-bar"></div>
+      <p class="font-serif text-xl text-muted-foreground italic">
+        {t('hotel.subtitle', lang)}
+      </p>
+    </div>
+
+    <!-- Main Grid: Carousel Left + Content Right -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-section items-stretch">
+      <!-- Carousel Left -->
+      <div class="flex items-center animate-fade-up">
+        <Carousel class="w-full" opts={{ loop: true }}>
+          <CarouselContent>
+            {carouselImages.map((img) => (
+              <CarouselItem>
+                <div class="relative w-full aspect-[3/4] overflow-hidden rounded-xl shadow-elegant">
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    widths={[400, 640, 800]}
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious class="absolute left-4 top-1/2 -translate-y-1/2 size-10 bg-black/40 hover:bg-black/60 border-white/30 text-white" />
+          <CarouselNext class="absolute right-4 top-1/2 -translate-y-1/2 size-10 bg-black/40 hover:bg-black/60 border-white/30 text-white" />
+        </Carousel>
+      </div>
+
+      <!-- Content Right -->
+      <div class="flex flex-col justify-between animate-fade-up" style="animation-delay: 0.2s;">
+        <!-- Description -->
+        <div class="mb-8">
+          <p class="text-muted-foreground leading-relaxed mb-4 text-base">
+            {t('hotel.description', lang)}
+          </p>
+          <p class="text-muted-foreground leading-relaxed mb-6 text-base">
+            {t('hotel.description2', lang)}
+          </p>
+          <div class="bg-accent/10 rounded-lg p-4 mb-6">
+            <div class="flex items-start gap-3">
+              <Icon name="mdi:information-outline" class="size-5 text-accent mt-0.5 flex-shrink-0" />
+              <p class="text-sm text-muted-foreground">
+                {t('hotel.groupNote', lang)}
+              </p>
+            </div>
+          </div>
+          <p class="text-sm text-muted-foreground italic">
+            {t('hotel.closingNote', lang)}
+          </p>
+        </div>
+
+        <!-- Rooms Pricing - 2 Column Grid -->
+        <div>
+          <h3 class="heading-subsection mb-6">
+            {t('hotel.pricingTitle', lang)}
+          </h3>
+          <div class="grid grid-cols-2 gap-item">
+            {roomKeys.map((key) => (
+              <div class="p-4 bg-card rounded-lg border border-border/50 hover:border-accent/50 hover:bg-accent/5 transition-all">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+                    <Icon name="mdi:account-group" class="size-4 text-accent" />
+                  </div>
+                </div>
+                <p class="text-sm font-medium text-foreground mb-2">
+                  {t(`hotel.rooms.${key}.name`, lang)}
+                </p>
+                <p class="text-lg font-bold text-accent font-serif">
+                  {t(`hotel.rooms.${key}.price`, lang)}€
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Extras -->
+    <div class="my-section animate-fade-up">
+      <div class="bg-secondary rounded-xl p-8">
+        <h3 class="heading-subsection mb-6 flex items-center gap-2">
+          <Icon name="mdi:check-circle" class="size-5 text-accent" />
+          {t('hotel.extrasTitle', lang)}
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-item">
+          {extraKeys.map((key) => (
+            <p class="text-sm text-muted-foreground flex items-start gap-2">
+              <span class="text-accent mt-1.5 flex-shrink-0">•</span>
+              {t(`hotel.extras.${key}`, lang)}
+            </p>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

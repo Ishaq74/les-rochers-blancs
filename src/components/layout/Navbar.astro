@@ -1,0 +1,143 @@
+---
+import { t } from '@/lib/i18n';
+import type { Locale } from '@/lib/i18n';
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle } from '@/components/starwind/sheet';
+import { Dropdown, DropdownTrigger, DropdownContent, DropdownItem } from '@/components/starwind/dropdown';
+import { ThemeToggle } from '@/components/starwind/theme-toggle';
+import { Button } from '@/components/starwind/button';
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+
+const navItems = [
+  { label: t('nav.home', lang), href: '#hero' },
+  { label: t('nav.hotel', lang), href: '#rooms' },
+  { label: t('nav.restaurant', lang), href: '#restaurant' },
+  { label: t('nav.menu', lang), href: '#menu' },
+  { label: t('nav.access', lang), href: '#access' },
+];
+
+const bookLabel = t('nav.book', lang);
+const contactEmail = t('contact.emailValue', lang);
+
+const languages = [
+  { code: 'fr', name: 'Français', flag: 'circle-flags:fr' },
+  { code: 'en', name: 'English', flag: 'circle-flags:uk' },
+  { code: 'ar', name: 'العربية', flag: 'circle-flags:sa' },
+  { code: 'zh', name: '中文', flag: 'circle-flags:cn' },
+];
+
+const currentLanguage = languages.find((l) => l.code === lang) || languages[0];
+---
+
+<nav
+  id="site-navbar"
+  data-site-navbar="true"
+  class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-transparent"
+>
+  <div class="container-wide mx-auto px-6 lg:px-12">
+    <div class="flex items-center justify-between h-20">
+      <!-- Logo -->
+      <a href="#hero" class="flex items-center gap-3">
+        <span class="font-serif text-2xl font-bold tracking-wide navbar-logo-text text-snow">
+          Les Rochers Blancs
+        </span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden lg:flex items-center gap-8">
+        {navItems.map((item) => (
+          <a
+            href={item.href}
+            class="font-medium transition-colors hover:text-accent navbar-link text-snow"
+          >
+            {item.label}
+          </a>
+        ))}
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-3">
+        <!-- Language Switcher -->
+        <Dropdown>
+          <DropdownTrigger class="navbar-action-btn text-snow hover:bg-snow/10 rounded-md size-11 inline-flex items-center justify-center">
+            <Icon name="mdi:translate" class="size-5" />
+          </DropdownTrigger>
+          <DropdownContent align="end" class="min-w-40">
+            {languages.map((l) => (
+              <DropdownItem
+                as="a"
+                href={`/${l.code}/`}
+                class:list={['gap-2 text-sm', { 'bg-accent/10': lang === l.code }]}
+              >
+                <Icon name={l.flag} class="size-5 rounded-full" />
+                <span>{l.name}</span>
+              </DropdownItem>
+            ))}
+          </DropdownContent>
+        </Dropdown>
+
+        <!-- Theme Toggle -->
+        <ThemeToggle class="navbar-action-btn text-snow hover:bg-snow/10 border-0" />
+
+        <!-- Book Button (desktop) -->
+        <Button href={`mailto:${contactEmail}`} variant="primary" size="sm" class="hidden md:inline-flex bg-accent text-accent-foreground hover:bg-gold-light font-semibold">
+          {bookLabel}
+        </Button>
+
+        <!-- Mobile Menu Toggle -->
+        <Sheet>
+          <SheetTrigger class="lg:hidden navbar-action-btn text-snow hover:bg-snow/10 rounded-md size-11 inline-flex items-center justify-center">
+            <Icon name="mdi:menu" class="size-6" />
+          </SheetTrigger>
+          <SheetContent side="right">
+            <SheetHeader>
+              <SheetTitle>Les Rochers Blancs</SheetTitle>
+            </SheetHeader>
+            <div class="flex flex-col gap-4 px-4 py-6">
+              {navItems.map((item) => (
+                <a
+                  href={item.href}
+                  class="text-foreground font-medium py-2 hover:text-accent transition-colors"
+                  data-sheet-nav-link
+                >
+                  {item.label}
+                </a>
+              ))}
+              <Button href={`mailto:${contactEmail}`} variant="primary" class="mt-4 bg-accent text-accent-foreground hover:bg-gold-light font-semibold text-center">
+                {bookLabel}
+              </Button>
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  // Handle navbar scroll state
+  const navbar = document.getElementById('site-navbar');
+  if (navbar) {
+    const update = () => {
+      const scrolled = window.scrollY > 50;
+      navbar.classList.toggle('bg-primary', scrolled);
+      navbar.classList.toggle('shadow-medium', scrolled);
+      navbar.classList.toggle('bg-transparent', !scrolled);
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  }
+
+  // Close sheet on nav link click
+  document.querySelectorAll('[data-sheet-nav-link]').forEach((link) => {
+    link.addEventListener('click', () => {
+      const closeBtn = document.querySelector('[data-slot="sheet-content"] [data-slot="sheet-close"]');
+      if (closeBtn instanceof HTMLElement) closeBtn.click();
+    });
+  });
+</script>
