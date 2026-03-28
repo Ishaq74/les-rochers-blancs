@@ -1,0 +1,757 @@
+{
+  "nav": {
+    "home": "首页",
+    "hotel": "酒店",
+    "rooms": "客房",
+    "restaurant": "餐厅",
+    "about": "关于我们",
+    "access": "交通",
+    "contact": "联系我们",
+    "book": "预订"
+  },
+  "hero": {
+    "location": "塞姆诺兹，上萨瓦省",
+    "title": "Les Rochers Blancs",
+    "subtitle": "塞姆诺兹酒店与餐厅",
+    "tagline": "上萨瓦省山脉中心海拔1700米的宁静避风港",
+    "cta": "探索",
+    "book": "立即预订"
+  },
+  "openings": {
+    "sectionLabel": "营业时间",
+    "title": "开放时间",
+    "openingLabel": "营业",
+    "statusOpen": "营业中",
+    "statusClosed": "已关闭",
+    "summer": {
+      "title": "夏季",
+      "restaurantLabel": "餐厅",
+      "restaurantDates": "2026年5月9日至2026年10月21日",
+      "hotelLabel": "酒店",
+      "hotelDates": "2026年7月5日至2026年9月1日（+六月、九月、十月周末）",
+      "closedDays": "每周一及周日晚间休息"
+    },
+    "winter": {
+      "title": "冬季",
+      "restaurantLabel": "餐厅",
+      "restaurantDates": "2026年12月9日至2027年4月2日",
+      "hotelLabel": "酒店",
+      "hotelDates": "2026年12月21日至2027年1月7日及2027年2月9日至2027年3月10日（+一月及三月周末）",
+      "closedDays": "每周一及周日晚间休息"
+    }
+  },
+  "hotel": {
+    "sectionLabel": "住宿",
+    "title": "酒店",
+    "subtitle": "海拔1700米的16间舒适客房",
+    "description": "在Les Rochers Blancs，我们为您提供一个宁静的避风港，让您在探索塞姆诺兹的美景后休息放松。在海拔1700米的山区环境中，所有客房都配有浴室、卫生间、电视和无线网络。",
+    "description2": "我们的16间舒适温馨的客房，旨在为您提供一个放松的空间，配有精心的装饰和实用的家具。在我们柔软的床上享受良好的睡眠，欣赏周围群山的宁静。",
+    "groupNote": "团体可以在开放期外预订。请随时与我们联系。",
+    "closingNote": "Les Rochers Blancs酒店的关闭日期与餐厅不同。",
+    "pricingTitle": "价格",
+    "rooms": {
+      "single": { "name": "单人房", "price": "88" },
+      "double1": { "name": "双人房（一张床）", "price": "98" },
+      "double2": { "name": "双人房（两张床）", "price": "108" },
+      "triple": { "name": "三人房", "price": "125" },
+      "quad": { "name": "四人房", "price": "140" },
+      "five": { "name": "五人房", "price": "155" }
+    },
+    "extras": {
+      "breakfast": "早餐：自助餐 14欧元",
+      "halfBoard": "半膳：88欧元 最少3天 — 每人每天价格",
+      "halfBoardChild": "2至5岁儿童：44欧元，5至10岁：56欧元",
+      "fullBoard": "全膳：112欧元 最少3天 — 每人每天价格",
+      "singleSupplement": "单人房补充：35欧元",
+      "fullBoardChild": "2至5岁儿童：56欧元，5至10岁：68欧元",
+      "taxAndDog": "旅游税：0.85欧元（18岁以上）— 宠物犬补充：5欧元/天"
+    }
+  },
+  "restaurant": {
+    "sectionLabel": "美食",
+    "title": "餐厅",
+    "subtitle": "高山美食与地方风味",
+    "description": "我们的厨师在温暖的氛围中升华萨瓦地区的美食，享有全景山景。",
+    "menu": "查看菜单",
+    "reserve": "预订餐桌",
+    "pricingTitle": "价格",
+    "pricing": {
+      "dailySpecial": "每日特餐：18至23欧元",
+      "specialty": "特色菜：22至30欧元",
+      "menu": "套餐：35至48欧元",
+      "childMenu": "儿童套餐：13欧元"
+    },
+    "groupTitle": "团体用餐？",
+    "groupDescription": "我们组织一天或多天的研讨会。",
+    "contactUs": "联系我们"
+  },
+  "about": {
+    "sectionLabel": "关于我们",
+    "title": "我们的故事",
+    "subtitle": "塞姆诺兹山顶的宁静避风港",
+    "description": "坐落在塞姆诺兹山顶，Les Rochers Blancs是一个传统与现代交汇的非凡度假胜地。我们的家族在这个迷人的海拔1700米环境中世代欢迎您。",
+    "values": {
+      "tradition": {
+        "title": "传统",
+        "description": "代代相传的专业技术"
+      },
+      "nature": {
+        "title": "自然",
+        "description": "与高山环境和谐共处"
+      },
+      "excellence": {
+        "title": "卓越",
+        "description": "为每位客人提供个性化服务"
+      }
+    }
+  },
+  "access": {
+    "sectionLabel": "交通指南",
+    "title": "如何到达",
+    "subtitle": "您不会迷路",
+    "bus": {
+      "title": "从安纳西乘坐公交",
+      "description": "夏季每天6班，周末和学校假期期间。"
+    },
+    "car": {
+      "title": "自驾",
+      "description": "A41高速公路安纳西南出口。朝阿尔贝维尔方向到安纳西市中心。沿塞姆诺兹方向（D41）行驶17公里。到达Crêt de Chatillon。"
+    },
+    "gps": {
+      "title": "GPS导航",
+      "description": "塞姆诺兹之家，Viuz-la-Chiesaz市镇。到达塞姆诺兹站后，酒店在上方2公里处。"
+    },
+    "partners": {
+      "title": "合作伙伴",
+      "description": "与我们地区的专业人士一起增添您在塞姆诺兹住宿期间的放松和逃离时刻。"
+    }
+  },
+  "contact": {
+    "sectionLabel": "联系",
+    "title": "联系我们",
+    "subtitle": "我们聆听您的需求",
+    "addressLabel": "地址",
+    "addressValue": "塞姆诺兹路，74000 安纳西，法国",
+    "phoneLabel": "电话",
+    "phoneValue": "+33 4 50 XX XX XX",
+    "emailLabel": "电子邮件",
+    "emailValue": "contact@lesrochersblancs.fr",
+    "hoursLabel": "营业时间",
+    "hoursValue": "前台：24小时 — 餐厅：12:00-14:00 / 19:00-22:00",
+    "formLabel": "联系表格",
+    "form": {
+      "name": "您的姓名",
+      "email": "您的电子邮件",
+      "message": "您的留言",
+      "send": "发送"
+    }
+  },
+  "footer": {
+    "brandName": "Les Rochers Blancs",
+    "rights": "版权所有",
+    "legal": "法律声明",
+    "privacy": "隐私政策",
+    "quickLinksLabel": "快速链接",
+    "instagramUrl": "#",
+    "facebookUrl": "#"
+  },
+  "menuSection": {
+    "label": "美食",
+    "title": "我们的菜单",
+    "subtitle": "品尝我们主厨用最优质本地食材精心烹制的时令与节日菜单",
+    "print": "打印菜单",
+    "person": "人",
+    "comingSoon": "该菜单即将上线",
+    "vegetarian": "素食",
+    "glutenFree": "无麸质",
+    "chefSignature": "主厨招牌"
+  },
+  "adminLogin": {
+    "backToSite": "返回网站",
+    "title": "管理后台",
+    "subtitle": "登录以访问管理面板",
+    "emailLabel": "邮箱",
+    "passwordLabel": "密码",
+    "signIn": "登录",
+    "signingIn": "登录中...",
+    "toast": {
+      "signInErrorTitle": "登录错误",
+      "genericErrorTitle": "错误",
+      "genericErrorDescription": "发生错误"
+    }
+  },
+  "notFound": {
+    "message": "哎呀！页面未找到",
+    "returnHome": "返回首页"
+  },
+  "adminLayout": {
+    "signOut": "退出登录",
+    "nav": {
+      "dashboard": "仪表盘",
+      "content": "CMS 内容",
+      "menu": "餐厅菜单",
+      "services": "服务",
+      "formations": "培训",
+      "blog": "博客",
+      "comments": "评论",
+      "clients": "CRM 客户",
+      "reservations": "预订",
+      "invoices": "发票",
+      "quotes": "报价单",
+      "media": "媒体库",
+      "theme": "主题",
+      "settings": "设置"
+    }
+  },
+  "common": {
+    "cancel": "取消",
+    "save": "保存",
+    "create": "创建",
+    "update": "更新",
+    "delete": "删除",
+    "add": "添加",
+    "edit": "编辑",
+    "actions": "操作",
+    "status": "状态",
+    "name": "名称",
+    "slug": "标识",
+    "active": "活跃",
+    "inactive": "不活跃",
+    "saving": "保存中...",
+    "error": "错误",
+    "success": "成功",
+    "deleted": "已删除",
+    "notes": "备注",
+    "client": "客户",
+    "date": "日期",
+    "noResults": "无结果",
+    "errorSave": "保存失败",
+    "errorDelete": "删除失败"
+  },
+  "dashboard": {
+    "title": "控制面板",
+    "welcome": "欢迎来到 Les Rochers Blancs 管理面板",
+    "stats": {
+      "clients": { "title": "客户", "description": "注册客户总数" },
+      "reservations": { "title": "预订", "pendingDescription": "待处理" },
+      "revenue": { "title": "营业额", "description": "已付款发票总额" },
+      "unpaidInvoices": { "title": "未付发票", "description": "需跟进" },
+      "pendingQuotes": { "title": "待处理报价", "totalDescription": "共计报价" },
+      "blogPosts": { "title": "博客文章", "description": "已发布文章" },
+      "comments": { "title": "评论", "description": "待审核" }
+    },
+    "quickActions": {
+      "title": "快速操作",
+      "description": "快速访问主要功能",
+      "newReservation": "新建预订",
+      "addClient": "添加客户",
+      "createInvoice": "创建发票",
+      "createQuote": "创建报价",
+      "writeArticle": "撰写文章"
+    },
+    "languages": {
+      "title": "支持的语言",
+      "description": "您的网站提供 4 种语言版本"
+    }
+  },
+  "reservations": {
+    "title": "预订管理",
+    "subtitle": "管理所有预订",
+    "new": "新建预订",
+    "editTitle": "编辑预订",
+    "newTitle": "新建预订",
+    "confirmDelete": "删除此预订？",
+    "noItems": "暂无预订",
+    "form": {
+      "client": "客户",
+      "clientPlaceholder": "选择客户",
+      "type": "类型",
+      "startDate": "开始日期 *",
+      "endDate": "结束日期",
+      "status": "状态",
+      "guests": "人数",
+      "amount": "总金额 (€)",
+      "specialRequests": "特殊要求",
+      "notes": "内部备注"
+    },
+    "table": {
+      "client": "客户",
+      "type": "类型",
+      "dates": "日期",
+      "guests": "人数",
+      "amount": "金额",
+      "status": "状态",
+      "actions": "操作"
+    },
+    "status": {
+      "pending": "待处理",
+      "confirmed": "已确认",
+      "cancelled": "已取消",
+      "completed": "已完成"
+    },
+    "type": {
+      "room": "客房",
+      "restaurant": "餐厅",
+      "service": "服务",
+      "formation": "培训"
+    },
+    "toast": {
+      "created": "预订已创建",
+      "updated": "预订已更新",
+      "deleted": "预订已删除",
+      "errorSave": "保存失败",
+      "errorDelete": "删除失败"
+    }
+  },
+  "invoices": {
+    "title": "发票管理",
+    "subtitle": "管理您的发票",
+    "new": "新建发票",
+    "editTitle": "编辑发票",
+    "newTitle": "新建发票",
+    "confirmDelete": "删除此发票？",
+    "noItems": "暂无发票",
+    "form": {
+      "number": "发票编号",
+      "client": "客户",
+      "clientPlaceholder": "选择",
+      "status": "状态",
+      "issueDate": "开具日期",
+      "dueDate": "到期日期",
+      "taxRate": "税率 (%)",
+      "lines": "发票明细",
+      "addLine": "添加明细",
+      "notes": "备注",
+      "descriptionPlaceholder": "描述",
+      "qtyPlaceholder": "数量",
+      "pricePlaceholder": "单价",
+      "subtotal": "小计",
+      "tax": "税款 ({{rate}}%)",
+      "totalTTC": "含税总额"
+    },
+    "table": {
+      "number": "发票编号",
+      "client": "客户",
+      "date": "日期",
+      "dueDate": "到期日",
+      "total": "总额",
+      "status": "状态",
+      "actions": "操作"
+    },
+    "status": {
+      "draft": "草稿",
+      "sent": "已发送",
+      "paid": "已付款",
+      "overdue": "逾期",
+      "cancelled": "已取消"
+    },
+    "toast": {
+      "created": "发票已创建",
+      "updated": "发票已更新",
+      "deleted": "发票已删除",
+      "errorSave": "保存失败",
+      "errorDelete": "删除失败"
+    }
+  },
+  "quotes": {
+    "title": "报价管理",
+    "subtitle": "管理所有报价",
+    "new": "新建报价",
+    "editTitle": "编辑报价",
+    "newTitle": "新建报价",
+    "confirmDelete": "删除此报价？",
+    "confirmConvert": "将报价转换为发票？",
+    "noItems": "暂无报价",
+    "form": {
+      "number": "报价编号",
+      "client": "客户",
+      "clientPlaceholder": "选择",
+      "status": "状态",
+      "issueDate": "开具日期",
+      "validUntil": "有效期至",
+      "taxRate": "税率 (%)",
+      "lines": "报价明细",
+      "addLine": "添加明细",
+      "notes": "备注",
+      "descriptionPlaceholder": "描述",
+      "qtyPlaceholder": "数量",
+      "pricePlaceholder": "单价",
+      "subtotal": "小计",
+      "tax": "税款 ({{rate}}%)",
+      "totalTTC": "含税总额"
+    },
+    "table": {
+      "number": "报价编号",
+      "client": "客户",
+      "date": "日期",
+      "validity": "有效期",
+      "total": "总额",
+      "status": "状态",
+      "actions": "操作"
+    },
+    "status": {
+      "draft": "草稿",
+      "sent": "已发送",
+      "accepted": "已接受",
+      "rejected": "已拒绝",
+      "expired": "已过期",
+      "converted": "已转换"
+    },
+    "toast": {
+      "created": "报价已创建",
+      "updated": "报价已更新",
+      "deleted": "报价已删除",
+      "converted": "报价已转换为发票",
+      "errorSave": "保存失败",
+      "errorDelete": "删除失败",
+      "errorConvert": "转换失败"
+    }
+  },
+  "clients": {
+    "title": "客户管理",
+    "subtitle": "管理客户数据库",
+    "new": "添加客户",
+    "editTitle": "编辑客户",
+    "newTitle": "新建客户",
+    "confirmDelete": "删除此客户？",
+    "noItems": "暂无客户",
+    "countSuffix": "位客户",
+    "search": "搜索客户...",
+    "form": {
+      "firstName": "名 *",
+      "lastName": "姓 *",
+      "email": "电子邮件 *",
+      "phone": "电话",
+      "company": "公司",
+      "address": "地址",
+      "city": "城市",
+      "postalCode": "邮政编码",
+      "country": "国家",
+      "tags": "标签（逗号分隔）",
+      "tagsPlaceholder": "VIP、常客、企业",
+      "notes": "备注"
+    },
+    "table": {
+      "client": "客户",
+      "contact": "联系方式",
+      "company": "公司",
+      "tags": "标签",
+      "createdAt": "创建日期",
+      "actions": "操作"
+    },
+    "toast": {
+      "created": "客户已创建",
+      "updated": "客户已更新",
+      "deleted": "客户已删除",
+      "errorSave": "保存失败",
+      "errorDelete": "删除失败"
+    }
+  },
+  "blog": {
+    "title": "博客",
+    "subtitle": "管理博客文章",
+    "new": "新建文章",
+    "editTitle": "编辑文章",
+    "newTitle": "新建文章",
+    "confirmDelete": "删除此文章？",
+    "noItems": "暂无文章",
+    "published": "已发布",
+    "draft": "草稿",
+    "form": {
+      "slug": "标识 (URL)",
+      "imageUrl": "封面图片 (URL)",
+      "titleLabel": "标题",
+      "excerpt": "摘要",
+      "content": "内容",
+      "metaTitle": "Meta 标题 (SEO)",
+      "metaDescription": "Meta 描述 (SEO)"
+    },
+    "table": {
+      "title": "标题",
+      "date": "日期",
+      "views": "浏览量",
+      "status": "状态",
+      "actions": "操作"
+    },
+    "toast": {
+      "created": "文章已创建",
+      "updated": "文章已更新",
+      "deleted": "文章已删除",
+      "published": "文章已发布",
+      "unpublished": "文章已取消发布",
+      "errorSave": "保存失败",
+      "errorDelete": "删除失败",
+      "error": "错误"
+    }
+  },
+  "comments": {
+    "title": "评论管理",
+    "subtitle": "审核博客评论",
+    "pendingTitle": "待审核",
+    "noProcessed": "暂无已处理评论",
+    "articleLabel": "文章",
+    "approve": "批准",
+    "reject": "拒绝",
+    "table": {
+      "author": "作者",
+      "comment": "评论",
+      "article": "文章",
+      "date": "日期",
+      "status": "状态",
+      "actions": "操作"
+    },
+    "status": {
+      "approved": "已批准",
+      "rejected": "已拒绝",
+      "pending": "待处理"
+    },
+    "toast": {
+      "approved": "评论已批准",
+      "rejected": "评论已拒绝",
+      "deleted": "评论已删除",
+      "confirmDelete": "删除此评论？",
+      "error": "错误"
+    }
+  },
+  "services": {
+    "title": "服务管理",
+    "subtitle": "管理设施服务",
+    "new": "添加服务",
+    "editTitle": "编辑服务",
+    "newTitle": "新建服务",
+    "confirmDelete": "删除此服务？",
+    "noItems": "暂无服务",
+    "activeLabel": "活跃",
+    "inactiveLabel": "不活跃",
+    "toggleActive": "活跃",
+    "form": {
+      "slug": "标识",
+      "icon": "图标（lucide 名称）",
+      "imageUrl": "图片链接"
+    },
+    "table": {
+      "name": "名称",
+      "slug": "标识",
+      "status": "状态",
+      "actions": "操作"
+    },
+    "toast": {
+      "created": "服务已创建",
+      "updated": "服务已更新",
+      "deleted": "服务已删除",
+      "errorSave": "保存失败",
+      "errorDelete": "删除失败"
+    }
+  },
+  "formations": {
+    "title": "培训管理",
+    "subtitle": "管理可用培训",
+    "new": "添加培训",
+    "editTitle": "编辑培训",
+    "newTitle": "新建培训",
+    "confirmDelete": "删除此培训？",
+    "noItems": "暂无培训",
+    "activeLabel": "活跃",
+    "inactiveLabel": "不活跃",
+    "toggleActive": "活跃",
+    "form": {
+      "slug": "标识",
+      "duration": "时长",
+      "price": "价格 (€)",
+      "imageUrl": "图片链接",
+      "durationPlaceholder": "2天"
+    },
+    "table": {
+      "name": "名称",
+      "duration": "时长",
+      "price": "价格",
+      "status": "状态",
+      "actions": "操作"
+    },
+    "toast": {
+      "created": "培训已创建",
+      "updated": "培训已更新",
+      "deleted": "培训已删除",
+      "errorSave": "保存失败",
+      "errorDelete": "删除失败"
+    }
+  },
+  "media": {
+    "title": "媒体库",
+    "subtitle": "管理文件和图片",
+    "upload": "上传",
+    "noItems": "暂无上传文件",
+    "uploadFirst": "上传您的第一个文件",
+    "confirmDelete": "删除此文件？",
+    "toast": {
+      "uploaded": "已上传 {{count}} 个文件",
+      "urlCopied": "链接已复制",
+      "deleted": "文件已删除",
+      "errorUpload": "上传失败",
+      "errorDelete": "删除失败"
+    }
+  },
+  "theme": {
+    "title": "主题",
+    "subtitle": "自定义网站外观",
+    "save": "保存",
+    "colors": {
+      "title": "颜色",
+      "description": "自定义主题颜色（HSL 格式）",
+      "primary": "主色",
+      "accent": "强调色",
+      "background": "背景色",
+      "foreground": "前景色",
+      "muted": "柔和色",
+      "secondary": "次要色"
+    },
+    "typography": {
+      "title": "字体",
+      "description": "选择字体",
+      "heading": "标题字体",
+      "body": "正文字体",
+      "preview": "预览："
+    },
+    "preview": {
+      "title": "预览",
+      "description": "可视化更改",
+      "tagline": "阿尔卑斯山心脏的宁静庇护所",
+      "primaryButton": "主按钮",
+      "accentButton": "强调按钮"
+    },
+    "toast": {
+      "saved": "主题已保存",
+      "errorSave": "保存失败"
+    }
+  },
+  "settings": {
+    "title": "设置",
+    "subtitle": "配置网站设置",
+    "save": "保存",
+    "backup": "备份",
+    "fields": {
+      "site_name": "网站名称",
+      "site_description": "描述",
+      "contact_email": "联系邮箱",
+      "contact_phone": "电话",
+      "contact_address": "地址",
+      "social_facebook": "Facebook 链接",
+      "social_instagram": "Instagram 链接",
+      "social_twitter": "Twitter/X 链接",
+      "meta_title": "Meta 标题 (SEO)",
+      "meta_description": "Meta 描述 (SEO)",
+      "meta_keywords": "Meta 关键词 (SEO)"
+    },
+    "categories": {
+      "general": "通用",
+      "contact": "联系方式",
+      "social": "社交媒体",
+      "seo": "SEO"
+    },
+    "backupSection": {
+      "title": "备份与恢复",
+      "description": "创建数据备份或从备份恢复",
+      "download": "下载备份",
+      "restore": "恢复（即将推出）"
+    },
+    "toast": {
+      "saved": "设置已保存",
+      "backupDownloaded": "备份已下载",
+      "errorSave": "保存失败",
+      "errorBackup": "备份失败"
+    }
+  },
+  "contentManager": {
+    "title": "内容管理",
+    "subtitle": "编辑各语言版本的网站内容",
+    "prefill": "从翻译预填",
+    "saveAll": "全部保存",
+    "saving": "保存中...",
+    "sectionLabel": "版块",
+    "sections": {
+      "hero": "首屏",
+      "openings": "营业时间",
+      "hotel": "酒店",
+      "restaurant": "餐厅",
+      "about": "关于",
+      "access": "交通",
+      "contact": "联系方式",
+      "nav": "导航",
+      "footer": "页脚"
+    },
+    "toast": {
+      "loadError": "内容加载失败",
+      "prefillSuccess": "预填完成",
+      "prefillDescription": "空字段已从默认翻译填充。点击\"保存\"确认。",
+      "saveSuccess": "内容保存成功",
+      "saveError": "内容保存失败"
+    }
+  },
+  "menuManager": {
+    "title": "菜单管理",
+    "subtitle": "节日菜单（圣诞节、复活节...）含分类和菜品",
+    "newMenu": "新建菜单",
+    "editMenuTitle": "编辑",
+    "newMenuTitle": "新建",
+    "editCategoryTitle": "编辑",
+    "newCategoryTitle": "新建",
+    "editItemTitle": "编辑",
+    "newItemTitle": "新建",
+    "menuSuffix": "个菜单",
+    "categorySuffix": "个分类",
+    "itemSuffix": "道菜",
+    "duplicate": "复制",
+    "confirmDeleteMenu": "删除此菜单及其所有分类和菜品？",
+    "confirmDeleteCategory": "删除此分类及其所有菜品？",
+    "confirmDeleteItem": "删除此菜品？",
+    "noMenus": "暂无菜单。创建您的第一个节日菜单！",
+    "noCategories": "暂无分类。添加\"前菜\"、\"主菜\"、\"甜点\"...",
+    "categoriesLabel": "菜单分类",
+    "categoriesSuffix": "个分类",
+    "dishesSuffix": "道菜",
+    "addCategory": "分类",
+    "addItem": "菜品",
+    "form": {
+      "slug": "标识",
+      "globalPrice": "总价 (€)",
+      "year": "年份",
+      "startDate": "开始日期",
+      "endDate": "结束日期",
+      "isActive": "菜单已激活（在网站上可见）",
+      "sortOrder": "显示顺序",
+      "translationsLabel": "翻译",
+      "menuName": "菜单名称",
+      "menuDescription": "描述",
+      "categoryActive": "分类已激活",
+      "categoryName": "名称",
+      "categoryDescription": "描述（可选）",
+      "itemName": "菜品名称",
+      "itemDescription": "描述",
+      "itemPrice": "价格 (€) - 单点时使用",
+      "isSignature": "主厨招牌",
+      "isVegetarian": "素食",
+      "isVegan": "纯素",
+      "isGlutenFree": "无麸质",
+      "itemActive": "菜品已激活"
+    },
+    "toast": {
+      "menuSaved": "菜单已保存",
+      "menuDeleted": "菜单已删除",
+      "categorySaved": "分类已保存",
+      "categoryDeleted": "分类已删除",
+      "itemSaved": "菜品已保存",
+      "itemDeleted": "菜品已删除",
+      "duplicated": "菜单已复制至 {{year}} 年",
+      "error": "错误",
+      "errorSave": "保存失败",
+      "errorDelete": "删除失败",
+      "errorLoad": "菜单加载失败",
+      "errorDuplicate": "复制失败"
+    }
+  },
+  "partners": {
+    "sectionLabel": "合作伙伴",
+    "title": "合作伙伴",
+    "description": "与我们地区的专业人士一起增添您在塞姆诺兹住宿期间的放松和逃离时刻。"
+  }
+}

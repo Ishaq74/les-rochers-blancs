@@ -1,0 +1,755 @@
+{
+  "nav": {
+    "home": "الرئيسية",
+    "hotel": "الفندق",
+    "rooms": "الغرف",
+    "restaurant": "المطعم",
+    "about": "من نحن",
+    "access": "الوصول",
+    "contact": "اتصل بنا",
+    "book": "احجز"
+  },
+  "hero": {
+    "location": "سيمنوز، هوت سافوا",
+    "title": "Les Rochers Blancs",
+    "subtitle": "فندق ومطعم في سيمنوز",
+    "tagline": "ملاذ هادئ على ارتفاع 1700 متر في قلب جبال هوت سافوا",
+    "cta": "اكتشف",
+    "book": "احجز الآن"
+  },
+  "openings": {
+    "sectionLabel": "ساعات العمل",
+    "title": "فترات الافتتاح",
+    "openingLabel": "الافتتاح",
+    "statusOpen": "مفتوح",
+    "statusClosed": "مغلق",
+    "summer": {
+      "title": "موسم الصيف",
+      "restaurantLabel": "المطعم",
+      "restaurantDates": "من 9/3/26 إلى 21/10/26",
+      "hotelLabel": "الفندق",
+      "hotelDates": "من 5/7/26 إلى 1/9/26 (+عطلة نهاية الأسبوع يونيو، سبتمبر، أكتوبر)",
+      "closedDays": "مغلق يوم الاثنين ومساء الأحد"
+    },
+    "winter": {
+      "title": "موسم الشتاء",
+      "restaurantLabel": "المطعم",
+      "restaurantDates": "من 9/12/26 إلى 2/4/27",
+      "hotelLabel": "الفندق",
+      "hotelDates": "من 21/12/26 إلى 7/1/27 ومن 9/2/27 إلى 10/3/27 (+عطلة نهاية الأسبوع يناير ومارس)",
+      "closedDays": "مغلق يوم الاثنين ومساء الأحد"
+    }
+  },
+  "hotel": {
+    "sectionLabel": "إقامة",
+    "title": "الفندق",
+    "subtitle": "16 غرفة مريحة على ارتفاع 1700 متر",
+    "description": "في روشيه بلان، نقدم لك ملاذاً هادئاً للراحة بعد يوم حافل باستكشاف عجائب سيمنوز. في بيئة جبلية على ارتفاع 1700 متر، جميع غرفنا مجهزة بحمام ومرحاض وتلفزيون وواي فاي.",
+    "description2": "مع 16 غرفة مريحة ومرحبة، مصممة لتوفير مساحة استرخاء لك، مع ديكور أنيق وأثاث عملي. استمتع بنوم هادئ في أسرّتنا الناعمة وقدّر هدوء الجبال المحيطة.",
+    "groupNote": "إمكانية الحجز خارج فترات الافتتاح للمجموعات. لا تتردد في الاتصال بنا.",
+    "closingNote": "تواريخ إغلاق فندق روشيه بلان تختلف عن تواريخ المطعم.",
+    "pricingTitle": "الأسعار",
+    "rooms": {
+      "single": { "name": "غرفة فردية", "price": "88" },
+      "double1": { "name": "غرفة مزدوجة (سرير واحد)", "price": "98" },
+      "double2": { "name": "غرفة مزدوجة (سريرين)", "price": "108" },
+      "triple": { "name": "غرفة ثلاثية", "price": "125" },
+      "quad": { "name": "غرفة رباعية", "price": "140" },
+      "five": { "name": "غرفة لخمسة أشخاص", "price": "155" }
+    },
+    "extras": {
+      "breakfast": "فطور: بوفيه 14 يورو",
+      "halfBoard": "نصف إقامة: 88 يورو الحد الأدنى 3 أيام — السعر لليوم للشخص",
+      "halfBoardChild": "طفل من 2 إلى 5 سنوات: 44 يورو، من 5 إلى 10 سنوات: 56 يورو",
+      "fullBoard": "إقامة كاملة: 112 يورو الحد الأدنى 3 أيام — السعر لليوم للشخص",
+      "singleSupplement": "تكملة غرفة فردية: 35 يورو",
+      "fullBoardChild": "طفل من 2 إلى 5 سنوات: 56 يورو، من 5 إلى 10 سنوات: 68 يورو",
+      "taxAndDog": "ضريبة الإقامة: 0.85 يورو (+18 سنة) — تكملة كلب: 5 يورو/يوم"
+    }
+  },
+  "restaurant": {
+    "sectionLabel": "فن الطبخ",
+    "title": "المطعم",
+    "subtitle": "المطبخ الجبلي والنكهات المحلية",
+    "description": "يرتقي طاهينا بمنتجات تراث سافوا في أجواء دافئة مع إطلالة بانورامية على الجبال.",
+    "menu": "عرض القوائم",
+    "reserve": "حجز طاولة",
+    "pricingTitle": "الأسعار",
+    "pricing": {
+      "dailySpecial": "طبق اليوم: من 18 إلى 23 يورو",
+      "specialty": "التخصص: من 22 إلى 30 يورو",
+      "menu": "القائمة: من 35 إلى 48 يورو",
+      "childMenu": "قائمة الأطفال: 13 يورو"
+    },
+    "groupTitle": "هل أنتم مجموعة؟",
+    "groupDescription": "ننظم ندوات على يوم واحد أو عدة أيام.",
+    "contactUs": "اتصل بنا"
+  },
+  "about": {
+    "sectionLabel": "هويتنا",
+    "title": "قصتنا",
+    "subtitle": "ملاذ هادئ في قمة سيمنوز",
+    "description": "يقع في قمة سيمنوز، روشيه بلان هو ملجأ استثنائي حيث يلتقي التقليد والحداثة. عائلتنا ترحب بكم منذ أجيال في هذا الإطار الساحر على ارتفاع 1700 متر.",
+    "values": {
+      "tradition": {
+        "title": "التقاليد",
+        "description": "خبرة متوارثة من جيل إلى جيل"
+      },
+      "nature": {
+        "title": "الطبيعة",
+        "description": "في انسجام مع البيئة الجبلية"
+      },
+      "excellence": {
+        "title": "التميز",
+        "description": "خدمة شخصية لكل ضيف"
+      }
+    }
+  },
+  "access": {
+    "sectionLabel": "خطة الوصول",
+    "title": "كيف تصل إلينا",
+    "subtitle": "لا يمكنك أن تخطئ",
+    "bus": {
+      "title": "بالحافلة من آنسي",
+      "description": "6 مرات يومياً في الصيف، عطلات نهاية الأسبوع وخلال العطل المدرسية."
+    },
+    "car": {
+      "title": "بالسيارة",
+      "description": "طريق A41 السريع مخرج آنسي جنوب. اتبع اتجاه ألبرتفيل حتى مركز آنسي. اتبع سيمنوز (D41) لمسافة 17 كم. الوصول إلى كريت دو شاتيون."
+    },
+    "gps": {
+      "title": "GPS الوصول",
+      "description": "ميزون دو سيمنوز، بلدية فيوز لا شيساز. تصل إلى محطة سيمنوز، الفندق يقع 2 كم فوقها."
+    },
+    "partners": {
+      "title": "شركاؤنا",
+      "description": "عزز لحظات الاسترخاء والهروب خلال إقامتك في سيمنوز مع محترفي منطقتنا."
+    }
+  },
+  "contact": {
+    "sectionLabel": "اتصل بنا",
+    "title": "اتصل بنا",
+    "subtitle": "نحن في خدمتكم",
+    "addressLabel": "العنوان",
+    "addressValue": "طريق سيمنوز، 74000 آنسي، فرنسا",
+    "phoneLabel": "الهاتف",
+    "phoneValue": "+33 4 50 XX XX XX",
+    "emailLabel": "البريد الإلكتروني",
+    "emailValue": "contact@lesrochersblancs.fr",
+    "hoursLabel": "ساعات العمل",
+    "hoursValue": "الاستقبال: 24/24 — المطعم: 12ظ-14 / 19-22",
+    "formLabel": "نموذج الاتصال",
+    "form": {
+      "name": "اسمك",
+      "email": "بريدك الإلكتروني",
+      "message": "رسالتك",
+      "send": "إرسال"
+    }
+  },
+  "footer": {
+    "brandName": "Les Rochers Blancs",
+    "rights": "جميع الحقوق محفوظة",
+    "legal": "الإشعار القانوني",
+    "privacy": "الخصوصية",
+    "quickLinksLabel": "روابط سريعة",
+    "instagramUrl": "#",
+    "facebookUrl": "#"
+  },
+  "menuSection": {
+    "label": "فن الطهي",
+    "title": "قوائمنا",
+    "subtitle": "اكتشف قوائمنا الموسمية والاحتفالية التي يعدها الشيف بأجود المنتجات المحلية",
+    "print": "طباعة القوائم",
+    "person": "شخص",
+    "comingSoon": "ستكون هذه القائمة متاحة قريبا",
+    "vegetarian": "نباتي",
+    "glutenFree": "خال من الغلوتين",
+    "chefSignature": "توقيع الشيف"
+  },
+  "adminLogin": {
+    "backToSite": "العودة إلى الموقع",
+    "title": "الإدارة",
+    "subtitle": "سجّل الدخول للوصول إلى لوحة الإدارة",
+    "emailLabel": "البريد الإلكتروني",
+    "passwordLabel": "كلمة المرور",
+    "signIn": "تسجيل الدخول",
+    "signingIn": "جار تسجيل الدخول...",
+    "toast": {
+      "signInErrorTitle": "خطأ في تسجيل الدخول",
+      "genericErrorTitle": "خطأ",
+      "genericErrorDescription": "حدث خطأ"
+    }
+  },
+  "notFound": {
+    "message": "عذرا! الصفحة غير موجودة",
+    "returnHome": "العودة إلى الرئيسية"
+  },
+  "adminLayout": {
+    "signOut": "تسجيل الخروج",
+    "nav": {
+      "dashboard": "لوحة التحكم",
+      "content": "محتوى CMS",
+      "menu": "قوائم المطعم",
+      "services": "الخدمات",
+      "formations": "الدورات",
+      "blog": "المدونة",
+      "comments": "التعليقات",
+      "clients": "عملاء CRM",
+      "reservations": "الحجوزات",
+      "invoices": "الفواتير",
+      "quotes": "عروض الأسعار",
+      "media": "مكتبة الوسائط",
+      "theme": "السمة",
+      "settings": "الإعدادات"
+    }
+  },
+  "common": {
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "create": "إنشاء",
+    "update": "تحديث",
+    "delete": "حذف",
+    "add": "إضافة",
+    "edit": "تعديل",
+    "actions": "إجراءات",
+    "status": "الحالة",
+    "name": "الاسم",
+    "slug": "المعرّف",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "saving": "جارٍ الحفظ...",
+    "error": "خطأ",
+    "success": "نجاح",
+    "deleted": "تم الحذف",
+    "notes": "ملاحظات",
+    "client": "العميل",
+    "date": "التاريخ",
+    "noResults": "لا توجد نتائج",
+    "errorSave": "خطأ في الحفظ",
+    "errorDelete": "خطأ في الحذف"
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "welcome": "مرحباً بك في لوحة إدارة Les Rochers Blancs",
+    "stats": {
+      "clients": { "title": "العملاء", "description": "إجمالي العملاء المسجلين" },
+      "reservations": { "title": "الحجوزات", "pendingDescription": "قيد الانتظار" },
+      "revenue": { "title": "الإيراد", "description": "إجمالي الفواتير المدفوعة" },
+      "unpaidInvoices": { "title": "فواتير غير مدفوعة", "description": "للمتابعة" },
+      "pendingQuotes": { "title": "عروض الأسعار المعلّقة", "totalDescription": "عرض سعر إجمالاً" },
+      "blogPosts": { "title": "مقالات المدوّنة", "description": "المقالات المنشورة" },
+      "comments": { "title": "التعليقات", "description": "في انتظار المراجعة" }
+    },
+    "quickActions": {
+      "title": "إجراءات سريعة",
+      "description": "الوصول السريع إلى الميزات الرئيسية",
+      "newReservation": "حجز جديد",
+      "addClient": "إضافة عميل",
+      "createInvoice": "إنشاء فاتورة",
+      "createQuote": "إنشاء عرض سعر",
+      "writeArticle": "كتابة مقال"
+    },
+    "languages": {
+      "title": "اللغات المدعومة",
+      "description": "موقعك متاح بـ 4 لغات"
+    }
+  },
+  "reservations": {
+    "title": "الحجوزات",
+    "subtitle": "إدارة الحجوزات",
+    "new": "حجز جديد",
+    "editTitle": "تعديل الحجز",
+    "newTitle": "حجز جديد",
+    "confirmDelete": "حذف هذا الحجز؟",
+    "noItems": "لا توجد حجوزات",
+    "form": {
+      "client": "العميل",
+      "clientPlaceholder": "اختر عميلاً",
+      "type": "النوع",
+      "startDate": "تاريخ البدء *",
+      "endDate": "تاريخ الانتهاء",
+      "status": "الحالة",
+      "guests": "عدد الأشخاص",
+      "amount": "المبلغ الإجمالي (€)",
+      "specialRequests": "طلبات خاصة",
+      "notes": "ملاحظات داخلية"
+    },
+    "table": {
+      "client": "العميل",
+      "type": "النوع",
+      "dates": "التواريخ",
+      "guests": "الأشخاص",
+      "amount": "المبلغ",
+      "status": "الحالة",
+      "actions": "إجراءات"
+    },
+    "status": {
+      "pending": "قيد الانتظار",
+      "confirmed": "مؤكد",
+      "cancelled": "ملغى",
+      "completed": "مكتمل"
+    },
+    "type": {
+      "room": "غرفة",
+      "restaurant": "مطعم",
+      "service": "خدمة",
+      "formation": "تدريب"
+    },
+    "toast": {
+      "created": "تم إنشاء الحجز",
+      "updated": "تم تحديث الحجز",
+      "deleted": "تم حذف الحجز",
+      "errorSave": "خطأ في الحفظ",
+      "errorDelete": "خطأ في الحذف"
+    }
+  },
+  "invoices": {
+    "title": "الفواتير",
+    "subtitle": "إدارة فواتيرك",
+    "new": "فاتورة جديدة",
+    "editTitle": "تعديل الفاتورة",
+    "newTitle": "فاتورة جديدة",
+    "confirmDelete": "حذف هذه الفاتورة؟",
+    "noItems": "لا توجد فواتير",
+    "form": {
+      "number": "رقم الفاتورة",
+      "client": "العميل",
+      "clientPlaceholder": "اختر",
+      "status": "الحالة",
+      "issueDate": "تاريخ الإصدار",
+      "dueDate": "تاريخ الاستحقاق",
+      "taxRate": "نسبة الضريبة (%)",
+      "lines": "بنود الفاتورة",
+      "addLine": "إضافة بند",
+      "notes": "ملاحظات",
+      "descriptionPlaceholder": "الوصف",
+      "qtyPlaceholder": "الكمية",
+      "pricePlaceholder": "سعر الوحدة",
+      "subtotal": "المجموع الجزئي",
+      "tax": "ضريبة ({{rate}}%)",
+      "totalTTC": "المجموع الكلي"
+    },
+    "table": {
+      "number": "رقم الفاتورة",
+      "client": "العميل",
+      "date": "التاريخ",
+      "dueDate": "الاستحقاق",
+      "total": "المجموع",
+      "status": "الحالة",
+      "actions": "إجراءات"
+    },
+    "status": {
+      "draft": "مسودة",
+      "sent": "مرسلة",
+      "paid": "مدفوعة",
+      "overdue": "متأخرة",
+      "cancelled": "ملغاة"
+    },
+    "toast": {
+      "created": "تم إنشاء الفاتورة",
+      "updated": "تم تحديث الفاتورة",
+      "deleted": "تم حذف الفاتورة",
+      "errorSave": "خطأ في الحفظ",
+      "errorDelete": "خطأ في الحذف"
+    }
+  },
+  "quotes": {
+    "title": "عروض الأسعار",
+    "subtitle": "إدارة عروض الأسعار",
+    "new": "عرض سعر جديد",
+    "editTitle": "تعديل عرض السعر",
+    "newTitle": "عرض سعر جديد",
+    "confirmDelete": "حذف عرض السعر هذا؟",
+    "confirmConvert": "تحويل عرض السعر إلى فاتورة؟",
+    "noItems": "لا توجد عروض أسعار",
+    "form": {
+      "number": "رقم عرض السعر",
+      "client": "العميل",
+      "clientPlaceholder": "اختر",
+      "status": "الحالة",
+      "issueDate": "تاريخ الإصدار",
+      "validUntil": "صالح حتى",
+      "taxRate": "نسبة الضريبة (%)",
+      "lines": "بنود عرض السعر",
+      "addLine": "إضافة بند",
+      "notes": "ملاحظات",
+      "descriptionPlaceholder": "الوصف",
+      "qtyPlaceholder": "الكمية",
+      "pricePlaceholder": "سعر الوحدة",
+      "subtotal": "المجموع الجزئي",
+      "tax": "ضريبة ({{rate}}%)",
+      "totalTTC": "المجموع الكلي"
+    },
+    "table": {
+      "number": "رقم عرض السعر",
+      "client": "العميل",
+      "date": "التاريخ",
+      "validity": "الصلاحية",
+      "total": "المجموع",
+      "status": "الحالة",
+      "actions": "إجراءات"
+    },
+    "status": {
+      "draft": "مسودة",
+      "sent": "مرسل",
+      "accepted": "مقبول",
+      "rejected": "مرفوض",
+      "expired": "منتهي الصلاحية",
+      "converted": "محوّل"
+    },
+    "toast": {
+      "created": "تم إنشاء عرض السعر",
+      "updated": "تم تحديث عرض السعر",
+      "deleted": "تم حذف عرض السعر",
+      "converted": "تم تحويل عرض السعر إلى فاتورة",
+      "errorSave": "خطأ في الحفظ",
+      "errorDelete": "خطأ في الحذف",
+      "errorConvert": "خطأ في التحويل"
+    }
+  },
+  "clients": {
+    "title": "إدارة العملاء",
+    "subtitle": "إدارة قاعدة بيانات العملاء",
+    "new": "إضافة عميل",
+    "editTitle": "تعديل العميل",
+    "newTitle": "عميل جديد",
+    "confirmDelete": "حذف هذا العميل؟",
+    "noItems": "لا يوجد عملاء",
+    "countSuffix": "عميل",
+    "search": "البحث عن عميل...",
+    "form": {
+      "firstName": "الاسم الأول *",
+      "lastName": "اسم العائلة *",
+      "email": "البريد الإلكتروني *",
+      "phone": "الهاتف",
+      "company": "الشركة",
+      "address": "العنوان",
+      "city": "المدينة",
+      "postalCode": "الرمز البريدي",
+      "country": "البلد",
+      "tags": "الوسوم (مفصولة بفواصل)",
+      "tagsPlaceholder": "VIP، مخلص، شركة",
+      "notes": "ملاحظات"
+    },
+    "table": {
+      "client": "العميل",
+      "contact": "التواصل",
+      "company": "الشركة",
+      "tags": "الوسوم",
+      "createdAt": "تاريخ الإنشاء",
+      "actions": "إجراءات"
+    },
+    "toast": {
+      "created": "تم إنشاء العميل",
+      "updated": "تم تحديث العميل",
+      "deleted": "تم حذف العميل",
+      "errorSave": "خطأ في الحفظ",
+      "errorDelete": "خطأ في الحذف"
+    }
+  },
+  "blog": {
+    "title": "المدوّنة",
+    "subtitle": "إدارة مقالات المدوّنة",
+    "new": "مقال جديد",
+    "editTitle": "تعديل المقال",
+    "newTitle": "مقال جديد",
+    "confirmDelete": "حذف هذا المقال؟",
+    "noItems": "لا توجد مقالات",
+    "published": "منشور",
+    "draft": "مسودة",
+    "form": {
+      "slug": "المعرّف (URL)",
+      "imageUrl": "صورة الغلاف (URL)",
+      "titleLabel": "العنوان",
+      "excerpt": "مقتطف",
+      "content": "المحتوى",
+      "metaTitle": "عنوان Meta (SEO)",
+      "metaDescription": "وصف Meta (SEO)"
+    },
+    "table": {
+      "title": "العنوان",
+      "date": "التاريخ",
+      "views": "المشاهدات",
+      "status": "الحالة",
+      "actions": "إجراءات"
+    },
+    "toast": {
+      "created": "تم إنشاء المقال",
+      "updated": "تم تحديث المقال",
+      "deleted": "تم حذف المقال",
+      "published": "تم نشر المقال",
+      "unpublished": "تم إلغاء نشر المقال",
+      "errorSave": "خطأ في الحفظ",
+      "errorDelete": "خطأ في الحذف",
+      "error": "خطأ"
+    }
+  },
+  "comments": {
+    "title": "التعليقات",
+    "subtitle": "مراجعة تعليقات المدوّنة",
+    "pendingTitle": "في انتظار المراجعة",
+    "noProcessed": "لا توجد تعليقات معالجة",
+    "articleLabel": "المقال",
+    "approve": "موافقة",
+    "reject": "رفض",
+    "table": {
+      "author": "الكاتب",
+      "comment": "التعليق",
+      "article": "المقال",
+      "date": "التاريخ",
+      "status": "الحالة",
+      "actions": "إجراءات"
+    },
+    "status": {
+      "approved": "موافق عليه",
+      "rejected": "مرفوض",
+      "pending": "قيد الانتظار"
+    },
+    "toast": {
+      "approved": "تمت الموافقة على التعليق",
+      "rejected": "تم رفض التعليق",
+      "deleted": "تم حذف التعليق",
+      "confirmDelete": "حذف هذا التعليق؟",
+      "error": "خطأ"
+    }
+  },
+  "services": {
+    "title": "الخدمات",
+    "subtitle": "إدارة خدمات المنشأة",
+    "new": "إضافة خدمة",
+    "editTitle": "تعديل الخدمة",
+    "newTitle": "خدمة جديدة",
+    "confirmDelete": "حذف هذه الخدمة؟",
+    "noItems": "لا توجد خدمات",
+    "activeLabel": "نشطة",
+    "inactiveLabel": "غير نشطة",
+    "toggleActive": "نشطة",
+    "form": {
+      "slug": "المعرّف",
+      "icon": "الأيقونة (اسم lucide)",
+      "imageUrl": "رابط الصورة"
+    },
+    "table": {
+      "name": "الاسم",
+      "slug": "المعرّف",
+      "status": "الحالة",
+      "actions": "إجراءات"
+    },
+    "toast": {
+      "created": "تم إنشاء الخدمة",
+      "updated": "تم تحديث الخدمة",
+      "deleted": "تم حذف الخدمة",
+      "errorSave": "خطأ في الحفظ",
+      "errorDelete": "خطأ في الحذف"
+    }
+  },
+  "formations": {
+    "title": "التدريبات",
+    "subtitle": "إدارة التدريبات المتاحة",
+    "new": "إضافة تدريب",
+    "editTitle": "تعديل التدريب",
+    "newTitle": "تدريب جديد",
+    "confirmDelete": "حذف هذا التدريب؟",
+    "noItems": "لا توجد تدريبات",
+    "activeLabel": "نشط",
+    "inactiveLabel": "غير نشط",
+    "toggleActive": "نشط",
+    "form": {
+      "slug": "المعرّف",
+      "duration": "المدة",
+      "price": "السعر (€)",
+      "imageUrl": "رابط الصورة",
+      "durationPlaceholder": "يومان"
+    },
+    "table": {
+      "name": "الاسم",
+      "duration": "المدة",
+      "price": "السعر",
+      "status": "الحالة",
+      "actions": "إجراءات"
+    },
+    "toast": {
+      "created": "تم إنشاء التدريب",
+      "updated": "تم تحديث التدريب",
+      "deleted": "تم حذف التدريب",
+      "errorSave": "خطأ في الحفظ",
+      "errorDelete": "خطأ في الحذف"
+    }
+  },
+  "media": {
+    "title": "مكتبة الوسائط",
+    "subtitle": "إدارة ملفاتك وصورك",
+    "upload": "رفع",
+    "noItems": "لا توجد ملفات مرفوعة",
+    "uploadFirst": "ارفع ملفك الأول",
+    "confirmDelete": "حذف هذا الملف؟",
+    "toast": {
+      "uploaded": "تم رفع {{count}} ملف/ملفات",
+      "urlCopied": "تم نسخ الرابط",
+      "deleted": "تم حذف الملف",
+      "errorUpload": "خطأ في الرفع",
+      "errorDelete": "خطأ في الحذف"
+    }
+  },
+  "theme": {
+    "title": "المظهر",
+    "subtitle": "تخصيص مظهر الموقع",
+    "save": "حفظ",
+    "colors": {
+      "title": "الألوان",
+      "description": "تخصيص ألوان المظهر (تنسيق HSL)",
+      "primary": "اللون الرئيسي",
+      "accent": "لون التمييز",
+      "background": "الخلفية",
+      "foreground": "لون النص",
+      "muted": "العناصر الخافتة",
+      "secondary": "الثانوي"
+    },
+    "typography": {
+      "title": "الطباعة",
+      "description": "اختر الخطوط",
+      "heading": "خط العناوين",
+      "body": "خط النص",
+      "preview": "معاينة:"
+    },
+    "preview": {
+      "title": "معاينة",
+      "description": "تصوّر التغييرات",
+      "tagline": "ملاذ هادئ في قلب جبال الألب",
+      "primaryButton": "الزر الرئيسي",
+      "accentButton": "زر التمييز"
+    },
+    "toast": {
+      "saved": "تم حفظ المظهر",
+      "errorSave": "خطأ في الحفظ"
+    }
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "subtitle": "تهيئة إعدادات الموقع",
+    "save": "حفظ",
+    "backup": "نسخ احتياطي",
+    "fields": {
+      "site_name": "اسم الموقع",
+      "site_description": "الوصف",
+      "contact_email": "البريد الإلكتروني للتواصل",
+      "contact_phone": "الهاتف",
+      "contact_address": "العنوان",
+      "social_facebook": "رابط فيسبوك",
+      "social_instagram": "رابط إنستغرام",
+      "social_twitter": "رابط تويتر/X",
+      "meta_title": "عنوان Meta (SEO)",
+      "meta_description": "وصف Meta (SEO)",
+      "meta_keywords": "كلمات مفتاحية Meta (SEO)"
+    },
+    "categories": {
+      "general": "عام",
+      "contact": "التواصل",
+      "social": "وسائل التواصل الاجتماعي",
+      "seo": "SEO"
+    },
+    "backupSection": {
+      "title": "النسخ الاحتياطي والاستعادة",
+      "description": "إنشاء نسخ احتياطية من بياناتك أو الاستعادة من نسخة احتياطية",
+      "download": "تنزيل نسخة احتياطية",
+      "restore": "استعادة (قادم قريباً)"
+    },
+    "toast": {
+      "saved": "تم حفظ الإعدادات",
+      "backupDownloaded": "تم تنزيل النسخة الاحتياطية",
+      "errorSave": "خطأ في الحفظ",
+      "errorBackup": "خطأ في النسخ الاحتياطي"
+    }
+  },
+  "contentManager": {
+    "title": "إدارة المحتوى",
+    "subtitle": "تعديل محتوى الموقع بجميع اللغات",
+    "prefill": "ملء مسبق من الترجمات",
+    "saveAll": "حفظ الكل",
+    "saving": "جارٍ الحفظ...",
+    "sectionLabel": "القسم",
+    "sections": {
+      "hero": "الغلاف (الرئيسية)",
+      "openings": "مواعيد الفتح",
+      "hotel": "الفندق",
+      "restaurant": "المطعم",
+      "about": "عن المكان",
+      "access": "الوصول",
+      "contact": "التواصل",
+      "nav": "التنقل",
+      "footer": "تذييل الصفحة"
+    },
+    "toast": {
+      "loadError": "تعذّر تحميل المحتوى",
+      "prefillSuccess": "اكتمل الملء المسبق",
+      "prefillDescription": "تم ملء الحقول الفارغة من الترجمات الافتراضية. انقر على \"حفظ\" للتأكيد.",
+      "saveSuccess": "تم حفظ المحتوى بنجاح",
+      "saveError": "تعذّر حفظ المحتوى"
+    }
+  },
+  "menuManager": {
+    "title": "إدارة القوائم",
+    "subtitle": "قوائم المناسبات (عيد الميلاد، عيد الفصح...) مع الفئات والأطباق",
+    "newMenu": "قائمة جديدة",
+    "editMenuTitle": "تعديل",
+    "newMenuTitle": "جديد",
+    "editCategoryTitle": "تعديل",
+    "newCategoryTitle": "جديد",
+    "editItemTitle": "تعديل",
+    "newItemTitle": "جديد",
+    "menuSuffix": "قائمة",
+    "categorySuffix": "فئة",
+    "itemSuffix": "طبق",
+    "duplicate": "نسخ",
+    "confirmDeleteMenu": "حذف هذه القائمة وجميع فئاتها وأطباقها؟",
+    "confirmDeleteCategory": "حذف هذه الفئة وجميع أطباقها؟",
+    "confirmDeleteItem": "حذف هذا الطبق؟",
+    "noMenus": "لا توجد قوائم. أنشئ أول قائمة للمناسبات!",
+    "noCategories": "لا توجد فئات. أضف \"مقبلات\"، \"أطباق رئيسية\"، \"حلويات\"...",
+    "categoriesLabel": "فئات القائمة",
+    "categoriesSuffix": "فئات",
+    "dishesSuffix": "أطباق",
+    "addCategory": "فئة",
+    "addItem": "طبق",
+    "form": {
+      "slug": "المعرّف",
+      "globalPrice": "السعر الكلي (€)",
+      "year": "السنة",
+      "startDate": "تاريخ البدء",
+      "endDate": "تاريخ الانتهاء",
+      "isActive": "القائمة نشطة (مرئية في الموقع)",
+      "sortOrder": "ترتيب العرض",
+      "translationsLabel": "الترجمات",
+      "menuName": "اسم القائمة",
+      "menuDescription": "الوصف",
+      "categoryActive": "الفئة نشطة",
+      "categoryName": "الاسم",
+      "categoryDescription": "الوصف (اختياري)",
+      "itemName": "اسم الطبق",
+      "itemDescription": "الوصف",
+      "itemPrice": "السعر (€) - إذا كان à la carte",
+      "isSignature": "توقيع الشيف",
+      "isVegetarian": "نباتي",
+      "isVegan": "نباتي صارم",
+      "isGlutenFree": "خالي من الغلوتين",
+      "itemActive": "الطبق نشط"
+    },
+    "toast": {
+      "menuSaved": "تم حفظ القائمة",
+      "menuDeleted": "تم حذف القائمة",
+      "categorySaved": "تم حفظ الفئة",
+      "categoryDeleted": "تم حذف الفئة",
+      "itemSaved": "تم حفظ الطبق",
+      "itemDeleted": "تم حذف الطبق",
+      "duplicated": "تم نسخ القائمة لسنة {{year}}",
+      "error": "خطأ",
+      "errorSave": "تعذّر الحفظ",
+      "errorDelete": "تعذّر الحذف",
+      "errorLoad": "تعذّر تحميل القوائم",
+      "errorDuplicate": "تعذّر النسخ"
+    }  },
+  "partners": {
+    "sectionLabel": "شركاء",
+    "title": "شركاؤنا",
+    "description": "عزز لحظات الاسترخاء والهروب خلال إقامتك في سيمنوز مع محترفي منطقتنا."  }
+}

@@ -1,0 +1,757 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "hotel": "Hôtel",
+    "rooms": "Chambres",
+    "restaurant": "Restaurant",
+    "about": "À propos",
+    "access": "Accès",
+    "contact": "Contact",
+    "book": "Réserver"
+  },
+  "hero": {
+    "location": "Semnoz, Haute-Savoie",
+    "title": "Les Rochers Blancs",
+    "subtitle": "Hôtel & Restaurant au Semnoz",
+    "tagline": "Un havre de paix à 1700 mètres d'altitude au cœur des montagnes de Haute-Savoie",
+    "cta": "Découvrir",
+    "book": "Réserver maintenant"
+  },
+  "openings": {
+    "sectionLabel": "Ouverture",
+    "title": "Périodes d'ouverture",
+    "openingLabel": "OUVERTURE",
+    "statusOpen": "Ouvert",
+    "statusClosed": "Fermé",
+    "summer": {
+      "title": "Saison ÉTÉ",
+      "restaurantLabel": "Restaurant",
+      "restaurantDates": "Du 9/3/26 au 21/10/26",
+      "hotelLabel": "Hôtel",
+      "hotelDates": "Du 5/7/26 au 1/9/26 (+week-end juin, septembre, octobre)",
+      "closedDays": "Fermé le Lundi et le Dimanche Soir"
+    },
+    "winter": {
+      "title": "Saison HIVER",
+      "restaurantLabel": "Restaurant",
+      "restaurantDates": "Du 9/12/26 au 2/4/27",
+      "hotelLabel": "Hôtel",
+      "hotelDates": "Du 21/12/26 au 7/1/27 et du 9/2/27 au 10/3/27 (+week-end janvier et mars)",
+      "closedDays": "Fermé le Lundi et le Dimanche Soir"
+    }
+  },
+  "hotel": {
+    "sectionLabel": "Hébergement",
+    "title": "L'Hôtel",
+    "subtitle": "16 chambres confortables à 1700m d'altitude",
+    "description": "Aux Rochers Blancs, nous vous offrons un havre de paix pour vous reposer après une journée bien remplie à explorer les merveilles du Semnoz. Dans un cadre montagnard situé à 1700 mètres d'altitude, toutes nos chambres sont équipées de salle de bain, WC, télévision et wifi.",
+    "description2": "Avec nos 16 chambres confortables et accueillantes, conçues pour vous offrir un espace de détente, avec une décoration soignée et un ameublement fonctionnel. Profitez d'une bonne nuit de sommeil dans nos lits moelleux et appréciez le calme des montagnes environnantes.",
+    "groupNote": "Possibilité de réservation hors périodes d'ouverture pour les groupes. N'hésitez pas à nous contacter.",
+    "closingNote": "Dates de fermeture de l'Hôtel Les Rochers Blancs différentes de celles du Restaurant.",
+    "pricingTitle": "Les Tarifs",
+    "rooms": {
+      "single": { "name": "Chambre 1 personne", "price": "88" },
+      "double1": { "name": "Chambre 2 personnes (1 lit)", "price": "98" },
+      "double2": { "name": "Chambre 2 personnes (2 lits)", "price": "108" },
+      "triple": { "name": "Chambre 3 personnes", "price": "125" },
+      "quad": { "name": "Chambre 4 personnes", "price": "140" },
+      "five": { "name": "Chambre 5 personnes", "price": "155" }
+    },
+    "extras": {
+      "breakfast": "Petit déjeuner : buffet 14 €",
+      "halfBoard": "Demi-pension : 88 € minimum 3 jours — prix par jour et par personne",
+      "halfBoardChild": "Enfant 2 à 5 ans : 44 €, de 5 à 10 ans : 56 €",
+      "fullBoard": "Pension complète : 112 € minimum 3 jours — prix par jour et par personne",
+      "singleSupplement": "Supplément chambre individuelle : 35 €",
+      "fullBoardChild": "Enfant de 2 à 5 ans : 56 €, de 5 à 10 ans : 68 €",
+      "taxAndDog": "Taxe de séjour : 0,85 € (+18 ans) — Supplément chien : 5 €/jour"
+    }
+  },
+  "restaurant": {
+    "sectionLabel": "Gastronomie",
+    "title": "Le Restaurant",
+    "subtitle": "Gastronomie alpine et saveurs locales",
+    "description": "Notre chef sublime les produits du terroir savoyard dans une atmosphère chaleureuse avec vue panoramique sur les montagnes.",
+    "menu": "Voir les menus",
+    "reserve": "Réserver une table",
+    "pricingTitle": "Les Tarifs",
+    "pricing": {
+      "dailySpecial": "Plat du jour : 18 à 23 €",
+      "specialty": "Spécialité : de 22 € à 30 €",
+      "menu": "Menu : de 35 € à 48 €",
+      "childMenu": "Menu enfant : 13 €"
+    },
+    "groupTitle": "Vous venez en groupe ?",
+    "groupDescription": "Nous organisons des séminaires sur une ou plusieurs journées.",
+    "contactUs": "Nous Contacter"
+  },
+  "about": {
+    "sectionLabel": "Notre identité",
+    "title": "Notre Histoire",
+    "subtitle": "Un havre de paix au sommet du Semnoz",
+    "description": "Niché au sommet du Semnoz, Les Rochers Blancs est un refuge d'exception où tradition et modernité se rencontrent. Notre famille vous accueille depuis des générations dans ce cadre enchanteur à 1700 mètres d'altitude.",
+    "values": {
+      "tradition": {
+        "title": "Tradition",
+        "description": "Un savoir-faire transmis de génération en génération"
+      },
+      "nature": {
+        "title": "Nature",
+        "description": "En harmonie avec l'environnement alpin"
+      },
+      "excellence": {
+        "title": "Excellence",
+        "description": "Un service personnalisé pour chaque hôte"
+      }
+    }
+  },
+  "access": {
+    "sectionLabel": "Plan d'accès",
+    "title": "Comment venir",
+    "subtitle": "Vous ne pouvez pas vous tromper",
+    "bus": {
+      "title": "En Bus depuis Annecy",
+      "description": "6 fois par jour l'été, les week-ends et pendant les vacances scolaires."
+    },
+    "car": {
+      "title": "En Voiture",
+      "description": "Autoroute A41 sortie Annecy Sud. Suivre direction Albertville jusqu'au centre d'Annecy. Suivre le Semnoz (départementale D41) sur 17 km. Arrivée au Crêt de Chatillon."
+    },
+    "gps": {
+      "title": "Accès GPS",
+      "description": "Maison du Semnoz, commune Viuz-la-Chiesaz. Vous arrivez à la station du Semnoz, l'hôtel se situe 2 km au-dessus."
+    },
+    "partners": {
+      "title": "Nos Partenaires",
+      "description": "Augmentez vos moments de détente et d'évasion durant votre séjour au Semnoz avec les professionnels de notre région."
+    }
+  },
+  "contact": {
+    "sectionLabel": "Contact",
+    "title": "Nous Contacter",
+    "subtitle": "Nous sommes à votre écoute",
+    "addressLabel": "Adresse",
+    "addressValue": "Route du Semnoz, 74000 Annecy, France",
+    "phoneLabel": "Téléphone",
+    "phoneValue": "+33 4 50 XX XX XX",
+    "emailLabel": "Email",
+    "emailValue": "contact@lesrochersblancs.fr",
+    "hoursLabel": "Horaires",
+    "hoursValue": "Réception : 24h/24 — Restaurant : 12h-14h / 19h-22h",
+    "formLabel": "Formulaire de contact",
+    "form": {
+      "name": "Votre nom",
+      "email": "Votre email",
+      "message": "Votre message",
+      "send": "Envoyer"
+    }
+  },
+  "footer": {
+    "brandName": "Les Rochers Blancs",
+    "rights": "Tous droits réservés",
+    "legal": "Mentions légales",
+    "privacy": "Confidentialité",
+    "quickLinksLabel": "Liens rapides",
+    "instagramUrl": "#",
+    "facebookUrl": "#"
+  },
+  "menuSection": {
+    "label": "Gastronomie",
+    "title": "Nos Menus",
+    "subtitle": "Découvrez nos menus saisonniers et festifs, élaborés par notre Chef avec les meilleurs produits locaux",
+    "print": "Imprimer les menus",
+    "person": "personne",
+    "comingSoon": "Ce menu sera bientôt disponible",
+    "vegetarian": "Végétarien",
+    "glutenFree": "Sans gluten",
+    "chefSignature": "Signature du chef"
+  },
+  "adminLogin": {
+    "backToSite": "Retour au site",
+    "title": "Administration",
+    "subtitle": "Connectez-vous pour accéder au panneau d'administration",
+    "emailLabel": "Email",
+    "passwordLabel": "Mot de passe",
+    "signIn": "Se connecter",
+    "signingIn": "Connexion...",
+    "toast": {
+      "signInErrorTitle": "Erreur de connexion",
+      "genericErrorTitle": "Erreur",
+      "genericErrorDescription": "Une erreur est survenue"
+    }
+  },
+  "notFound": {
+    "message": "Oups ! Page introuvable",
+    "returnHome": "Retour à l'accueil"
+  },
+  "adminLayout": {
+    "signOut": "Déconnexion",
+    "nav": {
+      "dashboard": "Dashboard",
+      "content": "Contenu CMS",
+      "menu": "Menus Restaurant",
+      "services": "Services",
+      "formations": "Formations",
+      "blog": "Blog",
+      "comments": "Commentaires",
+      "clients": "Clients CRM",
+      "reservations": "Réservations",
+      "invoices": "Factures",
+      "quotes": "Devis",
+      "media": "Médiathèque",
+      "theme": "Thème",
+      "settings": "Paramètres"
+    }
+  },
+  "common": {
+    "cancel": "Annuler",
+    "save": "Sauvegarder",
+    "create": "Créer",
+    "update": "Mettre à jour",
+    "delete": "Supprimer",
+    "add": "Ajouter",
+    "edit": "Modifier",
+    "actions": "Actions",
+    "status": "Statut",
+    "name": "Nom",
+    "slug": "Slug",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "saving": "Sauvegarde...",
+    "error": "Erreur",
+    "success": "Succès",
+    "deleted": "Supprimé",
+    "notes": "Notes",
+    "client": "Client",
+    "date": "Date",
+    "noResults": "Aucun résultat",
+    "errorSave": "Erreur lors de la sauvegarde",
+    "errorDelete": "Erreur lors de la suppression"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Bienvenue dans le panneau d'administration des Rochers Blancs",
+    "stats": {
+      "clients": { "title": "Clients", "description": "Total clients enregistrés" },
+      "reservations": { "title": "Réservations", "pendingDescription": "en attente" },
+      "revenue": { "title": "Chiffre d'affaires", "description": "Total factures payées" },
+      "unpaidInvoices": { "title": "Factures impayées", "description": "À relancer" },
+      "pendingQuotes": { "title": "Devis en attente", "totalDescription": "devis au total" },
+      "blogPosts": { "title": "Articles de blog", "description": "Articles publiés" },
+      "comments": { "title": "Commentaires", "description": "En attente de modération" }
+    },
+    "quickActions": {
+      "title": "Actions rapides",
+      "description": "Accédez rapidement aux fonctionnalités principales",
+      "newReservation": "Nouvelle réservation",
+      "addClient": "Ajouter un client",
+      "createInvoice": "Créer une facture",
+      "createQuote": "Créer un devis",
+      "writeArticle": "Écrire un article"
+    },
+    "languages": {
+      "title": "Langues supportées",
+      "description": "Votre site est disponible en 4 langues"
+    }
+  },
+  "reservations": {
+    "title": "Réservations",
+    "subtitle": "Gérez les réservations",
+    "new": "Nouvelle réservation",
+    "editTitle": "Modifier la réservation",
+    "newTitle": "Nouvelle réservation",
+    "confirmDelete": "Supprimer cette réservation ?",
+    "noItems": "Aucune réservation",
+    "form": {
+      "client": "Client",
+      "clientPlaceholder": "Sélectionner un client",
+      "type": "Type",
+      "startDate": "Date de début *",
+      "endDate": "Date de fin",
+      "status": "Statut",
+      "guests": "Nombre de personnes",
+      "amount": "Montant total (€)",
+      "specialRequests": "Demandes spéciales",
+      "notes": "Notes internes"
+    },
+    "table": {
+      "client": "Client",
+      "type": "Type",
+      "dates": "Dates",
+      "guests": "Personnes",
+      "amount": "Montant",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "status": {
+      "pending": "En attente",
+      "confirmed": "Confirmée",
+      "cancelled": "Annulée",
+      "completed": "Terminée"
+    },
+    "type": {
+      "room": "Chambre",
+      "restaurant": "Restaurant",
+      "service": "Service",
+      "formation": "Formation"
+    },
+    "toast": {
+      "created": "Réservation créée",
+      "updated": "Réservation mise à jour",
+      "deleted": "Réservation supprimée",
+      "errorSave": "Erreur lors de la sauvegarde",
+      "errorDelete": "Erreur lors de la suppression"
+    }
+  },
+  "invoices": {
+    "title": "Factures",
+    "subtitle": "Gérez vos factures",
+    "new": "Nouvelle facture",
+    "editTitle": "Modifier la facture",
+    "newTitle": "Nouvelle facture",
+    "confirmDelete": "Supprimer cette facture ?",
+    "noItems": "Aucune facture",
+    "form": {
+      "number": "Numéro de facture",
+      "client": "Client",
+      "clientPlaceholder": "Sélectionner",
+      "status": "Statut",
+      "issueDate": "Date d'émission",
+      "dueDate": "Date d'échéance",
+      "taxRate": "Taux TVA (%)",
+      "lines": "Lignes de facture",
+      "addLine": "Ajouter une ligne",
+      "notes": "Notes",
+      "descriptionPlaceholder": "Description",
+      "qtyPlaceholder": "Qté",
+      "pricePlaceholder": "Prix HT",
+      "subtotal": "Sous-total HT",
+      "tax": "TVA ({{rate}}%)",
+      "totalTTC": "Total TTC"
+    },
+    "table": {
+      "number": "N° Facture",
+      "client": "Client",
+      "date": "Date",
+      "dueDate": "Échéance",
+      "total": "Total TTC",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "status": {
+      "draft": "Brouillon",
+      "sent": "Envoyée",
+      "paid": "Payée",
+      "overdue": "En retard",
+      "cancelled": "Annulée"
+    },
+    "toast": {
+      "created": "Facture créée",
+      "updated": "Facture mise à jour",
+      "deleted": "Facture supprimée",
+      "errorSave": "Erreur lors de la sauvegarde",
+      "errorDelete": "Erreur lors de la suppression"
+    }
+  },
+  "quotes": {
+    "title": "Devis",
+    "subtitle": "Gérez vos devis",
+    "new": "Nouveau devis",
+    "editTitle": "Modifier le devis",
+    "newTitle": "Nouveau devis",
+    "confirmDelete": "Supprimer ce devis ?",
+    "confirmConvert": "Convertir ce devis en facture ?",
+    "noItems": "Aucun devis",
+    "form": {
+      "number": "Numéro de devis",
+      "client": "Client",
+      "clientPlaceholder": "Sélectionner",
+      "status": "Statut",
+      "issueDate": "Date d'émission",
+      "validUntil": "Valide jusqu'au",
+      "taxRate": "Taux TVA (%)",
+      "lines": "Lignes du devis",
+      "addLine": "Ajouter une ligne",
+      "notes": "Notes",
+      "descriptionPlaceholder": "Description",
+      "qtyPlaceholder": "Qté",
+      "pricePlaceholder": "Prix HT",
+      "subtotal": "Sous-total HT",
+      "tax": "TVA ({{rate}}%)",
+      "totalTTC": "Total TTC"
+    },
+    "table": {
+      "number": "N° Devis",
+      "client": "Client",
+      "date": "Date",
+      "validity": "Validité",
+      "total": "Total TTC",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "status": {
+      "draft": "Brouillon",
+      "sent": "Envoyé",
+      "accepted": "Accepté",
+      "rejected": "Refusé",
+      "expired": "Expiré",
+      "converted": "Converti"
+    },
+    "toast": {
+      "created": "Devis créé",
+      "updated": "Devis mis à jour",
+      "deleted": "Devis supprimé",
+      "converted": "Devis converti en facture",
+      "errorSave": "Erreur lors de la sauvegarde",
+      "errorDelete": "Erreur lors de la suppression",
+      "errorConvert": "Erreur lors de la conversion"
+    }
+  },
+  "clients": {
+    "title": "Clients CRM",
+    "subtitle": "Gérez votre base de clients",
+    "new": "Ajouter un client",
+    "editTitle": "Modifier le client",
+    "newTitle": "Nouveau client",
+    "confirmDelete": "Supprimer ce client ?",
+    "noItems": "Aucun client",
+    "countSuffix": "client(s)",
+    "search": "Rechercher un client...",
+    "form": {
+      "firstName": "Prénom *",
+      "lastName": "Nom *",
+      "email": "Email *",
+      "phone": "Téléphone",
+      "company": "Entreprise",
+      "address": "Adresse",
+      "city": "Ville",
+      "postalCode": "Code postal",
+      "country": "Pays",
+      "tags": "Tags (séparés par des virgules)",
+      "tagsPlaceholder": "VIP, Fidèle, Entreprise",
+      "notes": "Notes"
+    },
+    "table": {
+      "client": "Client",
+      "contact": "Contact",
+      "company": "Entreprise",
+      "tags": "Tags",
+      "createdAt": "Créé le",
+      "actions": "Actions"
+    },
+    "toast": {
+      "created": "Client créé",
+      "updated": "Client mis à jour",
+      "deleted": "Client supprimé",
+      "errorSave": "Erreur lors de la sauvegarde",
+      "errorDelete": "Erreur lors de la suppression"
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Gérez les articles du blog",
+    "new": "Nouvel article",
+    "editTitle": "Modifier l'article",
+    "newTitle": "Nouvel article",
+    "confirmDelete": "Supprimer cet article ?",
+    "noItems": "Aucun article",
+    "published": "Publié",
+    "draft": "Brouillon",
+    "form": {
+      "slug": "Slug (URL)",
+      "imageUrl": "Image de couverture (URL)",
+      "titleLabel": "Titre",
+      "excerpt": "Extrait",
+      "content": "Contenu",
+      "metaTitle": "Meta Title (SEO)",
+      "metaDescription": "Meta Description (SEO)"
+    },
+    "table": {
+      "title": "Titre",
+      "date": "Date",
+      "views": "Vues",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "toast": {
+      "created": "Article créé",
+      "updated": "Article mis à jour",
+      "deleted": "Article supprimé",
+      "published": "Article publié",
+      "unpublished": "Article dépublié",
+      "errorSave": "Erreur lors de la sauvegarde",
+      "errorDelete": "Erreur lors de la suppression",
+      "error": "Erreur"
+    }
+  },
+  "comments": {
+    "title": "Commentaires",
+    "subtitle": "Modérez les commentaires du blog",
+    "pendingTitle": "En attente de modération",
+    "noProcessed": "Aucun commentaire traité",
+    "articleLabel": "Article",
+    "approve": "Approuver",
+    "reject": "Rejeter",
+    "table": {
+      "author": "Auteur",
+      "comment": "Commentaire",
+      "article": "Article",
+      "date": "Date",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "status": {
+      "approved": "Approuvé",
+      "rejected": "Rejeté",
+      "pending": "En attente"
+    },
+    "toast": {
+      "approved": "Commentaire approuvé",
+      "rejected": "Commentaire rejeté",
+      "deleted": "Commentaire supprimé",
+      "confirmDelete": "Supprimer ce commentaire ?",
+      "error": "Erreur"
+    }
+  },
+  "services": {
+    "title": "Services",
+    "subtitle": "Gérez les services de l'établissement",
+    "new": "Ajouter un service",
+    "editTitle": "Modifier le service",
+    "newTitle": "Nouveau service",
+    "confirmDelete": "Supprimer ce service ?",
+    "noItems": "Aucun service",
+    "activeLabel": "Actif",
+    "inactiveLabel": "Inactif",
+    "toggleActive": "Actif",
+    "form": {
+      "slug": "Slug (identifiant)",
+      "icon": "Icône (nom lucide)",
+      "imageUrl": "URL de l'image"
+    },
+    "table": {
+      "name": "Nom",
+      "slug": "Slug",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "toast": {
+      "created": "Service créé",
+      "updated": "Service mis à jour",
+      "deleted": "Service supprimé",
+      "errorSave": "Erreur lors de la sauvegarde",
+      "errorDelete": "Erreur lors de la suppression"
+    }
+  },
+  "formations": {
+    "title": "Formations",
+    "subtitle": "Gérez les formations proposées",
+    "new": "Ajouter une formation",
+    "editTitle": "Modifier la formation",
+    "newTitle": "Nouvelle formation",
+    "confirmDelete": "Supprimer cette formation ?",
+    "noItems": "Aucune formation",
+    "activeLabel": "Active",
+    "inactiveLabel": "Inactive",
+    "toggleActive": "Active",
+    "form": {
+      "slug": "Slug",
+      "duration": "Durée",
+      "price": "Prix (€)",
+      "imageUrl": "URL de l'image",
+      "durationPlaceholder": "2 jours"
+    },
+    "table": {
+      "name": "Nom",
+      "duration": "Durée",
+      "price": "Prix",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "toast": {
+      "created": "Formation créée",
+      "updated": "Formation mise à jour",
+      "deleted": "Formation supprimée",
+      "errorSave": "Erreur lors de la sauvegarde",
+      "errorDelete": "Erreur lors de la suppression"
+    }
+  },
+  "media": {
+    "title": "Médiathèque",
+    "subtitle": "Gérez vos fichiers et images",
+    "upload": "Uploader",
+    "noItems": "Aucun fichier uploadé",
+    "uploadFirst": "Uploader votre premier fichier",
+    "confirmDelete": "Supprimer ce fichier ?",
+    "toast": {
+      "uploaded": "{{count}} fichier(s) uploadé(s)",
+      "urlCopied": "URL copiée",
+      "deleted": "Fichier supprimé",
+      "errorUpload": "Erreur lors de l'upload",
+      "errorDelete": "Erreur lors de la suppression"
+    }
+  },
+  "theme": {
+    "title": "Thème",
+    "subtitle": "Personnalisez l'apparence du site",
+    "save": "Sauvegarder",
+    "colors": {
+      "title": "Couleurs",
+      "description": "Personnalisez les couleurs du thème (format HSL)",
+      "primary": "Couleur principale",
+      "accent": "Couleur d'accent",
+      "background": "Arrière-plan",
+      "foreground": "Texte principal",
+      "muted": "Éléments atténués",
+      "secondary": "Secondaire"
+    },
+    "typography": {
+      "title": "Typographie",
+      "description": "Choisissez les polices d'écriture",
+      "heading": "Police titres",
+      "body": "Police corps",
+      "preview": "Aperçu:"
+    },
+    "preview": {
+      "title": "Aperçu",
+      "description": "Visualisez vos modifications",
+      "tagline": "Un havre de paix au cœur des Alpes",
+      "primaryButton": "Bouton Principal",
+      "accentButton": "Bouton Accent"
+    },
+    "toast": {
+      "saved": "Thème sauvegardé",
+      "errorSave": "Erreur lors de la sauvegarde"
+    }
+  },
+  "settings": {
+    "title": "Paramètres",
+    "subtitle": "Configurez les paramètres du site",
+    "save": "Sauvegarder",
+    "backup": "Backup",
+    "fields": {
+      "site_name": "Nom du site",
+      "site_description": "Description",
+      "contact_email": "Email de contact",
+      "contact_phone": "Téléphone",
+      "contact_address": "Adresse",
+      "social_facebook": "Facebook URL",
+      "social_instagram": "Instagram URL",
+      "social_twitter": "Twitter/X URL",
+      "meta_title": "Meta Title (SEO)",
+      "meta_description": "Meta Description (SEO)",
+      "meta_keywords": "Meta Keywords (SEO)"
+    },
+    "categories": {
+      "general": "Général",
+      "contact": "Contact",
+      "social": "Réseaux sociaux",
+      "seo": "SEO"
+    },
+    "backupSection": {
+      "title": "Sauvegarde et restauration",
+      "description": "Créez des sauvegardes de vos données ou restaurez depuis un backup",
+      "download": "Télécharger un backup",
+      "restore": "Restaurer (bientôt disponible)"
+    },
+    "toast": {
+      "saved": "Paramètres sauvegardés",
+      "backupDownloaded": "Backup téléchargé",
+      "errorSave": "Erreur lors de la sauvegarde",
+      "errorBackup": "Erreur lors du backup"
+    }
+  },
+  "contentManager": {
+    "title": "Gestion du contenu",
+    "subtitle": "Modifiez le contenu du site dans toutes les langues",
+    "prefill": "Pré-remplir depuis les traductions",
+    "saveAll": "Sauvegarder tout",
+    "saving": "Sauvegarde...",
+    "sectionLabel": "Section",
+    "sections": {
+      "hero": "Hero (Accueil)",
+      "openings": "Ouvertures",
+      "hotel": "Hôtel",
+      "restaurant": "Restaurant",
+      "about": "À propos",
+      "access": "Accès",
+      "contact": "Contact",
+      "nav": "Navigation",
+      "footer": "Pied de page"
+    },
+    "toast": {
+      "loadError": "Impossible de charger le contenu",
+      "prefillSuccess": "Pré-remplissage effectué",
+      "prefillDescription": "Les champs vides ont été remplis depuis les traductions par défaut. Cliquez sur \"Sauvegarder\" pour enregistrer.",
+      "saveSuccess": "Contenu sauvegardé avec succès",
+      "saveError": "Impossible de sauvegarder le contenu"
+    }
+  },
+  "menuManager": {
+    "title": "Gestion des Menus",
+    "subtitle": "Menus événementiels (Noël, Pâques, Saint-Valentin...) avec catégories et plats",
+    "newMenu": "Nouveau menu",
+    "editMenuTitle": "Modifier",
+    "newMenuTitle": "Nouveau",
+    "editCategoryTitle": "Modifier",
+    "newCategoryTitle": "Nouvelle",
+    "editItemTitle": "Modifier",
+    "newItemTitle": "Nouveau",
+    "menuSuffix": "menu",
+    "categorySuffix": "catégorie",
+    "itemSuffix": "plat",
+    "duplicate": "Dupliquer",
+    "confirmDeleteMenu": "Supprimer ce menu et toutes ses catégories/plats ?",
+    "confirmDeleteCategory": "Supprimer cette catégorie et tous ses plats ?",
+    "confirmDeleteItem": "Supprimer ce plat ?",
+    "noMenus": "Aucun menu. Créez votre premier menu événementiel !",
+    "noCategories": "Aucune catégorie. Ajoutez \"Entrées\", \"Plats\", \"Desserts\"...",
+    "categoriesLabel": "Catégories du menu",
+    "categoriesSuffix": "catégories",
+    "dishesSuffix": "plats",
+    "addCategory": "Catégorie",
+    "addItem": "Plat",
+    "form": {
+      "slug": "Slug (identifiant)",
+      "globalPrice": "Prix global (€)",
+      "year": "Année",
+      "startDate": "Date début",
+      "endDate": "Date fin",
+      "isActive": "Menu actif (visible sur le site)",
+      "sortOrder": "Ordre d'affichage",
+      "translationsLabel": "Traductions",
+      "menuName": "Nom du menu",
+      "menuDescription": "Description",
+      "categoryActive": "Catégorie active",
+      "categoryName": "Nom",
+      "categoryDescription": "Description (optionnel)",
+      "itemName": "Nom du plat",
+      "itemDescription": "Description",
+      "itemPrice": "Prix (€) - si menu à la carte",
+      "isSignature": "Signature",
+      "isVegetarian": "Végétarien",
+      "isVegan": "Végan",
+      "isGlutenFree": "Sans gluten",
+      "itemActive": "Plat actif"
+    },
+    "toast": {
+      "menuSaved": "Menu sauvegardé",
+      "menuDeleted": "Menu supprimé",
+      "categorySaved": "Catégorie sauvegardée",
+      "categoryDeleted": "Catégorie supprimée",
+      "itemSaved": "Plat sauvegardé",
+      "itemDeleted": "Plat supprimé",
+      "duplicated": "Menu dupliqué pour {{year}}",
+      "error": "Erreur",
+      "errorSave": "Impossible de sauvegarder",
+      "errorDelete": "Impossible de supprimer",
+      "errorLoad": "Impossible de charger les menus",
+      "errorDuplicate": "Impossible de dupliquer"
+    }
+  },
+  "partners": {
+    "sectionLabel": "Partenaires",
+    "title": "Nos Partenaires",
+    "description": "Augmentez vos moments de détente et d'évasion durant votre séjour au Semnoz avec les professionnels de notre région."
+  }
+}

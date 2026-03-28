@@ -1,0 +1,757 @@
+{
+  "nav": {
+    "home": "Home",
+    "hotel": "Hotel",
+    "rooms": "Rooms",
+    "restaurant": "Restaurant",
+    "about": "About",
+    "access": "Access",
+    "contact": "Contact",
+    "book": "Book"
+  },
+  "hero": {
+    "location": "Semnoz, Haute-Savoie",
+    "title": "Les Rochers Blancs",
+    "subtitle": "Hotel & Restaurant at Semnoz",
+    "tagline": "A haven of peace at 1,700 meters altitude in the heart of Haute-Savoie mountains",
+    "cta": "Discover",
+    "book": "Book now"
+  },
+  "openings": {
+    "sectionLabel": "Opening Hours",
+    "title": "Opening Periods",
+    "openingLabel": "OPENING",
+    "statusOpen": "Open",
+    "statusClosed": "Closed",
+    "summer": {
+      "title": "SUMMER Season",
+      "restaurantLabel": "Restaurant",
+      "restaurantDates": "From 9/3/26 to 21/10/26",
+      "hotelLabel": "Hotel",
+      "hotelDates": "From 5/7/26 to 1/9/26 (+weekends June, September, October)",
+      "closedDays": "Closed on Mondays and Sunday Evenings"
+    },
+    "winter": {
+      "title": "WINTER Season",
+      "restaurantLabel": "Restaurant",
+      "restaurantDates": "From 9/12/26 to 2/4/27",
+      "hotelLabel": "Hotel",
+      "hotelDates": "From 21/12/26 to 7/1/27 and from 9/2/27 to 10/3/27 (+weekends January and March)",
+      "closedDays": "Closed on Mondays and Sunday Evenings"
+    }
+  },
+  "hotel": {
+    "sectionLabel": "Accommodation",
+    "title": "The Hotel",
+    "subtitle": "16 comfortable rooms at 1700m altitude",
+    "description": "At Les Rochers Blancs, we offer you a haven of peace to rest after a busy day exploring the wonders of Semnoz. In a mountain setting at 1700 meters altitude, all our rooms are equipped with bathroom, WC, television and wifi.",
+    "description2": "With our 16 comfortable and welcoming rooms, designed to offer you a relaxation space, with careful decoration and functional furniture. Enjoy a good night's sleep in our soft beds and appreciate the calm of the surrounding mountains.",
+    "groupNote": "Possibility of booking outside opening periods for groups. Do not hesitate to contact us.",
+    "closingNote": "Closing dates of Hotel Les Rochers Blancs differ from those of the Restaurant.",
+    "pricingTitle": "Rates",
+    "rooms": {
+      "single": { "name": "Single room", "price": "88" },
+      "double1": { "name": "Double room (1 bed)", "price": "98" },
+      "double2": { "name": "Double room (2 beds)", "price": "108" },
+      "triple": { "name": "Triple room", "price": "125" },
+      "quad": { "name": "Quadruple room", "price": "140" },
+      "five": { "name": "Five-person room", "price": "155" }
+    },
+    "extras": {
+      "breakfast": "Breakfast: buffet €14",
+      "halfBoard": "Half board: €88 minimum 3 days — price per day per person",
+      "halfBoardChild": "Child 2 to 5 years: €44, 5 to 10 years: €56",
+      "fullBoard": "Full board: €112 minimum 3 days — price per day per person",
+      "singleSupplement": "Single room supplement: €35",
+      "fullBoardChild": "Child 2 to 5 years: €56, 5 to 10 years: €68",
+      "taxAndDog": "Tourist tax: €0.85 (+18 years) — Dog supplement: €5/day"
+    }
+  },
+  "restaurant": {
+    "sectionLabel": "Gastronomy",
+    "title": "The Restaurant",
+    "subtitle": "Alpine gastronomy and local flavors",
+    "description": "Our chef elevates the products of the Savoyard terroir in a warm atmosphere with panoramic mountain views.",
+    "menu": "View menus",
+    "reserve": "Reserve a table",
+    "pricingTitle": "Rates",
+    "pricing": {
+      "dailySpecial": "Daily special: €18 to €23",
+      "specialty": "Specialty: €22 to €30",
+      "menu": "Menu: €35 to €48",
+      "childMenu": "Children's menu: €13"
+    },
+    "groupTitle": "Coming as a group?",
+    "groupDescription": "We organize seminars over one or several days.",
+    "contactUs": "Contact Us"
+  },
+  "about": {
+    "sectionLabel": "Our Identity",
+    "title": "Our Story",
+    "subtitle": "A haven of peace at the summit of Semnoz",
+    "description": "Nestled at the summit of Semnoz, Les Rochers Blancs is an exceptional retreat where tradition and modernity meet. Our family has welcomed you for generations in this enchanting setting at 1700 meters altitude.",
+    "values": {
+      "tradition": {
+        "title": "Tradition",
+        "description": "Know-how passed down from generation to generation"
+      },
+      "nature": {
+        "title": "Nature",
+        "description": "In harmony with the alpine environment"
+      },
+      "excellence": {
+        "title": "Excellence",
+        "description": "Personalized service for every guest"
+      }
+    }
+  },
+  "access": {
+    "sectionLabel": "Directions",
+    "title": "How to Get Here",
+    "subtitle": "You can't go wrong",
+    "bus": {
+      "title": "By Bus from Annecy",
+      "description": "6 times a day in summer, weekends and during school holidays."
+    },
+    "car": {
+      "title": "By Car",
+      "description": "Highway A41 exit Annecy Sud. Follow direction Albertville to the center of Annecy. Follow the Semnoz (D41) for 17 km. Arrival at Crêt de Chatillon."
+    },
+    "gps": {
+      "title": "GPS Access",
+      "description": "Maison du Semnoz, commune Viuz-la-Chiesaz. You arrive at the Semnoz station, the hotel is 2 km above."
+    },
+    "partners": {
+      "title": "Our Partners",
+      "description": "Enhance your relaxation and escape moments during your stay at Semnoz with the professionals of our region."
+    }
+  },
+  "contact": {
+    "sectionLabel": "Contact",
+    "title": "Contact Us",
+    "subtitle": "We are listening",
+    "addressLabel": "Address",
+    "addressValue": "Route du Semnoz, 74000 Annecy, France",
+    "phoneLabel": "Phone",
+    "phoneValue": "+33 4 50 XX XX XX",
+    "emailLabel": "Email",
+    "emailValue": "contact@lesrochersblancs.fr",
+    "hoursLabel": "Hours",
+    "hoursValue": "Reception: 24/7 — Restaurant: 12pm-2pm / 7pm-10pm",
+    "formLabel": "Contact form",
+    "form": {
+      "name": "Your name",
+      "email": "Your email",
+      "message": "Your message",
+      "send": "Send"
+    }
+  },
+  "footer": {
+    "brandName": "Les Rochers Blancs",
+    "rights": "All rights reserved",
+    "legal": "Legal notice",
+    "privacy": "Privacy",
+    "quickLinksLabel": "Quick links",
+    "instagramUrl": "#",
+    "facebookUrl": "#"
+  },
+  "menuSection": {
+    "label": "Gastronomy",
+    "title": "Our Menus",
+    "subtitle": "Discover our seasonal and festive menus, crafted by our Chef with the finest local products",
+    "print": "Print menus",
+    "person": "person",
+    "comingSoon": "This menu will be available soon",
+    "vegetarian": "Vegetarian",
+    "glutenFree": "Gluten free",
+    "chefSignature": "Chef's signature"
+  },
+  "adminLogin": {
+    "backToSite": "Back to website",
+    "title": "Administration",
+    "subtitle": "Sign in to access the admin panel",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "signIn": "Sign in",
+    "signingIn": "Signing in...",
+    "toast": {
+      "signInErrorTitle": "Sign-in error",
+      "genericErrorTitle": "Error",
+      "genericErrorDescription": "An error occurred"
+    }
+  },
+  "notFound": {
+    "message": "Oops! Page not found",
+    "returnHome": "Return to home"
+  },
+  "adminLayout": {
+    "signOut": "Sign out",
+    "nav": {
+      "dashboard": "Dashboard",
+      "content": "CMS Content",
+      "menu": "Restaurant Menus",
+      "services": "Services",
+      "formations": "Trainings",
+      "blog": "Blog",
+      "comments": "Comments",
+      "clients": "CRM Clients",
+      "reservations": "Reservations",
+      "invoices": "Invoices",
+      "quotes": "Quotes",
+      "media": "Media Library",
+      "theme": "Theme",
+      "settings": "Settings"
+    }
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "create": "Create",
+    "update": "Update",
+    "delete": "Delete",
+    "add": "Add",
+    "edit": "Edit",
+    "actions": "Actions",
+    "status": "Status",
+    "name": "Name",
+    "slug": "Slug",
+    "active": "Active",
+    "inactive": "Inactive",
+    "saving": "Saving...",
+    "error": "Error",
+    "success": "Success",
+    "deleted": "Deleted",
+    "notes": "Notes",
+    "client": "Client",
+    "date": "Date",
+    "noResults": "No results",
+    "errorSave": "Error saving",
+    "errorDelete": "Error deleting"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome to the Les Rochers Blancs administration panel",
+    "stats": {
+      "clients": { "title": "Clients", "description": "Total registered clients" },
+      "reservations": { "title": "Reservations", "pendingDescription": "pending" },
+      "revenue": { "title": "Revenue", "description": "Total paid invoices" },
+      "unpaidInvoices": { "title": "Unpaid Invoices", "description": "To follow up" },
+      "pendingQuotes": { "title": "Pending Quotes", "totalDescription": "quotes total" },
+      "blogPosts": { "title": "Blog Posts", "description": "Published articles" },
+      "comments": { "title": "Comments", "description": "Pending moderation" }
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "description": "Quickly access main features",
+      "newReservation": "New reservation",
+      "addClient": "Add a client",
+      "createInvoice": "Create an invoice",
+      "createQuote": "Create a quote",
+      "writeArticle": "Write an article"
+    },
+    "languages": {
+      "title": "Supported Languages",
+      "description": "Your site is available in 4 languages"
+    }
+  },
+  "reservations": {
+    "title": "Reservations",
+    "subtitle": "Manage reservations",
+    "new": "New reservation",
+    "editTitle": "Edit reservation",
+    "newTitle": "New reservation",
+    "confirmDelete": "Delete this reservation?",
+    "noItems": "No reservations",
+    "form": {
+      "client": "Client",
+      "clientPlaceholder": "Select a client",
+      "type": "Type",
+      "startDate": "Start date *",
+      "endDate": "End date",
+      "status": "Status",
+      "guests": "Number of guests",
+      "amount": "Total amount (€)",
+      "specialRequests": "Special requests",
+      "notes": "Internal notes"
+    },
+    "table": {
+      "client": "Client",
+      "type": "Type",
+      "dates": "Dates",
+      "guests": "Guests",
+      "amount": "Amount",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled",
+      "completed": "Completed"
+    },
+    "type": {
+      "room": "Room",
+      "restaurant": "Restaurant",
+      "service": "Service",
+      "formation": "Training"
+    },
+    "toast": {
+      "created": "Reservation created",
+      "updated": "Reservation updated",
+      "deleted": "Reservation deleted",
+      "errorSave": "Error saving",
+      "errorDelete": "Error deleting"
+    }
+  },
+  "invoices": {
+    "title": "Invoices",
+    "subtitle": "Manage your invoices",
+    "new": "New invoice",
+    "editTitle": "Edit invoice",
+    "newTitle": "New invoice",
+    "confirmDelete": "Delete this invoice?",
+    "noItems": "No invoices",
+    "form": {
+      "number": "Invoice number",
+      "client": "Client",
+      "clientPlaceholder": "Select",
+      "status": "Status",
+      "issueDate": "Issue date",
+      "dueDate": "Due date",
+      "taxRate": "Tax rate (%)",
+      "lines": "Invoice lines",
+      "addLine": "Add a line",
+      "notes": "Notes",
+      "descriptionPlaceholder": "Description",
+      "qtyPlaceholder": "Qty",
+      "pricePlaceholder": "Unit price",
+      "subtotal": "Subtotal",
+      "tax": "Tax ({{rate}}%)",
+      "totalTTC": "Total incl. tax"
+    },
+    "table": {
+      "number": "Invoice #",
+      "client": "Client",
+      "date": "Date",
+      "dueDate": "Due date",
+      "total": "Total",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "draft": "Draft",
+      "sent": "Sent",
+      "paid": "Paid",
+      "overdue": "Overdue",
+      "cancelled": "Cancelled"
+    },
+    "toast": {
+      "created": "Invoice created",
+      "updated": "Invoice updated",
+      "deleted": "Invoice deleted",
+      "errorSave": "Error saving",
+      "errorDelete": "Error deleting"
+    }
+  },
+  "quotes": {
+    "title": "Quotes",
+    "subtitle": "Manage your quotes",
+    "new": "New quote",
+    "editTitle": "Edit quote",
+    "newTitle": "New quote",
+    "confirmDelete": "Delete this quote?",
+    "confirmConvert": "Convert this quote to an invoice?",
+    "noItems": "No quotes",
+    "form": {
+      "number": "Quote number",
+      "client": "Client",
+      "clientPlaceholder": "Select",
+      "status": "Status",
+      "issueDate": "Issue date",
+      "validUntil": "Valid until",
+      "taxRate": "Tax rate (%)",
+      "lines": "Quote lines",
+      "addLine": "Add a line",
+      "notes": "Notes",
+      "descriptionPlaceholder": "Description",
+      "qtyPlaceholder": "Qty",
+      "pricePlaceholder": "Unit price",
+      "subtotal": "Subtotal",
+      "tax": "Tax ({{rate}}%)",
+      "totalTTC": "Total incl. tax"
+    },
+    "table": {
+      "number": "Quote #",
+      "client": "Client",
+      "date": "Date",
+      "validity": "Validity",
+      "total": "Total",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "draft": "Draft",
+      "sent": "Sent",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "expired": "Expired",
+      "converted": "Converted"
+    },
+    "toast": {
+      "created": "Quote created",
+      "updated": "Quote updated",
+      "deleted": "Quote deleted",
+      "converted": "Quote converted to invoice",
+      "errorSave": "Error saving",
+      "errorDelete": "Error deleting",
+      "errorConvert": "Error converting"
+    }
+  },
+  "clients": {
+    "title": "Clients CRM",
+    "subtitle": "Manage your client database",
+    "new": "Add a client",
+    "editTitle": "Edit client",
+    "newTitle": "New client",
+    "confirmDelete": "Delete this client?",
+    "noItems": "No clients",
+    "countSuffix": "client(s)",
+    "search": "Search a client...",
+    "form": {
+      "firstName": "First name *",
+      "lastName": "Last name *",
+      "email": "Email *",
+      "phone": "Phone",
+      "company": "Company",
+      "address": "Address",
+      "city": "City",
+      "postalCode": "Postal code",
+      "country": "Country",
+      "tags": "Tags (comma separated)",
+      "tagsPlaceholder": "VIP, Loyal, Corporate",
+      "notes": "Notes"
+    },
+    "table": {
+      "client": "Client",
+      "contact": "Contact",
+      "company": "Company",
+      "tags": "Tags",
+      "createdAt": "Created",
+      "actions": "Actions"
+    },
+    "toast": {
+      "created": "Client created",
+      "updated": "Client updated",
+      "deleted": "Client deleted",
+      "errorSave": "Error saving",
+      "errorDelete": "Error deleting"
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Manage blog posts",
+    "new": "New post",
+    "editTitle": "Edit post",
+    "newTitle": "New post",
+    "confirmDelete": "Delete this post?",
+    "noItems": "No posts",
+    "published": "Published",
+    "draft": "Draft",
+    "form": {
+      "slug": "Slug (URL)",
+      "imageUrl": "Cover image (URL)",
+      "titleLabel": "Title",
+      "excerpt": "Excerpt",
+      "content": "Content",
+      "metaTitle": "Meta Title (SEO)",
+      "metaDescription": "Meta Description (SEO)"
+    },
+    "table": {
+      "title": "Title",
+      "date": "Date",
+      "views": "Views",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "toast": {
+      "created": "Post created",
+      "updated": "Post updated",
+      "deleted": "Post deleted",
+      "published": "Post published",
+      "unpublished": "Post unpublished",
+      "errorSave": "Error saving",
+      "errorDelete": "Error deleting",
+      "error": "Error"
+    }
+  },
+  "comments": {
+    "title": "Comments",
+    "subtitle": "Moderate blog comments",
+    "pendingTitle": "Pending moderation",
+    "noProcessed": "No processed comments",
+    "articleLabel": "Post",
+    "approve": "Approve",
+    "reject": "Reject",
+    "table": {
+      "author": "Author",
+      "comment": "Comment",
+      "article": "Post",
+      "date": "Date",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "pending": "Pending"
+    },
+    "toast": {
+      "approved": "Comment approved",
+      "rejected": "Comment rejected",
+      "deleted": "Comment deleted",
+      "confirmDelete": "Delete this comment?",
+      "error": "Error"
+    }
+  },
+  "services": {
+    "title": "Services",
+    "subtitle": "Manage property services",
+    "new": "Add a service",
+    "editTitle": "Edit service",
+    "newTitle": "New service",
+    "confirmDelete": "Delete this service?",
+    "noItems": "No services",
+    "activeLabel": "Active",
+    "inactiveLabel": "Inactive",
+    "toggleActive": "Active",
+    "form": {
+      "slug": "Slug (identifier)",
+      "icon": "Icon (lucide name)",
+      "imageUrl": "Image URL"
+    },
+    "table": {
+      "name": "Name",
+      "slug": "Slug",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "toast": {
+      "created": "Service created",
+      "updated": "Service updated",
+      "deleted": "Service deleted",
+      "errorSave": "Error saving",
+      "errorDelete": "Error deleting"
+    }
+  },
+  "formations": {
+    "title": "Trainings",
+    "subtitle": "Manage available trainings",
+    "new": "Add a training",
+    "editTitle": "Edit training",
+    "newTitle": "New training",
+    "confirmDelete": "Delete this training?",
+    "noItems": "No trainings",
+    "activeLabel": "Active",
+    "inactiveLabel": "Inactive",
+    "toggleActive": "Active",
+    "form": {
+      "slug": "Slug",
+      "duration": "Duration",
+      "price": "Price (€)",
+      "imageUrl": "Image URL",
+      "durationPlaceholder": "2 days"
+    },
+    "table": {
+      "name": "Name",
+      "duration": "Duration",
+      "price": "Price",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "toast": {
+      "created": "Training created",
+      "updated": "Training updated",
+      "deleted": "Training deleted",
+      "errorSave": "Error saving",
+      "errorDelete": "Error deleting"
+    }
+  },
+  "media": {
+    "title": "Media Library",
+    "subtitle": "Manage your files and images",
+    "upload": "Upload",
+    "noItems": "No files uploaded",
+    "uploadFirst": "Upload your first file",
+    "confirmDelete": "Delete this file?",
+    "toast": {
+      "uploaded": "{{count}} file(s) uploaded",
+      "urlCopied": "URL copied",
+      "deleted": "File deleted",
+      "errorUpload": "Upload error",
+      "errorDelete": "Error deleting"
+    }
+  },
+  "theme": {
+    "title": "Theme",
+    "subtitle": "Customize the site appearance",
+    "save": "Save",
+    "colors": {
+      "title": "Colors",
+      "description": "Customize theme colors (HSL format)",
+      "primary": "Primary color",
+      "accent": "Accent color",
+      "background": "Background",
+      "foreground": "Text color",
+      "muted": "Muted elements",
+      "secondary": "Secondary"
+    },
+    "typography": {
+      "title": "Typography",
+      "description": "Choose fonts",
+      "heading": "Heading font",
+      "body": "Body font",
+      "preview": "Preview:"
+    },
+    "preview": {
+      "title": "Preview",
+      "description": "Visualize your changes",
+      "tagline": "A haven of peace in the Alps",
+      "primaryButton": "Primary Button",
+      "accentButton": "Accent Button"
+    },
+    "toast": {
+      "saved": "Theme saved",
+      "errorSave": "Error saving"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Configure site settings",
+    "save": "Save",
+    "backup": "Backup",
+    "fields": {
+      "site_name": "Site name",
+      "site_description": "Description",
+      "contact_email": "Contact email",
+      "contact_phone": "Phone",
+      "contact_address": "Address",
+      "social_facebook": "Facebook URL",
+      "social_instagram": "Instagram URL",
+      "social_twitter": "Twitter/X URL",
+      "meta_title": "Meta Title (SEO)",
+      "meta_description": "Meta Description (SEO)",
+      "meta_keywords": "Meta Keywords (SEO)"
+    },
+    "categories": {
+      "general": "General",
+      "contact": "Contact",
+      "social": "Social Media",
+      "seo": "SEO"
+    },
+    "backupSection": {
+      "title": "Backup & Restore",
+      "description": "Create data backups or restore from a backup",
+      "download": "Download backup",
+      "restore": "Restore (coming soon)"
+    },
+    "toast": {
+      "saved": "Settings saved",
+      "backupDownloaded": "Backup downloaded",
+      "errorSave": "Error saving",
+      "errorBackup": "Error during backup"
+    }
+  },
+  "contentManager": {
+    "title": "Content Manager",
+    "subtitle": "Edit site content in all languages",
+    "prefill": "Pre-fill from translations",
+    "saveAll": "Save all",
+    "saving": "Saving...",
+    "sectionLabel": "Section",
+    "sections": {
+      "hero": "Hero (Home)",
+      "openings": "Opening Hours",
+      "hotel": "Hotel",
+      "restaurant": "Restaurant",
+      "about": "About",
+      "access": "Access",
+      "contact": "Contact",
+      "nav": "Navigation",
+      "footer": "Footer"
+    },
+    "toast": {
+      "loadError": "Unable to load content",
+      "prefillSuccess": "Pre-fill complete",
+      "prefillDescription": "Empty fields have been filled from default translations. Click \"Save\" to save.",
+      "saveSuccess": "Content saved successfully",
+      "saveError": "Unable to save content"
+    }
+  },
+  "menuManager": {
+    "title": "Menu Management",
+    "subtitle": "Event menus (Christmas, Easter, Valentine's...) with categories and dishes",
+    "newMenu": "New menu",
+    "editMenuTitle": "Edit",
+    "newMenuTitle": "New",
+    "editCategoryTitle": "Edit",
+    "newCategoryTitle": "New",
+    "editItemTitle": "Edit",
+    "newItemTitle": "New",
+    "menuSuffix": "menu",
+    "categorySuffix": "category",
+    "itemSuffix": "dish",
+    "duplicate": "Duplicate",
+    "confirmDeleteMenu": "Delete this menu and all its categories/dishes?",
+    "confirmDeleteCategory": "Delete this category and all its dishes?",
+    "confirmDeleteItem": "Delete this dish?",
+    "noMenus": "No menus. Create your first event menu!",
+    "noCategories": "No categories. Add \"Starters\", \"Mains\", \"Desserts\"...",
+    "categoriesLabel": "Menu categories",
+    "categoriesSuffix": "categories",
+    "dishesSuffix": "dishes",
+    "addCategory": "Category",
+    "addItem": "Dish",
+    "form": {
+      "slug": "Slug (identifier)",
+      "globalPrice": "Global price (€)",
+      "year": "Year",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "isActive": "Menu active (visible on site)",
+      "sortOrder": "Display order",
+      "translationsLabel": "Translations",
+      "menuName": "Menu name",
+      "menuDescription": "Description",
+      "categoryActive": "Category active",
+      "categoryName": "Name",
+      "categoryDescription": "Description (optional)",
+      "itemName": "Dish name",
+      "itemDescription": "Description",
+      "itemPrice": "Price (€) - if à la carte",
+      "isSignature": "Signature",
+      "isVegetarian": "Vegetarian",
+      "isVegan": "Vegan",
+      "isGlutenFree": "Gluten free",
+      "itemActive": "Dish active"
+    },
+    "toast": {
+      "menuSaved": "Menu saved",
+      "menuDeleted": "Menu deleted",
+      "categorySaved": "Category saved",
+      "categoryDeleted": "Category deleted",
+      "itemSaved": "Dish saved",
+      "itemDeleted": "Dish deleted",
+      "duplicated": "Menu duplicated for {{year}}",
+      "error": "Error",
+      "errorSave": "Unable to save",
+      "errorDelete": "Unable to delete",
+      "errorLoad": "Unable to load menus",
+      "errorDuplicate": "Unable to duplicate"
+    }
+  },
+  "partners": {
+    "sectionLabel": "Partners",
+    "title": "Our Partners",
+    "description": "Enhance your relaxation and escape moments during your stay at Semnoz with the professionals of our region."
+  }
+}
