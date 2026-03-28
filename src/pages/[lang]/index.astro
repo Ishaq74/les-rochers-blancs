@@ -2,7 +2,6 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Navbar from '@/components/layout/Navbar.astro';
 import HeroSection from '@/components/sections/HeroSection.astro';
-import AboutSection from '@/components/sections/AboutSection.astro';
 import RoomsSection from '@/components/sections/RoomsSection.astro';
 import RestaurantSection from '@/components/sections/RestaurantSection.astro';
 import MenuSection from '@/components/sections/MenuSection.astro';
@@ -20,7 +19,7 @@ export function getStaticPaths() {
 }
 
 const { lang } = Astro.params as { lang: Locale };
-const title = `${t('hero.title', lang)} — Les Rochers Blancs`;
+const title = `${t('hero.title', lang)} — ${t('footer.brandName', lang)}`;
 const description = t('hero.tagline', lang);
 ---
 

@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { db } from '@/db';
 import { restaurantMenus, restaurantMenuTranslations, menuCategories, menuCategoryTranslations, menuItems, menuItemTranslations } from '@/db/schema';
-import { eq, and, asc } from 'drizzle-orm';
+import { eq, asc } from 'drizzle-orm';
 
 export const prerender = false;
 

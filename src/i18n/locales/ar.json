@@ -125,7 +125,8 @@
     "partners": {
       "title": "شركاؤنا",
       "description": "عزز لحظات الاسترخاء والهروب خلال إقامتك في سيمنوز مع محترفي منطقتنا."
-    }
+    },
+    "mapTitle": "خريطة — Les Rochers Blancs"
   },
   "contact": {
     "sectionLabel": "اتصل بنا",
@@ -154,15 +155,24 @@
     "privacy": "الخصوصية",
     "quickLinksLabel": "روابط سريعة",
     "instagramUrl": "#",
-    "facebookUrl": "#"
+    "facebookUrl": "#",
+    "instagramLabel": "إنستغرام",
+    "facebookLabel": "فيسبوك"
   },
   "menuSection": {
     "label": "فن الطهي",
     "title": "قوائمنا",
     "subtitle": "اكتشف قوائمنا الموسمية والاحتفالية التي يعدها الشيف بأجود المنتجات المحلية",
     "print": "طباعة القوائم",
+    "printThisMenu": "طباعة هذه القائمة",
     "person": "شخص",
+    "seasonal": "موسمي",
+    "active": "متاح الآن",
+    "inactive": "خارج الموسم",
+    "allYear": "طوال العام",
     "comingSoon": "ستكون هذه القائمة متاحة قريبا",
+    "availableFrom": "متاح من",
+    "menuPrice": "قائمة بسعر",
     "vegetarian": "نباتي",
     "glutenFree": "خال من الغلوتين",
     "chefSignature": "توقيع الشيف"

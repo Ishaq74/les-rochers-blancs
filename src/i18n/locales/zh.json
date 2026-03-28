@@ -125,7 +125,8 @@
     "partners": {
       "title": "合作伙伴",
       "description": "与我们地区的专业人士一起增添您在塞姆诺兹住宿期间的放松和逃离时刻。"
-    }
+    },
+    "mapTitle": "地图 — Les Rochers Blancs"
   },
   "contact": {
     "sectionLabel": "联系",
@@ -154,15 +155,24 @@
     "privacy": "隐私政策",
     "quickLinksLabel": "快速链接",
     "instagramUrl": "#",
-    "facebookUrl": "#"
+    "facebookUrl": "#",
+    "instagramLabel": "Instagram",
+    "facebookLabel": "Facebook"
   },
   "menuSection": {
     "label": "美食",
     "title": "我们的菜单",
     "subtitle": "品尝我们主厨用最优质本地食材精心烹制的时令与节日菜单",
     "print": "打印菜单",
+    "printThisMenu": "打印此菜单",
     "person": "人",
+    "seasonal": "时令",
+    "active": "当前供应",
+    "inactive": "已停供",
+    "allYear": "全年供应",
     "comingSoon": "该菜单即将上线",
+    "availableFrom": "供应开始于",
+    "menuPrice": "套餐价格",
     "vegetarian": "素食",
     "glutenFree": "无麸质",
     "chefSignature": "主厨招牌"

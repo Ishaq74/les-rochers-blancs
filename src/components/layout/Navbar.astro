@@ -4,7 +4,6 @@ import type { Locale } from '@/lib/i18n';
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle } from '@/components/starwind/sheet';
 import { Dropdown, DropdownTrigger, DropdownContent, DropdownItem } from '@/components/starwind/dropdown';
 import { ThemeToggle } from '@/components/starwind/theme-toggle';
-import { Button } from '@/components/starwind/button';
 import { Icon } from 'astro-icon/components';
 
 interface Props {
@@ -21,9 +20,6 @@ const navItems = [
   { label: t('nav.access', lang), href: '#access' },
 ];
 
-const bookLabel = t('nav.book', lang);
-const contactEmail = t('contact.emailValue', lang);
-
 const languages = [
   { code: 'fr', name: 'Français', flag: 'circle-flags:fr' },
   { code: 'en', name: 'English', flag: 'circle-flags:uk' },
@@ -31,7 +27,6 @@ const languages = [
   { code: 'zh', name: '中文', flag: 'circle-flags:cn' },
 ];
 
-const currentLanguage = languages.find((l) => l.code === lang) || languages[0];
 ---
 
 <nav
@@ -44,7 +39,7 @@ const currentLanguage = languages.find((l) => l.code === lang) || languages[0];
       <!-- Logo -->
       <a href="#hero" class="flex items-center gap-3">
         <span class="font-serif text-2xl font-bold tracking-wide navbar-logo-text text-snow">
-          Les Rochers Blancs
+          {t('footer.brandName', lang)}
         </span>
       </a>
 
@@ -84,11 +79,6 @@ const currentLanguage = languages.find((l) => l.code === lang) || languages[0];
         <!-- Theme Toggle -->
         <ThemeToggle class="navbar-action-btn text-snow hover:bg-snow/10 border-0" />
 
-        <!-- Book Button (desktop) -->
-        <Button href={`mailto:${contactEmail}`} variant="primary" size="sm" class="hidden md:inline-flex btn-gold">
-          {bookLabel}
-        </Button>
-
         <!-- Mobile Menu Toggle -->
         <Sheet>
           <SheetTrigger class="lg:hidden navbar-action-btn text-snow hover:bg-snow/10 rounded-md size-11 inline-flex items-center justify-center">
@@ -96,7 +86,7 @@ const currentLanguage = languages.find((l) => l.code === lang) || languages[0];
           </SheetTrigger>
           <SheetContent side="right">
             <SheetHeader>
-              <SheetTitle>Les Rochers Blancs</SheetTitle>
+              <SheetTitle>{t('footer.brandName', lang)}</SheetTitle>
             </SheetHeader>
             <div class="flex flex-col gap-4 px-4 py-6">
               {navItems.map((item) => (
@@ -108,9 +98,6 @@ const currentLanguage = languages.find((l) => l.code === lang) || languages[0];
                   {item.label}
                 </a>
               ))}
-              <Button href={`mailto:${contactEmail}`} variant="primary" class="mt-4 btn-gold text-center">
-                {bookLabel}
-              </Button>
             </div>
           </SheetContent>
         </Sheet>

@@ -5,10 +5,8 @@ import { db } from '@/db';
 import { restaurantMenus, restaurantMenuTranslations, menuCategories, menuCategoryTranslations, menuItems, menuItemTranslations } from '@/db/schema';
 import { eq, asc } from 'drizzle-orm';
 import { format } from 'date-fns';
-import { getDateFnsLocale } from '@/lib/i18n-utils';
+import { getDateFnsLocale } from '@/lib/i18n';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/starwind/tabs';
-import { Badge } from '@/components/starwind/badge';
-import { Button } from '@/components/starwind/button';
 import { Icon } from 'astro-icon/components';
 
 interface Props {
@@ -138,13 +136,13 @@ const defaultMenuId =
 if (menus.length === 0) return;
 ---
 
-<section id="menu" class="relative overflow-hidden section-padding bg-secondary" dir={rtl ? 'rtl' : 'ltr'}>
+<section id="menu" class="relative overflow-hidden section-padding bg-secondary print:bg-white print:p-0" dir={rtl ? 'rtl' : 'ltr'}>
   <div class="max-w-6xl mx-auto">
     <!-- Watermark -->
-    <Icon name="mdi:book-open-variant" size={280} class="section-watermark top-right text-foreground" aria-hidden="true" />
+    <Icon name="mdi:book-open-variant" size={280} class="section-watermark top-right text-foreground print:hidden" aria-hidden="true" />
 
     <!-- Header -->
-    <div class="text-center mb-section animate-fade-up">
+    <div class="text-center mb-section animate-fade-up print:hidden">
       <h2 class="heading-section mb-3">
         {t('menuSection.title', lang)}
       </h2>
@@ -152,162 +150,8 @@ if (menus.length === 0) return;
       <p class="section-subtitle max-w-2xl mx-auto">
         {t('menuSection.subtitle', lang)}
       </p>
-      <div class="mt-6">
-        <Button variant="outline" class="font-semibold print-btn" data-print-menu>
-          <Icon name="mdi:printer" class="size-4" />
-          {t('menuSection.print', lang)}
-        </Button>
-      </div>
-    </div>
-
-    <!-- Tabs -->
-    <Tabs defaultValue={defaultMenuId} class="w-full">
-      <TabsList class="flex flex-wrap justify-center gap-2 bg-transparent h-auto mb-8 w-full">
-        {menus.map((menu: any) => {
-          const activeNow = isMenuActive(menu.start_date, menu.end_date);
-          const extraClass = activeNow === true
-            ? 'border-green-500/50 bg-green-500/10'
-            : activeNow === false
-              ? 'border-border/70 bg-background/70'
-              : 'border-border';
-          return (
-            <TabsTrigger
-              value={menu.id}
-              class={`px-6 py-3 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-full border data-[state=active]:border-accent transition-all ${extraClass}`}
-            >
-              <span class="flex items-center gap-2">
-                {menu.name}
-                {activeNow === true && (
-                  <Badge variant="success" size="sm" class="gap-1">
-                    <Icon name="mdi:check-circle" class="size-3.5" />
-                    {t('openings.statusOpen', lang)}
-                  </Badge>
-                )}
-                {activeNow === false && (
-                  <Badge variant="secondary" size="sm" class="gap-1">
-                    <Icon name="mdi:close-circle" class="size-3.5" />
-                    {t('openings.statusClosed', lang)}
-                  </Badge>
-                )}
-                {menu.price && (
-                  <span class="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                    {menu.price}€
-                  </span>
-                )}
-              </span>
-            </TabsTrigger>
-          );
-        })}
-      </TabsList>
-
-      {menus.map((menu: any) => {
-        const menuCategories = getCategoriesByMenu(menu.id);
-        return (
-          <TabsContent value={menu.id}>
-            <div class="space-y-8">
-              <!-- Menu header with price and dates -->
-              <div class="text-center pb-6 border-b border-border">
-                {menu.description && (
-                  <p class="text-muted-foreground italic mb-4 max-w-2xl mx-auto">
-                    {menu.description}
-                  </p>
-                )}
-                <div class="flex items-center justify-center gap-6 text-sm">
-                  {menu.price && (
-                    <div class="flex items-center gap-2 text-accent font-semibold text-lg">
-                      <Icon name="mdi:currency-eur" class="size-5" />
-                      <span>{menu.price}€ / {t('menuSection.person', lang)}</span>
-                    </div>
-                  )}
-                  {menu.start_date && (
-                    <div class="flex items-center gap-2 text-muted-foreground">
-                      <Icon name="mdi:calendar" class="size-4" />
-                      <span>{formatMenuDate(menu.start_date, menu.end_date)}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <!-- Categories and items -->
-              {menuCategories.map((category: any) => {
-                const categoryItems = getItemsByCategory(category.id);
-                return (
-                  <div class="space-y-4">
-                    <h3 class="heading-subsection text-center">
-                      {category.name}
-                    </h3>
-                    {category.description && (
-                      <p class="text-center text-muted-foreground text-sm italic">
-                        {category.description}
-                      </p>
-                    )}
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {categoryItems.map((item: any) => (
-                        <div class="group card-elevated overflow-hidden">
-                          {item.image_url && (
-                            <div class="h-44 overflow-hidden">
-                              <img
-                                src={item.image_url}
-                                alt={item.name}
-                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                                loading="lazy"
-                              />
-                            </div>
-                          )}
-                          <div class="p-5">
-                            <div class="flex justify-between items-start gap-4">
-                              <div class="flex-1">
-                                <div class="flex items-center gap-2 flex-wrap">
-                                  <h4 class="heading-card group-hover:text-accent transition-colors">
-                                    {item.name}
-                                  </h4>
-                                  {item.is_signature && (
-                                    <Icon name="mdi:star" class="size-4 text-accent" />
-                                  )}
-                                  {item.is_vegetarian && (
-                                    <Icon name="mdi:leaf" class="size-4 text-primary" aria-label={t('menuSection.vegetarian', lang)} />
-                                  )}
-                                  {item.is_vegan && (
-                                    <span class="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full">V</span>
-                                  )}
-                                  {item.is_gluten_free && (
-                                    <Icon name="mdi:barley-off" class="size-4 text-accent" aria-label={t('menuSection.glutenFree', lang)} />
-                                  )}
-                                </div>
-                                {item.description && (
-                                  <p class="text-muted-foreground mt-1 text-sm leading-relaxed">
-                                    {item.description}
-                                  </p>
-                                )}
-                              </div>
-                              {!menu.price && item.price > 0 && (
-                                <div class="text-accent font-serif text-lg font-bold whitespace-nowrap">
-                                  {item.price.toFixed(0)}€
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-
-              {menuCategories.length === 0 && (
-                <div class="text-center py-12 text-muted-foreground">
-                  {t('menuSection.comingSoon', lang)}
-                </div>
-              )}
-            </div>
-          </TabsContent>
-        );
-      })}
-    </Tabs>
-
-    <!-- Legend -->
-    <div class="text-center mt-12 pt-8 border-t border-border animate-fade-up">
+          <!-- Legend -->
+    <div class="text-center mt-14 pt-8 border-t border-border animate-fade-up print:hidden">
       <div class="flex items-center justify-center gap-6 text-sm text-muted-foreground flex-wrap">
         <div class="flex items-center gap-2">
           <Icon name="mdi:leaf" class="size-4 text-primary" />
@@ -323,9 +167,309 @@ if (menus.length === 0) return;
         </div>
       </div>
     </div>
+    </div>
+
+    <!-- Menu Tabs -->
+    <Tabs defaultValue={defaultMenuId} class="w-full">
+
+      <!-- ═══ Menu Selector Cards ═══ -->
+      <TabsList class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 bg-transparent h-auto mb-12 w-full print:hidden">
+        {menus.map((menu: any) => {
+          const activeNow = isMenuActive(menu.start_date, menu.end_date);
+          const isUnavailable = activeNow === false;
+          return (
+            <TabsTrigger
+              value={menu.id}
+              class:list={[
+                "group/card relative flex flex-col items-start gap-3 p-6 rounded-2xl border text-left h-auto w-full",
+                "transition-all duration-300 overflow-hidden",
+                isUnavailable
+                  ? "bg-muted/50 border-border/50 opacity-60 hover:opacity-80 hover:border-border"
+                  : "bg-card border-border hover:border-accent/50 hover:shadow-soft data-[state=active]:border-accent data-[state=active]:bg-accent/5 data-[state=active]:shadow-glow-gold"
+              ]}
+            >
+              {/* Decorative accent line at top */}
+              <div class:list={[
+                "absolute top-0 inset-x-0 h-1 rounded-t-2xl transition-all duration-300",
+                isUnavailable
+                  ? "bg-muted-foreground/20"
+                  : "bg-gradient-to-r from-transparent via-accent to-transparent opacity-0 group-data-[state=active]/card:opacity-100"
+              ]} />
+
+              {/* Menu name + status */}
+              <div class="flex items-start justify-between w-full gap-2">
+                <h3 class:list={[
+                  "font-heading text-xl font-bold leading-tight",
+                  isUnavailable ? "text-muted-foreground" : "text-foreground"
+                ]}>
+                  {menu.name}
+                </h3>
+                {activeNow === true && (
+                  <span class="shrink-0 flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    {t('menuSection.active', lang)}
+                  </span>
+                )}
+                {activeNow === false && (
+                  <span class="shrink-0 flex items-center gap-1.5 text-xs font-medium text-muted-foreground bg-muted px-2.5 py-1 rounded-full">
+                    <Icon name="mdi:clock-outline" class="size-3" />
+                    {t('menuSection.inactive', lang)}
+                  </span>
+                )}
+                {activeNow === null && (
+                  <span class="shrink-0 text-xs font-medium text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-full">
+                    {t('menuSection.allYear', lang)}
+                  </span>
+                )}
+              </div>
+
+              {/* Price */}
+              {menu.price && (
+                <div class:list={[
+                  "font-serif text-2xl font-bold",
+                  isUnavailable ? "text-muted-foreground/60" : "text-accent"
+                ]}>
+                  {menu.price}€
+                  <span class="text-sm font-normal font-sans text-muted-foreground ml-1">/ {t('menuSection.person', lang)}</span>
+                </div>
+              )}
+
+              {/* Date range */}
+              {menu.start_date && (
+                <div class="flex items-center gap-1.5 text-xs text-muted-foreground mt-auto">
+                  <Icon name="mdi:calendar-range" class="size-3.5 shrink-0" />
+                  <span>{formatMenuDate(menu.start_date, menu.end_date)}</span>
+                </div>
+              )}
+            </TabsTrigger>
+          );
+        })}
+      </TabsList>
+
+      <!-- ═══ Menu Content Panels ═══ -->
+      {menus.map((menu: any) => {
+        const menuCats = getCategoriesByMenu(menu.id);
+        const activeNow = isMenuActive(menu.start_date, menu.end_date);
+        const hasContent = menuCats.length > 0;
+        return (
+          <TabsContent value={menu.id} data-menu-content={menu.id}>
+            <div class="space-y-10">
+
+              {/* ── Print-only branded header ── */}
+              <div class="hidden print:block text-center mb-4">
+                <h1 class="text-2xl font-bold font-display tracking-widest uppercase mb-0.5">{t('footer.brandName', lang)}</h1>
+                <p class="text-[10px] text-gray-400 italic font-serif">{t('hero.subtitle', lang)}</p>
+                <div class="flex items-center justify-center gap-3 my-2">
+                  <div class="h-px w-12 bg-gray-300" />
+                  <span class="text-gray-400 text-xs">◆</span>
+                  <div class="h-px w-12 bg-gray-300" />
+                </div>
+                <h2 class="text-lg font-serif font-bold mb-0.5">{menu.name}</h2>
+                {menu.description && (
+                  <p class="text-[10px] text-gray-500 italic mb-1 max-w-sm mx-auto">{menu.description}</p>
+                )}
+                <div class="flex items-center justify-center gap-4 text-xs text-gray-600">
+                  {menu.price && <span class="font-semibold text-sm">{menu.price}€ / {t('menuSection.person', lang)}</span>}
+                  {menu.start_date && <span>{formatMenuDate(menu.start_date, menu.end_date)}</span>}
+                </div>
+              </div>
+
+              {/* ── Screen header: menu name, description, metadata, print button ── */}
+              <div class="print:hidden">
+                <div class="text-center max-w-2xl mx-auto">
+                  {/* Menu title */}
+                  <h3 class="font-display text-3xl sm:text-4xl font-bold text-foreground mb-3 tracking-wide">
+                    {menu.name}
+                  </h3>
+
+                  {/* Decorative diamond separator */}
+                  <div class="flex items-center justify-center gap-3 mb-4">
+                    <div class="h-px w-12 bg-accent/40" />
+                    <span class="text-accent text-sm">◆</span>
+                    <div class="h-px w-12 bg-accent/40" />
+                  </div>
+
+                  {menu.description && (
+                    <p class="text-muted-foreground italic font-serif text-lg mb-5 leading-relaxed">
+                      {menu.description}
+                    </p>
+                  )}
+
+                  {/* Price + date + status pills */}
+                  <div class="flex items-center justify-center gap-4 flex-wrap mb-6">
+                    {menu.price && (
+                      <span class="inline-flex items-center gap-1.5 bg-accent/10 text-accent font-semibold text-base px-4 py-2 rounded-full">
+                        <Icon name="mdi:silverware-fork-knife" class="size-4" />
+                        {t('menuSection.menuPrice', lang)} {menu.price}€ / {t('menuSection.person', lang)}
+                      </span>
+                    )}
+                    {menu.start_date && (
+                      <span class="inline-flex items-center gap-1.5 text-muted-foreground text-sm px-3 py-1.5 rounded-full bg-muted/50">
+                        <Icon name="mdi:calendar-range" class="size-4" />
+                        {formatMenuDate(menu.start_date, menu.end_date)}
+                      </span>
+                    )}
+                    {activeNow === true && (
+                      <span class="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 text-sm font-semibold px-3 py-1.5 rounded-full bg-emerald-500/10">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        {t('menuSection.active', lang)}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Print button — only if menu has content */}
+                  {hasContent && (
+                    <button
+                      data-print-menu={menu.id}
+                      class="inline-flex items-center gap-2.5 px-5 py-2.5 mt-2 rounded-full border border-accent/30 bg-accent/5 text-accent hover:bg-accent hover:text-white text-sm font-semibold tracking-wide transition-all duration-300 hover:shadow-glow-gold cursor-pointer"
+                    >
+                      <Icon name="mdi:printer" class="size-4" />
+                      {t('menuSection.printThisMenu', lang)}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* ── Unavailable menu: branded empty state ── */}
+              {!hasContent && (
+                <div class="text-center py-16 print:py-4">
+                  <div class="max-w-sm mx-auto">
+                    <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-muted/80 flex items-center justify-center">
+                      <Icon name="mdi:chef-hat" class="size-10 text-muted-foreground/60" />
+                    </div>
+                    <p class="font-serif text-xl text-muted-foreground italic mb-3">
+                      {t('menuSection.comingSoon', lang)}
+                    </p>
+                    {activeNow === false && menu.start_date && (
+                      <p class="text-sm text-muted-foreground/70">
+                        {t('menuSection.availableFrom', lang)}{' '}
+                        <span class="font-semibold text-foreground/80">{formatMenuDate(menu.start_date, null)}</span>
+                      </p>
+                    )}
+                    <div class="flex items-center justify-center gap-3 mt-6">
+                      <div class="h-px w-8 bg-border" />
+                      <span class="text-muted-foreground/30 text-xs">◆</span>
+                      <div class="h-px w-8 bg-border" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ── Categories + items ── */}
+              {menuCats.map((category: any) => {
+                const categoryItems = getItemsByCategory(category.id);
+                return (
+                  <div class="space-y-5 print:space-y-3">
+                    <div class="text-center">
+                      <h4 class="heading-subsection print:text-sm print:font-bold print:uppercase print:tracking-widest print:mt-3 print:mb-0">
+                        {category.name}
+                      </h4>
+                      {category.description && (
+                        <p class="text-muted-foreground text-sm italic mt-1 print:text-[10px] print:text-gray-500 print:mt-0">
+                          {category.description}
+                        </p>
+                      )}
+                      <div class="flex items-center justify-center gap-3 mt-4 print:mt-1 print:mb-0">
+                        <div class="h-px w-16 bg-accent/40 print:w-10 print:bg-gray-300" />
+                        <Icon name="mdi:silverware-variant" class="size-5 text-accent/50 print:size-3 print:text-gray-400" />
+                        <div class="h-px w-16 bg-accent/40 print:w-10 print:bg-gray-300" />
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 print:grid-cols-1 print:gap-0">
+                      {categoryItems.map((item: any) => (
+                        <div class="group card-elevated overflow-hidden print:shadow-none print:border-0 print:rounded-none print:border-b print:border-gray-100 flex flex-row print:block">
+                          <div class="w-28 sm:w-32 shrink-0 overflow-hidden print:hidden">
+                            {item.image_url ? (
+                              <img
+                                src={item.image_url}
+                                alt={item.name}
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <div class="w-full h-full min-h-24 bg-gradient-to-br from-accent/5 via-muted/30 to-accent/10 flex items-center justify-center">
+                                <Icon name="mdi:silverware-fork-knife" class="size-8 text-accent/20 group-hover:text-accent/35 transition-colors duration-500" />
+                              </div>
+                            )}
+                          </div>
+                          <div class="p-4 flex-1 min-w-0 print:p-1.5 print:px-0">
+                            <div class="flex justify-between items-start gap-3 print:gap-1 print:items-baseline">
+                              <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap print:gap-1 print:inline">
+                                  <h5 class="heading-card group-hover:text-accent transition-colors print:text-xs print:font-semibold print:inline">
+                                    {item.name}
+                                  </h5>
+                                  {item.is_signature && (
+                                    <Icon name="mdi:star" class="size-4 text-accent print:size-2.5 print:text-gray-600" />
+                                  )}
+                                  {item.is_vegetarian && (
+                                    <Icon name="mdi:leaf" class="size-4 text-primary print:size-2.5 print:text-gray-600" aria-label={t('menuSection.vegetarian', lang)} />
+                                  )}
+                                  {item.is_vegan && (
+                                    <span class="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full print:border print:border-gray-400 print:bg-transparent print:text-gray-600 print:text-[9px] print:px-1 print:py-0">V</span>
+                                  )}
+                                  {item.is_gluten_free && (
+                                    <Icon name="mdi:barley-off" class="size-4 text-accent print:size-2.5 print:text-gray-600" aria-label={t('menuSection.glutenFree', lang)} />
+                                  )}
+                                </div>
+                                {item.description && (
+                                  <p class="text-muted-foreground mt-1 text-sm leading-relaxed line-clamp-2 print:text-[10px] print:text-gray-500 print:mt-0 print:leading-tight">
+                                    {item.description}
+                                  </p>
+                                )}
+                              </div>
+                              {!menu.price && item.price > 0 && (
+                                <div class="text-accent font-serif text-lg font-bold whitespace-nowrap print:text-xs print:text-gray-800">
+                                  {item.price.toFixed(0)}€
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* ── Print footer ── */}
+              <div class="hidden print:block text-center mt-4 pt-2 border-t border-gray-200">
+                <p class="text-[9px] text-gray-400">{t('contact.addressValue', lang)} — {t('contact.phoneValue', lang)} — {t('contact.emailValue', lang)}</p>
+              </div>
+            </div>
+          </TabsContent>
+        );
+      })}
+    </Tabs>
   </div>
 </section>
 
 <script>
-  document.querySelector('[data-print-menu]')?.addEventListener('click', () => window.print());
+  // Per-menu print: show only the target menu content during print
+  document.querySelectorAll('[data-print-menu]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const menuId = (btn as HTMLElement).dataset.printMenu;
+      const allContents = document.querySelectorAll('[data-menu-content]');
+
+      // Save original state, then prepare for print
+      const original: { el: HTMLElement; hidden: boolean }[] = [];
+      allContents.forEach((el) => {
+        const htmlEl = el as HTMLElement;
+        original.push({ el: htmlEl, hidden: Boolean(htmlEl.hidden) });
+        const isTarget = htmlEl.getAttribute('data-menu-content') === menuId;
+        htmlEl.dataset.printActive = isTarget ? 'true' : 'false';
+        // Remove hidden attribute so CSS can control visibility via data-print-active
+        if (isTarget) htmlEl.hidden = false;
+      });
+
+      window.print();
+
+      // Restore original state after print
+      original.forEach(({ el, hidden }) => {
+        el.hidden = hidden;
+        delete el.dataset.printActive;
+      });
+    });
+  });
 </script>

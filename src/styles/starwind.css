@@ -322,7 +322,7 @@
     letter-spacing: 0.012em;
   }
 
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
 }
 
 /* ===== Component Utilities ===== */
@@ -481,19 +481,24 @@
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
   }
 
-  /* === Partners grayscale → color on hover === */
-  .partner-logo {
-    filter: grayscale(100%) opacity(0.7);
-    transition: all 0.4s ease;
+  /* === Partners logo visibility ===
+     Show original logo colors always.
+     Use drop-shadow to ensure white-on-transparent logos are visible in light mode
+     and dark-on-transparent logos are visible in dark mode (WCAG). */
+  .partner-logo-img {
+    filter: drop-shadow(0 0 0.5px rgba(0,0,0,0.5)) drop-shadow(0 0 2px rgba(0,0,0,0.15));
+    opacity: 0.85;
+    transition: opacity 0.3s, filter 0.3s;
   }
-  .partner-logo:hover {
-    filter: grayscale(0%) opacity(1);
+  .partner-logo:hover .partner-logo-img {
+    opacity: 1;
   }
-  .dark .partner-logo {
-    filter: grayscale(100%) opacity(0.6) brightness(1.2);
+  .dark .partner-logo-img {
+    filter: drop-shadow(0 0 0.5px rgba(255,255,255,0.6)) drop-shadow(0 0 2px rgba(255,255,255,0.2));
+    opacity: 0.85;
   }
-  .dark .partner-logo:hover {
-    filter: grayscale(0%) opacity(1) brightness(1.1);
+  .dark .partner-logo:hover .partner-logo-img {
+    opacity: 1;
   }
 
   /* === Top gold accent line for footer === */
@@ -514,5 +519,83 @@
   @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
+  }
+}
+
+/* ===== Print Styles — Per-menu A4 print ===== */
+@media print {
+  /* Hide everything by default */
+  body > *:not(main),
+  nav, footer, header,
+  main > *:not(#menu) {
+    display: none !important;
+  }
+
+  /* Show the main wrapper and menu section */
+  main {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  #menu {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: white !important;
+    color: black !important;
+    overflow: visible !important;
+  }
+
+  #menu > div {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 1cm 1.5cm !important;
+  }
+
+  /* Hide tab content that is not the print target */
+  [data-menu-content][data-print-active="false"] {
+    display: none !important;
+  }
+
+  /* Show the one we want to print — override hidden attribute */
+  [data-menu-content][data-print-active="true"],
+  [data-menu-content][data-print-active="true"][hidden] {
+    display: block !important;
+  }
+
+  /* Print header styling */
+  .print-header {
+    display: block !important;
+  }
+
+  /* Clean up card styles for print */
+  .card-elevated {
+    box-shadow: none !important;
+    transform: none !important;
+    break-inside: avoid;
+  }
+
+  /* Collapse space-y in print */
+  #menu .space-y-10 > * + * {
+    margin-top: 0.5rem !important;
+  }
+
+  /* Force readable text colors in print */
+  #menu * {
+    color: black !important;
+  }
+  #menu .text-gray-400,
+  #menu .text-gray-500 {
+    color: #6b7280 !important;
+  }
+  #menu .text-gray-300 {
+    color: #d1d5db !important;
+  }
+
+  /* A4 page setup */
+  @page {
+    size: A4;
+    margin: 0;
   }
 }

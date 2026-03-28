@@ -125,7 +125,8 @@
     "partners": {
       "title": "Nos Partenaires",
       "description": "Augmentez vos moments de détente et d'évasion durant votre séjour au Semnoz avec les professionnels de notre région."
-    }
+    },
+    "mapTitle": "Carte — Les Rochers Blancs"
   },
   "contact": {
     "sectionLabel": "Contact",
@@ -154,15 +155,24 @@
     "privacy": "Confidentialité",
     "quickLinksLabel": "Liens rapides",
     "instagramUrl": "#",
-    "facebookUrl": "#"
+    "facebookUrl": "#",
+    "instagramLabel": "Instagram",
+    "facebookLabel": "Facebook"
   },
   "menuSection": {
     "label": "Gastronomie",
     "title": "Nos Menus",
     "subtitle": "Découvrez nos menus saisonniers et festifs, élaborés par notre Chef avec les meilleurs produits locaux",
     "print": "Imprimer les menus",
+    "printThisMenu": "Imprimer ce menu",
     "person": "personne",
+    "seasonal": "Saisonnier",
+    "active": "En cours",
+    "inactive": "Hors saison",
+    "allYear": "Toute l'année",
     "comingSoon": "Ce menu sera bientôt disponible",
+    "availableFrom": "Disponible à partir du",
+    "menuPrice": "Menu à",
     "vegetarian": "Végétarien",
     "glutenFree": "Sans gluten",
     "chefSignature": "Signature du chef"

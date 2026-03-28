@@ -57,14 +57,8 @@ const { lang } = Astro.props;
 
       <div class="flex flex-col items-center sm:flex-row gap-4 justify-center animate-fade-up" style="animation-delay: 1s;">
         <a
-          href={`mailto:${t('contact.emailValue', lang)}`}
-          class="btn-gold inline-flex items-center justify-center h-12 font-semibold px-8 py-6 text-lg rounded-md"
-        >
-          {t('hero.book', lang)}
-        </a>
-        <a
           href="#rooms"
-          class="inline-flex items-center justify-center h-12 border border-snow/30 text-snow bg-snow/5 hover:bg-snow/15 font-semibold px-8 py-6 text-lg rounded-md transition-all backdrop-blur-sm"
+          class="btn-gold inline-flex items-center justify-center h-12 font-semibold px-8 py-6 text-lg rounded-md"
         >
           {t('hero.cta', lang)}
         </a>

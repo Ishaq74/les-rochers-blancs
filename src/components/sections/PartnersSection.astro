@@ -24,7 +24,6 @@ const partners = [
   { src: semnoz.src, alt: 'Semnoz' },
 ] as const;
 
-const logoSurfaceStyle = 'background-color: var(--background);';
 ---
 
 <section id="partners" class="relative overflow-hidden section-padding bg-cream">
@@ -52,12 +51,11 @@ const logoSurfaceStyle = 'background-color: var(--background);';
         >
           <div
             class="w-full h-full rounded-lg flex items-center justify-center p-3"
-            style={logoSurfaceStyle}
           >
             <img
               src={partner.src}
               alt={partner.alt}
-              class="w-full h-full object-contain"
+              class="partner-logo-img w-full h-full object-contain transition-all duration-300"
               loading="lazy"
             />
           </div>

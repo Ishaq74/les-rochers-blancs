@@ -1,7 +1,7 @@
 ---
 import "@/styles/starwind.css";
 import { Font } from 'astro:assets';
-import { isRtl, type Locale } from '@/lib/i18n';
+import { t, isRtl, type Locale } from '@/lib/i18n';
 
 interface Props {
   title?: string;
@@ -9,7 +9,8 @@ interface Props {
   lang?: Locale;
 }
 
-const { lang = 'fr', title = 'Les Rochers Blancs', description = '' } = Astro.props;
+const { lang = 'fr', title, description = '' } = Astro.props;
+const pageTitle = title || t('footer.brandName', lang);
 const dir = isRtl(lang) ? 'rtl' : 'ltr';
 ---
 
@@ -20,7 +21,7 @@ const dir = isRtl(lang) ? 'rtl' : 'ltr';
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
     {description && <meta name="description" content={description} />}
-    <title>{title}</title>
+    <title>{pageTitle}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <Font cssVariable="--font-playfair" />
     <Font cssVariable="--font-cormorant" />

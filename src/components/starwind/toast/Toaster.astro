@@ -218,7 +218,6 @@ const {
   class StarwindToastManager {
     readonly viewport: HTMLElement;
     private toasts: ToastState[] = [];
-    private queue: ToastState[] = [];
     private limit: number;
     private defaultDuration: number;
     private expanded: boolean = false;
@@ -373,7 +372,6 @@ const {
         toast.element?.remove();
       });
       this.toasts = [];
-      this.queue = [];
 
       // Remove all event listeners
       this.removeEvents();
@@ -561,7 +559,6 @@ const {
      */
     public closeAll(): void {
       [...this.toasts].forEach((toast) => this.close(toast.id));
-      this.queue = [];
     }
 
     private renderToast(toast: ToastState): void {

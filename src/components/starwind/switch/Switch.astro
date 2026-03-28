@@ -49,7 +49,7 @@ if (!padding) {
 
 const sizeMultiplier = size === "sm" ? 4 : size === "lg" ? 6 : 5;
 
-let ariaLabel;
+let ariaLabel: string;
 if (rest["aria-label"]) {
   ariaLabel = rest["aria-label"];
   delete rest["aria-label"];

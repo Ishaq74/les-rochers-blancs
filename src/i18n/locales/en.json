@@ -125,7 +125,8 @@
     "partners": {
       "title": "Our Partners",
       "description": "Enhance your relaxation and escape moments during your stay at Semnoz with the professionals of our region."
-    }
+    },
+    "mapTitle": "Map — Les Rochers Blancs"
   },
   "contact": {
     "sectionLabel": "Contact",
@@ -154,15 +155,24 @@
     "privacy": "Privacy",
     "quickLinksLabel": "Quick links",
     "instagramUrl": "#",
-    "facebookUrl": "#"
+    "facebookUrl": "#",
+    "instagramLabel": "Instagram",
+    "facebookLabel": "Facebook"
   },
   "menuSection": {
     "label": "Gastronomy",
     "title": "Our Menus",
     "subtitle": "Discover our seasonal and festive menus, crafted by our Chef with the finest local products",
     "print": "Print menus",
+    "printThisMenu": "Print this menu",
     "person": "person",
+    "seasonal": "Seasonal",
+    "active": "Available now",
+    "inactive": "Off season",
+    "allYear": "All year",
     "comingSoon": "This menu will be available soon",
+    "availableFrom": "Available from",
+    "menuPrice": "Menu at",
     "vegetarian": "Vegetarian",
     "glutenFree": "Gluten free",
     "chefSignature": "Chef's signature"

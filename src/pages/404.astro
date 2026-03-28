@@ -1,17 +1,25 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import { t, LOCALES, type Locale } from '@/lib/i18n';
+
+export const prerender = false;
+
+const currentLocale = Astro.currentLocale;
+const lang: Locale = LOCALES.includes(currentLocale as Locale)
+  ? (currentLocale as Locale)
+  : 'fr';
 ---
 
-<BaseLayout title="404 — Page introuvable">
+<BaseLayout title={`404 — ${t('notFound.message', lang)}`} lang={lang}>
   <div class="min-h-screen flex items-center justify-center bg-background">
     <div class="text-center">
       <h1 class="heading-hero text-accent mb-4">404</h1>
-      <p class="text-xl text-muted-foreground mb-8">Page introuvable</p>
+      <p class="text-xl text-muted-foreground mb-8">{t('notFound.message', lang)}</p>
       <a
-        href="/fr/"
+        href={`/${lang}/`}
         class="inline-flex items-center justify-center h-12 bg-accent text-accent-foreground hover:bg-gold-light font-semibold px-8 rounded-md transition-colors"
       >
-        Retour à l'accueil
+        {t('notFound.returnHome', lang)}
       </a>
     </div>
   </div>

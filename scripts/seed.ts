@@ -307,6 +307,8 @@ async function seed() {
     slug: 'menu-du-jour',
     price: '35.00',
     year: 2026,
+    startDate: '2026-03-09',
+    endDate: '2026-10-21',
     isActive: true,
     sortOrder: 0,
   }).returning();
@@ -349,19 +351,19 @@ async function seed() {
 
   // Menu items — Entrées
   const entreeItems = [
-    { slug: 'soupe-crozets', price: '12.00', translations: {
+    { slug: 'soupe-crozets', price: '12.00', imageUrl: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600&h=400&fit=crop', translations: {
       fr: { name: 'Soupe de crozets au Beaufort', description: 'Soupe traditionnelle savoyarde aux crozets et fromage Beaufort' },
       en: { name: 'Crozet soup with Beaufort cheese', description: 'Traditional Savoyard soup with crozets and Beaufort cheese' },
       ar: { name: 'شوربة كروزيه بجبنة بوفور', description: 'شوربة سافوا التقليدية مع كروزيه وجبنة بوفور' },
       zh: { name: '博福特奶酪意面汤', description: '传统萨瓦意面博福特奶酪汤' },
     }},
-    { slug: 'salade-montagnarde', price: '14.00', translations: {
+    { slug: 'salade-montagnarde', price: '14.00', imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&h=400&fit=crop', translations: {
       fr: { name: 'Salade Montagnarde', description: 'Salade verte, reblochon, noix, lardons et croûtons' },
       en: { name: 'Mountain Salad', description: 'Green salad, reblochon, walnuts, bacon and croutons' },
       ar: { name: 'سلطة الجبل', description: 'سلطة خضراء، ريبلوشون، جوز، لاردون وخبز محمص' },
       zh: { name: '山区沙拉', description: '绿色沙拉、瑞布罗申奶酪、核桃、培根和面包丁' },
     }},
-    { slug: 'terrine-campagne', price: '13.00', translations: {
+    { slug: 'terrine-campagne', price: '13.00', imageUrl: 'https://images.unsplash.com/photo-1608039829572-26b9cdb3b6a1?w=600&h=400&fit=crop', translations: {
       fr: { name: 'Terrine de campagne maison', description: 'Terrine maison servie avec cornichons et pain de campagne' },
       en: { name: 'Homemade country terrine', description: 'Homemade terrine served with pickles and country bread' },
       ar: { name: 'تيرين ريفي منزلي', description: 'تيرين منزلي يقدم مع مخللات وخبز ريفي' },
@@ -373,6 +375,7 @@ async function seed() {
     const item = entreeItems[i];
     const [inserted] = await db.insert(schema.menuItems).values({
       categoryId: catEntrees.id, slug: item.slug, price: item.price, sortOrder: i,
+      imageUrl: (item as Record<string, unknown>).imageUrl as string | undefined,
     }).returning();
     for (const locale of LOCALES) {
       await db.insert(schema.menuItemTranslations).values({
@@ -383,25 +386,25 @@ async function seed() {
 
   // Menu items — Plats
   const platItems = [
-    { slug: 'tartiflette', price: '22.00', isSignature: true, translations: {
+    { slug: 'tartiflette', price: '22.00', isSignature: true, imageUrl: 'https://images.unsplash.com/photo-1624726175512-19b9baf9fbd1?w=600&h=400&fit=crop', translations: {
       fr: { name: 'Tartiflette au Reblochon', description: 'La tartiflette traditionnelle au reblochon fermier' },
       en: { name: 'Tartiflette with Reblochon', description: 'Traditional tartiflette with farm reblochon cheese' },
       ar: { name: 'تارتيفليت بالريبلوشون', description: 'تارتيفليت تقليدية بجبنة ريبلوشون المزرعة' },
       zh: { name: '瑞布罗申奶酪土豆焗', description: '传统农场瑞布罗申奶酪焗土豆' },
     }},
-    { slug: 'filet-omble', price: '28.00', isGlutenFree: true, translations: {
+    { slug: 'filet-omble', price: '28.00', isGlutenFree: true, imageUrl: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=600&h=400&fit=crop', translations: {
       fr: { name: 'Filet d\'omble chevalier du lac', description: 'Omble chevalier du lac d\'Annecy, beurre blanc et légumes de saison' },
       en: { name: 'Lake Arctic char fillet', description: 'Lake Annecy Arctic char, white butter sauce and seasonal vegetables' },
       ar: { name: 'فيليه سمك السلمون المرقط', description: 'سمك من بحيرة أنسي، صلصة الزبدة البيضاء وخضروات الموسم' },
       zh: { name: '湖鲑鱼排', description: '安纳西湖鲑鱼，白黄油汁配时令蔬菜' },
     }},
-    { slug: 'fondue-savoyarde', price: '24.00', isVegetarian: true, translations: {
+    { slug: 'fondue-savoyarde', price: '24.00', isVegetarian: true, imageUrl: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=600&h=400&fit=crop', translations: {
       fr: { name: 'Fondue Savoyarde', description: 'Mélange de Beaufort, Comté et Emmental servi avec pain frais' },
       en: { name: 'Savoyard Fondue', description: 'Blend of Beaufort, Comté and Emmental served with fresh bread' },
       ar: { name: 'فوندو سافوا', description: 'مزيج من بوفور وكومتيه وإيمنتال يقدم مع خبز طازج' },
       zh: { name: '萨瓦奶酪火锅', description: '博福特、孔泰和埃蒙塔尔奶酪混合，配新鲜面包' },
     }},
-    { slug: 'diots-polenta', price: '20.00', translations: {
+    { slug: 'diots-polenta', price: '20.00', imageUrl: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&h=400&fit=crop', translations: {
       fr: { name: 'Diots de Savoie à la polenta', description: 'Saucisses savoyardes cuites au vin blanc, servies avec polenta crémeuse' },
       en: { name: 'Savoyard diots with polenta', description: 'Savoyard sausages cooked in white wine, served with creamy polenta' },
       ar: { name: 'نقانق سافوا مع البولنتا', description: 'نقانق سافوا مطبوخة بالنبيذ الأبيض، تقدم مع بولنتا كريمية' },
@@ -413,6 +416,7 @@ async function seed() {
     const item = platItems[i];
     const [inserted] = await db.insert(schema.menuItems).values({
       categoryId: catPlats.id, slug: item.slug, price: item.price, sortOrder: i,
+      imageUrl: (item as Record<string, unknown>).imageUrl as string | undefined,
       isSignature: (item as Record<string, unknown>).isSignature === true,
       isVegetarian: (item as Record<string, unknown>).isVegetarian === true,
       isGlutenFree: (item as Record<string, unknown>).isGlutenFree === true,
@@ -426,19 +430,19 @@ async function seed() {
 
   // Menu items — Desserts
   const dessertItems = [
-    { slug: 'tarte-myrtilles', price: '10.00', translations: {
+    { slug: 'tarte-myrtilles', price: '10.00', imageUrl: 'https://images.unsplash.com/photo-1464305795204-6f5bbfc7fb81?w=600&h=400&fit=crop', translations: {
       fr: { name: 'Tarte aux myrtilles du Semnoz', description: 'Tarte maison aux myrtilles sauvages cueillies au Semnoz' },
       en: { name: 'Semnoz blueberry tart', description: 'Homemade tart with wild blueberries from Semnoz' },
       ar: { name: 'فطيرة التوت البري', description: 'فطيرة منزلية بالتوت البري البري المقطوف من سيمنوز' },
       zh: { name: '塞姆诺兹蓝莓馅饼', description: '用塞姆诺兹野生蓝莓制作的自制馅饼' },
     }},
-    { slug: 'gateau-noix', price: '10.00', translations: {
+    { slug: 'gateau-noix', price: '10.00', imageUrl: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&h=400&fit=crop', translations: {
       fr: { name: 'Gâteau aux noix de Grenoble', description: 'Gâteau moelleux aux noix de Grenoble et caramel' },
       en: { name: 'Grenoble walnut cake', description: 'Moist Grenoble walnut cake with caramel' },
       ar: { name: 'كعكة الجوز', description: 'كعكة رطبة بجوز غرونوبل والكراميل' },
       zh: { name: '格勒诺布尔核桃蛋糕', description: '格勒诺布尔核桃焦糖湿润蛋糕' },
     }},
-    { slug: 'creme-brulee-gentiane', price: '11.00', isSignature: true, translations: {
+    { slug: 'creme-brulee-gentiane', price: '11.00', isSignature: true, imageUrl: 'https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?w=600&h=400&fit=crop', translations: {
       fr: { name: 'Crème brûlée à la Gentiane', description: 'Crème brûlée infusée à la liqueur de Gentiane des Alpes' },
       en: { name: 'Gentian crème brûlée', description: 'Crème brûlée infused with Alpine Gentian liqueur' },
       ar: { name: 'كريم بروليه بالجنتيان', description: 'كريم بروليه بنكهة مشروب الجنتيان الألبي' },
@@ -450,6 +454,7 @@ async function seed() {
     const item = dessertItems[i];
     const [inserted] = await db.insert(schema.menuItems).values({
       categoryId: catDesserts.id, slug: item.slug, price: item.price, sortOrder: i,
+      imageUrl: (item as Record<string, unknown>).imageUrl as string | undefined,
       isSignature: (item as Record<string, unknown>).isSignature === true,
     }).returning();
     for (const locale of LOCALES) {
@@ -464,6 +469,8 @@ async function seed() {
     slug: 'menu-savoyard',
     price: '48.00',
     year: 2026,
+    startDate: '2026-12-09',
+    endDate: '2027-04-02',
     isActive: true,
     sortOrder: 1,
   }).returning();

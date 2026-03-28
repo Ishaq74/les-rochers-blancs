@@ -212,7 +212,7 @@ const inputMode = isNumericOnly ? "numeric" : "text";
       this.updateValue();
     }
 
-    private handleClick(e: MouseEvent) {
+    private handleClick(_e: MouseEvent) {
       const isDisabled = this.container.dataset.disabled === "true";
       if (isDisabled) return;
 

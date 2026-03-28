@@ -8,10 +8,11 @@ import { Button } from "@/components/starwind/button";
 export const carouselPrevious = tv({
   base: [
     "starwind-carousel-previous absolute size-8 rounded-full",
+    "bg-black/40 hover:bg-black/60 border-white/30 text-white",
     // Horizontal positioning
-    "group-data-[axis=x]/carousel:top-1/2 group-data-[axis=x]/carousel:-left-12 group-data-[axis=x]/carousel:-translate-y-1/2",
+    "group-data-[axis=x]/carousel:top-1/2 group-data-[axis=x]/carousel:left-4 group-data-[axis=x]/carousel:-translate-y-1/2",
     // Vertical positioning
-    "group-data-[axis=y]/carousel:-top-12 group-data-[axis=y]/carousel:left-1/2 group-data-[axis=y]/carousel:-translate-x-1/2 group-data-[axis=y]/carousel:rotate-90",
+    "group-data-[axis=y]/carousel:top-4 group-data-[axis=y]/carousel:left-1/2 group-data-[axis=y]/carousel:-translate-x-1/2 group-data-[axis=y]/carousel:rotate-90",
   ],
 });
 

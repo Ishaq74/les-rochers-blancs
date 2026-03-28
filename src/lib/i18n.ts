@@ -2,6 +2,7 @@ import fr from '@/i18n/locales/fr.json';
 import en from '@/i18n/locales/en.json';
 import ar from '@/i18n/locales/ar.json';
 import zh from '@/i18n/locales/zh.json';
+import { ar as arDateFns, enUS, fr as frDateFns, zhCN } from 'date-fns/locale';
 
 const translations: Record<string, Record<string, unknown>> = { fr, en, ar, zh };
 
@@ -39,4 +40,30 @@ export function getSection(section: string, locale: string): Record<string, unkn
   const lang = translations[locale] ?? translations.fr;
   const result = (lang as Record<string, unknown>)[section];
   return (typeof result === 'object' && result !== null ? result : {}) as Record<string, unknown>;
+}
+
+export function getDateFnsLocale(locale: string) {
+  switch (locale) {
+    case 'fr':
+      return frDateFns;
+    case 'ar':
+      return arDateFns;
+    case 'zh':
+      return zhCN;
+    default:
+      return enUS;
+  }
+}
+
+export function getIntlLocale(locale: string) {
+  switch (locale) {
+    case 'fr':
+      return 'fr-FR';
+    case 'ar':
+      return 'ar';
+    case 'zh':
+      return 'zh-CN';
+    default:
+      return 'en-US';
+  }
 }
