@@ -1,6 +1,7 @@
 ---
 import "@/styles/starwind.css";
 import { t, type Locale } from '@/lib/i18n';
+import { Toaster } from '@/components/starwind/toast';
 
 export const prerender = false;
 
@@ -14,26 +15,30 @@ const { lang = 'fr', title, activeNav = 'dashboard' } = Astro.props;
 const user = Astro.locals.user;
 const pageTitle = title ? `${title} — Admin` : 'Admin — Les Rochers Blancs';
 
-const navItems = [
+const navItems: Array<{ key: string; href?: string; icon?: string; type?: 'divider' }> = [
   { key: 'dashboard', href: '/admin', icon: 'layout-dashboard' },
+  { key: 'divider-hotel', type: 'divider' },
   { key: 'rooms', href: '/admin/rooms', icon: 'bed' },
   { key: 'menu', href: '/admin/menus', icon: 'utensils' },
   { key: 'openings', href: '/admin/openings', icon: 'calendar' },
   { key: 'partners', href: '/admin/partners', icon: 'handshake' },
+  { key: 'divider-cms', type: 'divider' },
+  { key: 'pages', href: '/admin/cms', icon: 'file-stack' },
+  { key: 'media', href: '/admin/media', icon: 'image' },
+  { key: 'divider-business', type: 'divider' },
   { key: 'reservations', href: '/admin/reservations', icon: 'calendar-check' },
   { key: 'clients', href: '/admin/clients', icon: 'users' },
   { key: 'invoices', href: '/admin/invoices', icon: 'file-text' },
   { key: 'quotes', href: '/admin/quotes', icon: 'file-check' },
   { key: 'messages', href: '/admin/messages', icon: 'mail' },
   { key: 'blog', href: '/admin/blog', icon: 'pen-line' },
-  { key: 'content', href: '/admin/content', icon: 'globe' },
-  { key: 'media', href: '/admin/media', icon: 'image' },
+  { key: 'comments', href: '/admin/comments', icon: 'message-circle' },
+  { key: 'divider-config', type: 'divider' },
   { key: 'theme', href: '/admin/theme', icon: 'palette' },
   { key: 'settings', href: '/admin/settings', icon: 'settings' },
 ];
 
 function navLabel(key: string): string {
-  // Map nav keys to i18n paths
   const map: Record<string, string> = {
     dashboard: 'adminLayout.nav.dashboard',
     rooms: 'nav.rooms',
@@ -46,10 +51,15 @@ function navLabel(key: string): string {
     quotes: 'quotes.title',
     messages: 'contact.sectionLabel',
     blog: 'blog.title',
-    content: 'adminLayout.nav.content',
+    comments: 'comments.title',
+    pages: 'adminLayout.nav.pages',
     media: 'media.title',
     theme: 'theme.title',
     settings: 'settings.title',
+    'divider-hotel': 'adminLayout.nav.dividerHotel',
+    'divider-cms': 'adminLayout.nav.dividerCms',
+    'divider-business': 'adminLayout.nav.dividerBusiness',
+    'divider-config': 'adminLayout.nav.dividerConfig',
   };
   return t(map[key] ?? key, lang);
 }
@@ -66,7 +76,10 @@ const svgIcons: Record<string, string> = {
   'file-check': '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m9 15 2 2 4-4"/>',
   'mail': '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
   'pen-line': '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>',
+  'message-circle': '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
   'globe': '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+  'rows': '<rect x="3" y="3" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="17" width="18" height="4" rx="1"/>',
+  'file-stack': '<path d="M16 2H6a2 2 0 0 0-2 2v12"/><path d="M10 6h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/>',
   'image': '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>',
   'palette': '<circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12.5" r="0.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>',
   'settings': '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
@@ -174,21 +187,23 @@ const svgIcons: Record<string, string> = {
         </div>
         <nav class="flex-1 overflow-y-auto py-3 px-2" aria-label="Admin navigation">
           {navItems.map(item => (
-            <a
-              href={item.href}
-              class:list={[
-                'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                activeNav === item.key
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-              ]}
-              aria-current={activeNav === item.key ? 'page' : undefined}
-            >
-              <svg class="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <Fragment set:html={svgIcons[item.icon] ?? ''} />
-              </svg>
-              {navLabel(item.key)}
-            </a>
+            item.type === 'divider'
+              ? <div class="pt-4 pb-1 px-3"><span class="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">{navLabel(item.key)}</span></div>
+              : <a
+                  href={item.href}
+                  class:list={[
+                    'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                    activeNav === item.key
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                  ]}
+                  aria-current={activeNav === item.key ? 'page' : undefined}
+                >
+                  <svg class="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <Fragment set:html={svgIcons[item.icon!] ?? ''} />
+                  </svg>
+                  {navLabel(item.key)}
+                </a>
           ))}
         </nav>
         <div class="border-t border-border p-3">
@@ -230,20 +245,22 @@ const svgIcons: Record<string, string> = {
           </div>
           <nav class="flex-1 overflow-y-auto py-3 px-2" aria-label="Admin navigation">
             {navItems.map(item => (
-              <a
-                href={item.href}
-                class:list={[
-                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                  activeNav === item.key
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-                ]}
-              >
-                <svg class="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <Fragment set:html={svgIcons[item.icon] ?? ''} />
-                </svg>
-                {navLabel(item.key)}
-              </a>
+              item.type === 'divider'
+                ? <div class="pt-4 pb-1 px-3"><span class="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">{navLabel(item.key)}</span></div>
+                : <a
+                    href={item.href}
+                    class:list={[
+                      'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                      activeNav === item.key
+                        ? 'bg-primary/10 text-primary'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                    ]}
+                  >
+                    <svg class="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <Fragment set:html={svgIcons[item.icon!] ?? ''} />
+                    </svg>
+                    {navLabel(item.key)}
+                  </a>
             ))}
           </nav>
         </aside>
@@ -284,6 +301,14 @@ const svgIcons: Record<string, string> = {
         await fetch('/api/auth/sign-out', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
         window.location.href = '/admin/login';
       });
+    </script>
+    <Toaster position="bottom-right" duration={4000} />
+    <script is:inline>
+      window.showToast=function(msg,variant){
+        var mgr=window.__starwind__&&window.__starwind__.toast;
+        if(mgr){mgr.add({title:msg,variant:variant||'default'});}
+        else{console.log('[toast]',variant,msg);}
+      };
     </script>
   </body>
 </html>

@@ -3,6 +3,16 @@ import AdminLayout from '@/layouts/AdminLayout.astro';
 import { t } from '@/lib/i18n';
 export const prerender = false;
 const lang = 'fr';
+const i18n = {
+  edit: t('common.edit', lang),
+  delete: t('common.delete', lang),
+  previous: t('common.previous', lang),
+  next: t('common.next', lang),
+  newTitle: t('clients.newTitle', lang),
+  editTitle: t('clients.editTitle', lang),
+  confirmDelete: t('clients.confirmDelete', lang),
+  countSuffix: t('clients.countSuffix', lang),
+};
 ---
 
 <AdminLayout title={t('clients.title', lang)} activeNav="clients" lang={lang}>
@@ -72,7 +82,7 @@ const lang = 'fr';
     </div>
   </div>
 
-  <script is:inline>
+  <script is:inline define:vars={{ i18n }}>
     const API = (a,b) => fetch(`/_actions/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());
     function openD(){document.getElementById('edit-dialog')?.classList.remove('hidden')} function closeD(){document.getElementById('edit-dialog')?.classList.add('hidden')}
     document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeD));
@@ -104,14 +114,14 @@ const lang = 'fr';
         <td class="px-4 py-3">${r.company ? escapeHtml(r.company) : '—'}</td>
         <td class="px-4 py-3">${(r.tags||[]).map(t=>`<span class="inline-flex rounded-full bg-primary/10 text-primary px-2 py-0.5 text-xs mr-1">${escapeHtml(t)}</span>`).join('')||'—'}</td>
         <td class="px-4 py-3 space-x-2">
-          <button onclick="edit('${r.id}')" class="text-xs text-primary hover:underline">Modifier</button>
-          <button onclick="del('${r.id}')" class="text-xs text-destructive hover:underline">Supprimer</button>
+          <button onclick="edit('${r.id}')" class="text-xs text-primary hover:underline">${i18n.edit}</button>
+          <button onclick="del('${r.id}')" class="text-xs text-destructive hover:underline">${i18n.delete}</button>
         </td></tr>`).join('');
-      document.getElementById('pagination').innerHTML = `<span>${result.total||0} ${result.total===1?'client':'clients'}</span><div class="flex gap-2">${currentPage>1?`<button onclick="goPage(${currentPage-1})" class="text-xs text-primary hover:underline">← Précédent</button>`:''}${(result.totalPages||0)>currentPage?`<button onclick="goPage(${currentPage+1})" class="text-xs text-primary hover:underline">Suivant →</button>`:''}</div>`;
+      document.getElementById('pagination').innerHTML = `<span>${result.total||0} ${i18n.countSuffix}</span><div class="flex gap-2">${currentPage>1?`<button onclick="goPage(${currentPage-1})" class="text-xs text-primary hover:underline">← ${i18n.previous}</button>`:''}${(result.totalPages||0)>currentPage?`<button onclick="goPage(${currentPage+1})" class="text-xs text-primary hover:underline">${i18n.next} →</button>`:''}</div>`;
     }
     window.goPage = p => { currentPage=p; load(); };
 
-    document.getElementById('btn-add')?.addEventListener('click', () => { document.getElementById('edit-form').reset(); document.getElementById('edit-form').querySelector('[name=id]').value=''; document.getElementById('dialog-title').textContent='Nouveau client'; openD(); });
+    document.getElementById('btn-add')?.addEventListener('click', () => { document.getElementById('edit-form').reset(); document.getElementById('edit-form').querySelector('[name=id]').value=''; document.getElementById('dialog-title').textContent=i18n.newTitle; openD(); });
     window.edit = function(id) {
       const r = (result.items||[]).find(x=>x.id===id); if(!r) return; const f = document.getElementById('edit-form');
       f.querySelector('[name=id]').value=r.id; f.firstName.value=r.firstName; f.lastName.value=r.lastName; f.email.value=r.email;
@@ -119,7 +129,7 @@ const lang = 'fr';
       f.city.value=r.city||''; f.postalCode.value=r.postalCode||''; f.country.value=r.country||'France';
       f.tags.value=(r.tags||[]).join(', '); f.notes.value=r.notes||'';
       f.querySelector('[name=isActive]').checked=r.isActive!==false;
-      document.getElementById('dialog-title').textContent='Modifier le client'; openD();
+      document.getElementById('dialog-title').textContent=i18n.editTitle; openD();
     };
     document.getElementById('edit-form')?.addEventListener('submit', async e => {
       e.preventDefault(); const f=e.target; const id=f.querySelector('[name=id]').value||undefined;
@@ -127,7 +137,7 @@ const lang = 'fr';
       await API('saveClient', { id, firstName:f.firstName.value, lastName:f.lastName.value, email:f.email.value, phone:f.phone.value||undefined, company:f.company.value||undefined, address:f.address.value||undefined, city:f.city.value||undefined, postalCode:f.postalCode.value||undefined, country:f.country.value||'France', tags, notes:f.notes.value||undefined, isActive:f.querySelector('[name=isActive]').checked });
       closeD(); load();
     });
-    window.del = async id => { if(!confirm('Supprimer ce client ?')) return; await API('deleteClient',{id}); load(); };
+    window.del = async id => { if(!confirm(i18n.confirmDelete)) return; await API('deleteClient',{id}); load(); };
     load();
   </script>
 </AdminLayout>

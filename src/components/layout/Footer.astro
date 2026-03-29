@@ -2,6 +2,7 @@
 import { Icon } from 'astro-icon/components';
 import { t } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
+import { getSetting } from '@/lib/settings';
 
 interface Props {
   lang: Locale;
@@ -9,8 +10,16 @@ interface Props {
 
 const { lang } = Astro.props;
 const currentYear = new Date().getFullYear();
-const instagramUrl = t('footer.instagramUrl', lang);
-const facebookUrl = t('footer.facebookUrl', lang);
+
+// Fetch from DB site_settings with i18n fallback
+const [brandName, phone, email, address, instagramUrl, facebookUrl] = await Promise.all([
+  getSetting('brand_name', 'footer.brandName', lang),
+  getSetting('contact_phone', 'contact.phoneValue', lang),
+  getSetting('contact_email', 'contact.emailValue', lang),
+  getSetting('contact_address', 'contact.addressValue', lang),
+  getSetting('social_instagram', 'footer.instagramUrl', lang),
+  getSetting('social_facebook', 'footer.facebookUrl', lang),
+]);
 const isValidExternalUrl = (url: string) => /^https?:\/\//i.test(url);
 ---
 
@@ -21,7 +30,7 @@ const isValidExternalUrl = (url: string) => /^https?:\/\//i.test(url);
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
       <!-- Brand -->
       <div class="lg:col-span-2">
-        <h3 class="font-serif text-2xl font-bold mb-4">{t('footer.brandName', lang)}</h3>
+        <h3 class="font-serif text-2xl font-bold mb-4">{brandName}</h3>
         <p class="text-primary-foreground/80 max-w-md mb-6">
           {t('hero.tagline', lang)}
         </p>
@@ -59,15 +68,15 @@ const isValidExternalUrl = (url: string) => /^https?:\/\//i.test(url);
         <address class="not-italic space-y-3">
           <div class="flex items-start gap-3">
             <Icon name="mdi:map-marker" size={20} />
-            <span class="text-primary-foreground/80">{t('contact.addressValue', lang)}</span>
+            <span class="text-primary-foreground/80">{address}</span>
           </div>
           <div class="flex items-center gap-3">
             <Icon name="mdi:phone" size={20} />
-            <span class="text-primary-foreground/80">{t('contact.phoneValue', lang)}</span>
+            <span class="text-primary-foreground/80">{phone}</span>
           </div>
           <div class="flex items-center gap-3">
             <Icon name="mdi:email" size={20} />
-            <span class="text-primary-foreground/80">{t('contact.emailValue', lang)}</span>
+            <span class="text-primary-foreground/80">{email}</span>
           </div>
         </address>
       </div>
@@ -103,7 +112,7 @@ const isValidExternalUrl = (url: string) => /^https?:\/\//i.test(url);
     <!-- Bottom -->
     <div class="mt-12 pt-8 border-t border-primary-foreground/20 flex flex-col md:flex-row justify-between items-center gap-4">
       <p class="text-primary-foreground/60 text-sm">
-        &copy; {currentYear} {t('footer.brandName', lang)}. {t('footer.rights', lang)}.
+        &copy; {currentYear} {brandName}. {t('footer.rights', lang)}.
       </p>
       <div class="flex gap-6 text-sm">
         <a href={`/${lang}/legal#section-0`} class="text-primary-foreground/60 hover:text-accent transition-colors">

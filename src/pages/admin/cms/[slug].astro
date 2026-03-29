@@ -1,0 +1,617 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import { LOCALES } from '@/lib/i18n';
+export const prerender = false;
+const lang = 'fr';
+const locales = LOCALES;
+const { slug } = Astro.params;
+---
+
+<AdminLayout title="Éditeur de page" activeNav="pages" lang={lang}>
+  <div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex items-center gap-3 min-w-0">
+        <a href="/admin/cms" class="rounded-md p-1.5 hover:bg-muted transition-colors shrink-0" title="Retour">
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </a>
+        <div class="min-w-0">
+          <h1 id="page-title" class="text-2xl font-bold tracking-tight truncate">Chargement…</h1>
+          <p class="text-muted-foreground text-sm">Glissez pour réorganiser, cliquez pour modifier le contenu.</p>
+        </div>
+      </div>
+      <button id="btn-save" type="button" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 self-start sm:self-auto shrink-0">
+        <svg id="save-icon" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>
+        <svg id="save-spinner" class="size-4 animate-spin hidden" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span id="save-label">Sauvegarder tout</span>
+      </button>
+    </div>
+
+    <!-- Sections list (DnD + collapsible content editors) -->
+    <div id="sections-container" class="space-y-2">
+      <div class="flex items-center justify-center py-12">
+        <svg class="size-5 animate-spin text-muted-foreground" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span class="ml-2 text-sm text-muted-foreground">Chargement des sections…</span>
+      </div>
+    </div>
+
+    <!-- Empty sections state -->
+    <div id="empty-sections" class="hidden">
+      <div class="flex flex-col items-center justify-center py-12 text-center rounded-lg border border-dashed border-border">
+        <svg class="size-10 text-muted-foreground/40 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="17" width="18" height="4" rx="1"/></svg>
+        <p class="text-sm font-medium text-muted-foreground">Aucune section</p>
+        <p class="text-xs text-muted-foreground/70 mt-1">Ajoutez une section pour commencer.</p>
+      </div>
+    </div>
+
+    <!-- Add section -->
+    <div>
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <input id="new-section-key" placeholder="Clé de section (ex: intro, team, faq…)" class="flex h-9 flex-1 rounded-md border border-input bg-background px-3 text-sm font-mono" />
+        <input id="new-section-label" placeholder="Libellé affiché" class="flex h-9 flex-1 rounded-md border border-input bg-background px-3 text-sm" />
+        <button id="btn-add-section" type="button" class="inline-flex items-center justify-center gap-1 rounded-md border border-input px-3 py-2 text-sm font-medium hover:bg-muted shrink-0">
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          Section
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Media picker dialog -->
+  <div id="media-dialog" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" data-close-media></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+      <div class="bg-card rounded-xl border border-border shadow-2xl p-6 space-y-4 w-full max-w-4xl max-h-[85vh] overflow-hidden animate-in fade-in zoom-in-95">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold">Insérer une image</h3>
+          <button type="button" data-close-media class="rounded-md p-1 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
+            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button>
+        </div>
+        <div id="media-picker-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 overflow-y-auto max-h-[65vh]"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New field dialog -->
+  <div id="field-dialog" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" data-close-field></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+      <div class="bg-card rounded-xl border border-border shadow-2xl p-6 space-y-4 w-full max-w-sm animate-in fade-in zoom-in-95">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold">Nouveau champ</h3>
+          <button type="button" data-close-field class="rounded-md p-1 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
+            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button>
+        </div>
+        <div class="space-y-1.5">
+          <label for="new-field-key" class="text-sm font-medium">Clé du champ</label>
+          <input id="new-field-key" placeholder="ex: title, description, buttonText…" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm font-mono focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+        </div>
+        <div class="flex gap-2">
+          <button id="btn-create-field" type="button" class="inline-flex flex-1 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">Créer le champ</button>
+          <button type="button" data-close-field class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ slug, locales }}>
+    const API = function(action, body) {
+      return fetch('/_actions/' + action, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      }).then(function(r) { return r.json(); });
+    };
+
+    // ---- State ----
+    let sections = [];       // { sectionKey, label, sortOrder, isVisible, expanded }
+    let allContent = [];     // cms_content rows
+    let activeLocales = {};  // { sectionKey: currentLocale }
+    let draggedIdx = null;
+    let mediaItems = [];
+    let activeTextarea = null;
+    let fieldTargetSection = '';
+
+    // ---- Known section labels (for homepage) ----
+    const KNOWN_LABELS = {
+      hero: 'Hero (En-tête)', openings: 'Ouvertures', rooms: 'Hôtel / Chambres',
+      restaurant: 'Restaurant', menu: 'Menus', partners: 'Partenaires',
+      access: 'Accès / Carte', contact: 'Contact',
+    };
+
+    const DEFAULT_HOMEPAGE_SECTIONS = [
+      'hero', 'openings', 'rooms', 'restaurant', 'menu', 'partners', 'access', 'contact',
+    ];
+
+    // Keep visual section order keys decoupled from CMS storage keys.
+    // The homepage section "rooms" is backed by CMS entries under "hotel".
+    const SECTION_CONTENT_KEY = {
+      rooms: 'hotel',
+    };
+
+    function resolveContentSectionKey(sectionKey) {
+      return SECTION_CONTENT_KEY[sectionKey] || sectionKey;
+    }
+
+    // ---- Load ----
+    async function loadPage() {
+      try {
+        // Load page info
+        var pagesRes = await API('listPages', {});
+        var pages = Array.isArray(pagesRes?.data) ? pagesRes.data : (Array.isArray(pagesRes) ? pagesRes : []);
+        var page = pages.find(function(p) { return p.slug === slug; });
+        document.getElementById('page-title').textContent = page ? page.title : slug;
+
+      // Load sections for this page
+      var secRes = await API('listPageSections', { pageSlug: slug });
+      var secData = Array.isArray(secRes?.data) ? secRes.data : (Array.isArray(secRes) ? secRes : []);
+
+      if (secData.length > 0) {
+        sections = secData.map(function(s, i) {
+          return {
+            sectionKey: s.sectionKey,
+            label: KNOWN_LABELS[s.sectionKey] || s.sectionKey,
+            sortOrder: s.sortOrder ?? i,
+            isVisible: s.isVisible !== false,
+            expanded: false,
+          };
+        });
+        sections.sort(function(a, b) { return a.sortOrder - b.sortOrder; });
+      } else if (slug === 'accueil') {
+        sections = DEFAULT_HOMEPAGE_SECTIONS.map(function(key, i) {
+          return {
+            sectionKey: key,
+            label: KNOWN_LABELS[key] || key,
+            sortOrder: i,
+            isVisible: true,
+            expanded: false,
+          };
+        });
+      } else {
+        sections = [];
+      }
+
+      // Load CMS content
+      var cmsRes = await API('listCmsContent', {});
+      var cmsData = cmsRes?.data ?? cmsRes;
+      allContent = Array.isArray(cmsData) ? cmsData : [];
+
+      render();
+      } catch (err) {
+        showToast('Erreur de chargement de la page', 'error');
+      }
+    }
+
+    // ---- Markdown helpers ----
+    function markdownToHtml(md) {
+      var h = escapeHtml(md || '');
+      h = h.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
+      h = h.replace(/^##\s+(.+)$/gm, '<h2>$1</h2>');
+      h = h.replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
+      h = h.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      h = h.replace(/\*(.+?)\*/g, '<em>$1</em>');
+      h = h.replace(/!\[(.*?)\]\((.*?)\)/g, '<img alt="$1" src="$2" class="max-w-full h-auto rounded-md my-2" />');
+      h = h.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-primary underline" target="_blank" rel="noopener noreferrer">$1</a>');
+      h = h.replace(/\n{2,}/g, '</p><p>');
+      h = h.replace(/\n/g, '<br />');
+      if (h.trim()) h = '<p>' + h + '</p>';
+      return h;
+    }
+
+    function insertAtCursor(textarea, text) {
+      var start = textarea.selectionStart ?? textarea.value.length;
+      var end = textarea.selectionEnd ?? textarea.value.length;
+      textarea.value = textarea.value.slice(0, start) + text + textarea.value.slice(end);
+      textarea.focus();
+      var pos = start + text.length;
+      textarea.setSelectionRange(pos, pos);
+    }
+
+    // ---- Media picker ----
+    async function loadMediaItems() {
+      if (mediaItems.length > 0) return;
+      var r = await API('listMedia', { page: 1, limit: 200 });
+      var payload = r.data ?? r;
+      mediaItems = payload.items ?? [];
+    }
+
+    function renderMediaPicker() {
+      var grid = document.getElementById('media-picker-grid');
+      if (!mediaItems.length) {
+        grid.innerHTML = '<p class="text-sm text-muted-foreground col-span-full">Aucune image. Uploadez-en dans la médiathèque.</p>';
+        return;
+      }
+      grid.innerHTML = mediaItems.map(function(m) {
+        var isImage = (m.fileType || '').startsWith('image/');
+        return '<button type="button" class="border border-border rounded-lg overflow-hidden text-left hover:border-primary" data-media-url="' + m.fileUrl + '" data-media-name="' + (m.originalFilename || '').replace(/"/g, '&quot;') + '">' +
+          '<div class="aspect-square bg-muted flex items-center justify-center overflow-hidden">' +
+            (isImage ? '<img src="' + m.fileUrl + '" alt="" class="w-full h-full object-cover" loading="lazy"/>' : '<span class="text-2xl">📄</span>') +
+          '</div>' +
+          '<div class="p-2 text-xs truncate">' + (m.originalFilename || m.fileUrl) + '</div>' +
+        '</button>';
+      }).join('');
+
+      grid.querySelectorAll('[data-media-url]').forEach(function(el) {
+        el.addEventListener('click', function() {
+          if (!activeTextarea) return;
+          var url = el.getAttribute('data-media-url') || '';
+          var name = el.getAttribute('data-media-name') || 'image';
+          insertAtCursor(activeTextarea, '![' + name + '](' + url + ')');
+          closeMediaDialog();
+        });
+      });
+    }
+
+    function openMediaDialog(textarea) {
+      activeTextarea = textarea || activeTextarea;
+      document.getElementById('media-dialog')?.classList.remove('hidden');
+      loadMediaItems().then(renderMediaPicker);
+    }
+
+    function closeMediaDialog() {
+      document.getElementById('media-dialog')?.classList.add('hidden');
+    }
+
+    // ---- Render ----
+    function render() {
+      var container = document.getElementById('sections-container');
+      var emptyState = document.getElementById('empty-sections');
+      container.innerHTML = '';
+
+      if (!sections.length) {
+        emptyState?.classList.remove('hidden');
+        return;
+      }
+      emptyState?.classList.add('hidden');
+
+      sections.forEach(function(s, i) {
+        var row = document.createElement('div');
+        row.className = 'rounded-lg border border-border bg-card overflow-hidden transition-all ' + (s.isVisible ? '' : 'opacity-60');
+        row.draggable = true;
+        row.dataset.idx = String(i);
+
+        var currentLocale = activeLocales[s.sectionKey] || locales[0];
+        var cmsSection = resolveContentSectionKey(s.sectionKey);
+
+        // Header (always visible — drag handle, label, toggle, expand)
+        var header = document.createElement('div');
+        header.className = 'flex items-center gap-3 px-4 py-3 cursor-grab active:cursor-grabbing select-none';
+
+        // Drag handle
+        header.innerHTML =
+          '<button type="button" class="text-muted-foreground hover:text-foreground shrink-0" title="Glisser">' +
+            '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>' +
+          '</button>' +
+          '<div class="flex-1 min-w-0">' +
+            '<span class="font-medium text-sm">' + escapeHtml(s.label) + '</span>' +
+            '<span class="text-xs text-muted-foreground ml-2 font-mono">(' + escapeHtml(s.sectionKey) + ')</span>' +
+          '</div>' +
+          '<label class="relative inline-flex items-center cursor-pointer shrink-0" title="Visible">' +
+            '<input type="checkbox" class="sr-only peer" ' + (s.isVisible ? 'checked' : '') + ' data-toggle="' + i + '" />' +
+            '<div class="w-9 h-5 bg-muted rounded-full peer-checked:bg-primary transition-colors after:content-[\'\'] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-transform peer-checked:after:translate-x-4"></div>' +
+          '</label>' +
+          '<button type="button" data-expand="' + i + '" class="rounded-md p-1 hover:bg-muted transition-colors shrink-0" title="' + (s.expanded ? 'Réduire' : 'Modifier le contenu') + '">' +
+            '<svg class="size-4 transition-transform ' + (s.expanded ? 'rotate-180' : '') + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>' +
+          '</button>' +
+          '<button type="button" data-delete-section="' + i + '" class="rounded-md p-1 hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors shrink-0" title="Supprimer la section">' +
+            '<svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>' +
+          '</button>';
+
+        row.appendChild(header);
+
+        // Expanded content editor
+        if (s.expanded) {
+          var editor = document.createElement('div');
+          editor.className = 'border-t border-border px-4 py-4 space-y-4 bg-muted/30';
+
+          // Locale tabs
+          var tabsHtml = '<div class="flex gap-1 border-b border-border pb-2 mb-3">';
+          locales.forEach(function(l) {
+            var isActive = l === currentLocale;
+            tabsHtml += '<button type="button" data-locale-tab="' + l + '" data-section="' + s.sectionKey + '" class="px-3 py-1.5 text-xs font-medium rounded-t ' +
+              (isActive ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-muted') +
+            '">' + l.toUpperCase() + '</button>';
+          });
+          tabsHtml += '</div>';
+
+          // Fields for current locale
+          var sectionFields = getFieldsForSection(s.sectionKey);
+          var fieldsHtml = '';
+
+          if (sectionFields.length === 0) {
+            fieldsHtml = '<p class="text-sm text-muted-foreground">Aucun champ. Ajoutez-en un.</p>';
+          } else {
+            sectionFields.forEach(function(fk) {
+              var item = allContent.find(function(c) { return c.sectionKey === cmsSection && c.fieldKey === fk && c.locale === currentLocale; });
+              var val = item ? item.content : '';
+              fieldsHtml +=
+                '<div class="space-y-2 rounded-lg border border-border bg-card p-3">' +
+                  '<div class="flex items-center justify-between">' +
+                    '<label class="text-sm font-medium font-mono">' + escapeHtml(fk) + '</label>' +
+                    '<button type="button" data-del-field="' + fk + '" data-del-section="' + cmsSection + '" class="text-xs text-destructive hover:underline">Supprimer</button>' +
+                  '</div>' +
+                  '<div class="flex items-center gap-1.5 text-xs">' +
+                    '<button type="button" class="rounded border border-input px-1.5 py-0.5 hover:bg-muted" data-md="h2" data-md-field="' + cmsSection + '.' + fk + '">H2</button>' +
+                    '<button type="button" class="rounded border border-input px-1.5 py-0.5 hover:bg-muted" data-md="bold" data-md-field="' + cmsSection + '.' + fk + '">B</button>' +
+                    '<button type="button" class="rounded border border-input px-1.5 py-0.5 hover:bg-muted" data-md="italic" data-md-field="' + cmsSection + '.' + fk + '">I</button>' +
+                    '<button type="button" class="rounded border border-input px-1.5 py-0.5 hover:bg-muted" data-md="link" data-md-field="' + cmsSection + '.' + fk + '">Lien</button>' +
+                    '<button type="button" class="rounded border border-input px-1.5 py-0.5 hover:bg-muted" data-md="image" data-md-field="' + cmsSection + '.' + fk + '">Img</button>' +
+                    '<button type="button" class="rounded border border-input px-1.5 py-0.5 hover:bg-muted ml-auto" data-md="preview" data-md-field="' + cmsSection + '.' + fk + '">Aperçu</button>' +
+                  '</div>' +
+                  '<textarea data-cms-section="' + cmsSection + '" data-cms-field="' + fk + '" data-cms-locale="' + currentLocale + '" rows="4" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono resize-y">' + escapeHtml(val) + '</textarea>' +
+                  '<div data-preview-for="' + cmsSection + '.' + fk + '" class="hidden rounded-md border border-dashed border-border bg-background px-3 py-2 prose prose-sm max-w-none"></div>' +
+                '</div>';
+            });
+          }
+
+          editor.innerHTML = tabsHtml + '<div class="space-y-3">' + fieldsHtml + '</div>' +
+            '<div class="flex items-center gap-3 pt-2">' +
+              '<button type="button" data-add-field="' + cmsSection + '" class="text-sm text-primary hover:underline">+ Ajouter un champ</button>' +
+              '<button type="button" data-open-media="' + s.sectionKey + '" class="text-sm text-primary hover:underline">Médiathèque</button>' +
+            '</div>';
+
+          row.appendChild(editor);
+        }
+
+        // ---- Events ----
+
+        // Drag
+        row.addEventListener('dragstart', function(e) {
+          draggedIdx = i;
+          e.dataTransfer.effectAllowed = 'move';
+          row.classList.add('opacity-50');
+        });
+        row.addEventListener('dragend', function() {
+          draggedIdx = null;
+          row.classList.remove('opacity-50');
+        });
+        row.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          row.classList.add('ring-2', 'ring-primary/50');
+        });
+        row.addEventListener('dragleave', function() {
+          row.classList.remove('ring-2', 'ring-primary/50');
+        });
+        row.addEventListener('drop', function(e) {
+          e.preventDefault();
+          row.classList.remove('ring-2', 'ring-primary/50');
+          if (draggedIdx === null || draggedIdx === i) return;
+          var moved = sections.splice(draggedIdx, 1)[0];
+          sections.splice(i, 0, moved);
+          sections.forEach(function(s, idx) { s.sortOrder = idx; });
+          render();
+        });
+
+        // Visibility toggle
+        var toggle = row.querySelector('[data-toggle="' + i + '"]');
+        if (toggle) {
+          toggle.addEventListener('change', function() {
+            sections[i].isVisible = toggle.checked;
+            row.classList.toggle('opacity-60', !toggle.checked);
+          });
+        }
+
+        // Expand/collapse
+        var expandBtn = row.querySelector('[data-expand="' + i + '"]');
+        if (expandBtn) {
+          expandBtn.addEventListener('click', function() {
+            sections[i].expanded = !sections[i].expanded;
+            render();
+          });
+        }
+
+        // Delete section
+        var deleteBtn = row.querySelector('[data-delete-section="' + i + '"]');
+        if (deleteBtn) {
+          deleteBtn.addEventListener('click', function() {
+            if (!confirm('Supprimer la section "' + s.label + '" ?')) return;
+            sections.splice(i, 1);
+            sections.forEach(function(s, idx) { s.sortOrder = idx; });
+            showToast('Section supprimée', 'success');
+            render();
+          });
+        }
+
+        // Locale tabs
+        row.querySelectorAll('[data-locale-tab]').forEach(function(tabBtn) {
+          tabBtn.addEventListener('click', function() {
+            activeLocales[tabBtn.dataset.section] = tabBtn.dataset.localeTab;
+            render();
+          });
+        });
+
+        // Markdown toolbar
+        row.querySelectorAll('[data-md]').forEach(function(mdBtn) {
+          mdBtn.addEventListener('click', function() {
+            var key = mdBtn.dataset.mdField;
+            var parts = key.split('.');
+            var section = parts[0];
+            var field = parts.slice(1).join('.');
+            var textarea = row.querySelector('textarea[data-cms-section="' + section + '"][data-cms-field="' + field + '"]');
+            var preview = row.querySelector('[data-preview-for="' + key + '"]');
+            if (!textarea) return;
+
+            var action = mdBtn.dataset.md;
+            if (action === 'h2') insertAtCursor(textarea, '## Titre\n');
+            else if (action === 'bold') insertAtCursor(textarea, '**texte**');
+            else if (action === 'italic') insertAtCursor(textarea, '*texte*');
+            else if (action === 'link') insertAtCursor(textarea, '[texte](https://)');
+            else if (action === 'image') openMediaDialog(textarea);
+            else if (action === 'preview' && preview) {
+              if (preview.classList.contains('hidden')) {
+                preview.innerHTML = markdownToHtml(textarea.value);
+                preview.classList.remove('hidden');
+                mdBtn.textContent = 'Éditer';
+              } else {
+                preview.classList.add('hidden');
+                mdBtn.textContent = 'Aperçu';
+              }
+            }
+          });
+        });
+
+        // Add field button
+        var addFieldBtn = row.querySelector('[data-add-field]');
+        if (addFieldBtn) {
+          addFieldBtn.addEventListener('click', function() {
+            fieldTargetSection = addFieldBtn.dataset.addField;
+            document.getElementById('new-field-key').value = '';
+            document.getElementById('field-dialog')?.classList.remove('hidden');
+          });
+        }
+
+        // Open media
+        var mediaBtn = row.querySelector('[data-open-media]');
+        if (mediaBtn) {
+          mediaBtn.addEventListener('click', function() { openMediaDialog(null); });
+        }
+
+        // Delete field buttons
+        row.querySelectorAll('[data-del-field]').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var fk = btn.dataset.delField;
+            var sk = btn.dataset.delSection;
+            if (!confirm('Supprimer le champ "' + fk + '" pour toutes les langues ?')) return;
+            var items = allContent.filter(function(c) { return c.sectionKey === sk && c.fieldKey === fk; });
+            Promise.all(items.map(function(item) { return API('deleteCmsContent', { id: item.id }); }))
+              .then(function() {
+                showToast('Champ "' + fk + '" supprimé', 'success');
+                return loadCmsContent();
+              })
+              .then(function() { render(); })
+              .catch(function() { showToast('Erreur lors de la suppression', 'error'); });
+          });
+        });
+
+        // Textarea focus tracking
+        row.querySelectorAll('textarea[data-cms-section]').forEach(function(ta) {
+          ta.addEventListener('focus', function() { activeTextarea = ta; });
+        });
+
+        container.appendChild(row);
+      });
+    }
+
+    function getFieldsForSection(sectionKey) {
+      var cmsSection = resolveContentSectionKey(sectionKey);
+      var keys = new Set();
+      allContent.forEach(function(c) {
+        if (c.sectionKey === cmsSection) keys.add(c.fieldKey);
+      });
+      return Array.from(keys).sort();
+    }
+
+    async function loadCmsContent() {
+      var cmsRes = await API('listCmsContent', {});
+      var cmsData = cmsRes?.data ?? cmsRes;
+      allContent = Array.isArray(cmsData) ? cmsData : [];
+    }
+
+    // ---- Save all ----
+    document.getElementById('btn-save')?.addEventListener('click', async function() {
+      var btn = document.getElementById('btn-save');
+      var saveIcon = document.getElementById('save-icon');
+      var saveSpinner = document.getElementById('save-spinner');
+      var saveLabel = document.getElementById('save-label');
+      btn.disabled = true;
+      saveIcon?.classList.add('hidden');
+      saveSpinner?.classList.remove('hidden');
+      saveLabel.textContent = 'Sauvegarde…';
+
+      try {
+        // 1) Save section ordering
+        var payload = sections.map(function(s) {
+          return { sectionKey: s.sectionKey, sortOrder: s.sortOrder, isVisible: s.isVisible };
+        });
+        await API('savePageSections', { pageSlug: slug, sections: payload });
+
+        // 2) Save all CMS content from visible textareas
+        var textareas = document.querySelectorAll('textarea[data-cms-section]');
+        for (var t = 0; t < textareas.length; t++) {
+          var ta = textareas[t];
+          await API('upsertCmsContent', {
+            sectionKey: ta.dataset.cmsSection,
+            locale: ta.dataset.cmsLocale,
+            fieldKey: ta.dataset.cmsField,
+            content: ta.value,
+          });
+        }
+
+        showToast('Tout sauvegardé avec succès', 'success');
+        await loadCmsContent();
+      } catch (err) {
+        showToast('Erreur : ' + (err.message || 'Échec de la sauvegarde'), 'error');
+      } finally {
+        btn.disabled = false;
+        saveIcon?.classList.remove('hidden');
+        saveSpinner?.classList.add('hidden');
+        saveLabel.textContent = 'Sauvegarder tout';
+      }
+    });
+
+    // ---- Add section ----
+    document.getElementById('btn-add-section')?.addEventListener('click', function() {
+      var keyInput = document.getElementById('new-section-key');
+      var labelInput = document.getElementById('new-section-label');
+      var key = (keyInput?.value || '').trim().toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/^-|-$/g, '');
+      var label = (labelInput?.value || '').trim() || key;
+      if (!key) {
+        showToast('Entrez une clé de section', 'warning');
+        return;
+      }
+      if (sections.find(function(s) { return s.sectionKey === key; })) {
+        showToast('Cette section existe déjà', 'warning');
+        return;
+      }
+      sections.push({
+        sectionKey: key,
+        label: label,
+        sortOrder: sections.length,
+        isVisible: true,
+        expanded: true,
+      });
+      keyInput.value = '';
+      labelInput.value = '';
+      showToast('Section "' + label + '" ajoutée', 'success');
+      render();
+    });
+
+    // ---- Add field (dialog) ----
+    document.querySelectorAll('[data-close-field]').forEach(function(el) {
+      el.addEventListener('click', function() { document.getElementById('field-dialog')?.classList.add('hidden'); });
+    });
+
+    document.getElementById('btn-create-field')?.addEventListener('click', async function() {
+      var fk = (document.getElementById('new-field-key')?.value || '').trim();
+      if (!fk || !fieldTargetSection) {
+        showToast('Entrez une clé de champ', 'warning');
+        return;
+      }
+      try {
+        await API('upsertCmsContent', {
+          sectionKey: fieldTargetSection,
+          locale: locales[0],
+          fieldKey: fk,
+          content: '',
+        });
+        document.getElementById('field-dialog')?.classList.add('hidden');
+        showToast('Champ "' + fk + '" créé', 'success');
+        await loadCmsContent();
+        render();
+      } catch (err) {
+        showToast('Erreur lors de la création du champ', 'error');
+      }
+    });
+
+    // ---- Media dialog close ----
+    document.querySelectorAll('[data-close-media]').forEach(function(el) {
+      el.addEventListener('click', closeMediaDialog);
+    });
+
+    // ---- Init ----
+    loadPage();
+  </script>
+</AdminLayout>

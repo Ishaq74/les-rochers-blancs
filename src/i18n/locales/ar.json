@@ -39,7 +39,18 @@
       "hotelLabel": "الفندق",
       "hotelDates": "من 21/12/26 إلى 7/1/27 ومن 9/2/27 إلى 10/3/27 (+عطلة نهاية الأسبوع يناير ومارس)",
       "closedDays": "مغلق يوم الاثنين ومساء الأحد"
-    }
+    },
+    "adminSubtitle": "إدارة فترات افتتاح المؤسسة",
+    "new": "فترة جديدة",
+    "editTitle": "تعديل الفترة",
+    "newTitle": "فترة جديدة",
+    "confirmDelete": "حذف هذه الفترة؟",
+    "noItems": "لا توجد فترات",
+    "countSuffix": "فترة/فترات",
+    "form": { "season": "الموسم *", "year": "السنة *", "restaurantStart": "بداية المطعم", "restaurantEnd": "نهاية المطعم", "hotelStart": "بداية الفندق", "hotelEnd": "نهاية الفندق", "sortOrder": "الترتيب" },
+    "seasonOptions": { "summer": "صيف", "winter": "شتاء" },
+    "table": { "season": "الموسم", "year": "السنة", "restaurant": "المطعم", "hotel": "الفندق", "status": "الحالة", "actions": "إجراءات" },
+    "toast": { "created": "تم إنشاء الفترة", "updated": "تم تحديث الفترة", "deleted": "تم حذف الفترة", "errorSave": "خطأ في الحفظ", "errorDelete": "خطأ في الحذف" }
   },
   "hotel": {
     "sectionLabel": "إقامة",
@@ -153,8 +164,18 @@
   },
   "messages": {
     "title": "الرسائل",
-    "subtitle": "راجع وعالج رسائل الاتصال",
-    "noItems": "لا توجد رسائل"
+    "subtitle": "مراجعة ومعالجة رسائل الاتصال",
+    "noItems": "لا توجد رسائل",
+    "filterAll": "الكل",
+    "filterUnread": "غير مقروءة",
+    "detail": "تفاصيل الرسالة",
+    "confirmDelete": "حذف هذه الرسالة؟",
+    "countSuffix": "رسالة/رسائل",
+    "markRead": "مقروءة",
+    "markUnread": "غير مقروءة",
+    "table": { "sender": "المرسل", "message": "الرسالة", "language": "اللغة", "date": "التاريخ", "actions": "إجراءات" },
+    "form": { "name": "الاسم", "email": "البريد الإلكتروني", "language": "اللغة", "date": "التاريخ", "message": "الرسالة" },
+    "toast": { "deleted": "تم حذف الرسالة", "markedRead": "تم التعيين كمقروءة", "markedUnread": "تم التعيين كغير مقروءة", "error": "خطأ" }
   },
   "footer": {
     "brandName": "Les Rochers Blancs",
@@ -207,7 +228,7 @@
     "signOut": "تسجيل الخروج",
     "nav": {
       "dashboard": "لوحة التحكم",
-      "content": "محتوى CMS",
+      "pages": "الصفحات",
       "menu": "قوائم المطعم",
       "services": "الخدمات",
       "formations": "الدورات",
@@ -219,7 +240,11 @@
       "quotes": "عروض الأسعار",
       "media": "مكتبة الوسائط",
       "theme": "السمة",
-      "settings": "الإعدادات"
+      "settings": "الإعدادات",
+      "dividerHotel": "الفندق",
+      "dividerCms": "CMS",
+      "dividerBusiness": "الإدارة",
+      "dividerConfig": "الإعدادات"
     }
   },
   "common": {
@@ -245,7 +270,68 @@
     "date": "التاريخ",
     "noResults": "لا توجد نتائج",
     "errorSave": "خطأ في الحفظ",
-    "errorDelete": "خطأ في الحذف"
+    "errorDelete": "خطأ في الحذف",
+    "all": "الكل",
+    "loading": "جار التحميل…",
+    "previous": "السابق",
+    "next": "التالي",
+    "close": "إغلاق",
+    "search": "بحث",
+    "confirm": "تأكيد",
+    "sortOrder": "الترتيب",
+    "translations": "الترجمات",
+    "view": "عرض",
+    "type": "النوع",
+    "price": "السعر",
+    "results": "نتائج",
+    "description": "الوصف",
+    "capacity": "السعة",
+    "imageUrl": "رابط الصورة",
+    "label": "التسمية",
+    "year": "السنة",
+    "published": "منشور",
+    "draft": "مسودة"
+  },
+  "rooms": {
+    "title": "الغرف",
+    "subtitle": "إدارة الغرف والإضافات",
+    "new": "إضافة غرفة",
+    "editTitle": "تعديل الغرفة",
+    "newTitle": "غرفة جديدة",
+    "confirmDelete": "حذف هذه الغرفة؟",
+    "noItems": "لا توجد غرف",
+    "countSuffix": "غرفة/غرف",
+    "extras": {
+      "title": "إضافات (فطور، إقامة كاملة…)",
+      "new": "إضافة",
+      "editTitle": "تعديل الإضافة",
+      "newTitle": "إضافة جديدة",
+      "confirmDelete": "حذف هذه الإضافة؟"
+    },
+    "form": {
+      "slug": "المعرّف *",
+      "type": "النوع *",
+      "capacity": "السعة *",
+      "pricePerNight": "السعر/ليلة (€) *",
+      "imageUrl": "رابط الصورة",
+      "sortOrder": "الترتيب"
+    },
+    "table": {
+      "name": "الاسم",
+      "slug": "المعرّف",
+      "type": "النوع",
+      "capacity": "السعة",
+      "pricePerNight": "السعر/ليلة",
+      "status": "الحالة",
+      "actions": "إجراءات"
+    },
+    "toast": {
+      "created": "تم إنشاء الغرفة",
+      "updated": "تم تحديث الغرفة",
+      "deleted": "تم حذف الغرفة",
+      "errorSave": "خطأ في الحفظ",
+      "errorDelete": "خطأ في الحذف"
+    }
   },
   "dashboard": {
     "title": "لوحة التحكم",
@@ -476,6 +562,14 @@
     "noItems": "لا توجد مقالات",
     "published": "منشور",
     "draft": "مسودة",
+    "filterAll": "الكل",
+    "filterPublished": "المنشورة",
+    "filterDraft": "المسودات",
+    "countSuffix": "مقال/مقالات",
+    "untitled": "(بدون عنوان)",
+    "publishedLabel": "منشور",
+    "selectImage": "اختيار صورة",
+    "markdown": { "bold": "عريض", "italic": "مائل", "link": "رابط", "image": "صورة" },
     "form": {
       "slug": "المعرّف (URL)",
       "imageUrl": "صورة الغلاف (URL)",
@@ -511,6 +605,8 @@
     "articleLabel": "المقال",
     "approve": "موافقة",
     "reject": "رفض",
+    "countSuffix": "تعليق/تعليقات",
+    "filterAll": "الكل",
     "table": {
       "author": "الكاتب",
       "comment": "التعليق",
@@ -602,6 +698,13 @@
     "noItems": "لا توجد ملفات مرفوعة",
     "uploadFirst": "ارفع ملفك الأول",
     "confirmDelete": "حذف هذا الملف؟",
+    "uploadTitle": "رفع ملف",
+    "copyUrl": "نسخ الرابط",
+    "countSuffix": "ملف/ملفات",
+    "uploading": "جار الرفع…",
+    "siteAssets": "أصول الموقع (للقراءة فقط)",
+    "form": { "file": "ملف", "alt": "نص بديل", "folder": "مجلد" },
+    "filter": { "all": "جميع المجلدات", "general": "عام", "rooms": "الغرف", "restaurant": "المطعم", "blog": "المدوّنة" },
     "toast": {
       "uploaded": "تم رفع {{count}} ملف/ملفات",
       "urlCopied": "تم نسخ الرابط",
@@ -648,6 +751,10 @@
     "subtitle": "تهيئة إعدادات الموقع",
     "save": "حفظ",
     "backup": "نسخ احتياطي",
+    "addSetting": "إضافة إعداد",
+    "noSettings": "لا توجد إعدادات. أضف واحدة أدناه.",
+    "form": { "key": "المفتاح", "keyPlaceholder": "المفتاح (مثل: site_name)", "value": "القيمة", "category": "الفئة" },
+    "types": { "text": "نص", "email": "بريد إلكتروني", "url": "رابط", "textarea": "نص طويل", "boolean": "منطقي", "number": "رقم" },
     "fields": {
       "site_name": "اسم الموقع",
       "site_description": "الوصف",
@@ -704,7 +811,23 @@
       "prefillDescription": "تم ملء الحقول الفارغة من الترجمات الافتراضية. انقر على \"حفظ\" للتأكيد.",
       "saveSuccess": "تم حفظ المحتوى بنجاح",
       "saveError": "تعذّر حفظ المحتوى"
-    }
+    },
+    "pagesTitle": "صفحات الموقع",
+    "pagesSubtitle": "إدارة الصفحات وإعادة ترتيب الأقسام وتحرير المحتوى.",
+    "newPage": "صفحة جديدة",
+    "createPage": "إنشاء الصفحة",
+    "searchPages": "البحث عن صفحة…",
+    "filterAll": "الكل",
+    "filterSystem": "نظام",
+    "filterCustom": "مخصصة",
+    "noPages": "لم يتم العثور على صفحات",
+    "emptyHint": "عدّل الفلاتر أو أنشئ صفحة جديدة.",
+    "system": "نظام",
+    "custom": "مخصص",
+    "sectionsContent": "الأقسام والمحتوى",
+    "confirmDeletePage": "حذف هذه الصفحة وجميع أقسامها؟",
+    "pageForm": { "title": "العنوان", "slug": "المعرّف (URL)", "slugHint": "أحرف صغيرة وأرقام وشرطات فقط." },
+    "pageToast": { "created": "تم إنشاء الصفحة", "deleted": "تم حذف الصفحة", "deleteError": "خطأ في حذف الصفحة", "loadError": "خطأ في تحميل الصفحات", "titleRequired": "العنوان والمعرّف مطلوبان", "slugInvalid": "المعرّف يمكن أن يحتوي فقط على أحرف صغيرة وأرقام وشرطات", "slugExists": "هذا المعرّف موجود بالفعل" }
   },
   "menuManager": {
     "title": "إدارة القوائم",
@@ -770,7 +893,17 @@
   "partners": {
     "sectionLabel": "شركاء",
     "title": "شركاؤنا",
-    "description": "عزز لحظات الاسترخاء والهروب خلال إقامتك في سيمنوز مع محترفي منطقتنا."
+    "description": "عزز لحظات الاسترخاء والهروب خلال إقامتك في سيمنوز مع محترفي منطقتنا.",
+    "adminSubtitle": "إدارة شركاء الموقع",
+    "new": "إضافة شريك",
+    "editTitle": "تعديل الشريك",
+    "newTitle": "شريك جديد",
+    "confirmDelete": "حذف هذا الشريك؟",
+    "noItems": "لا يوجد شركاء",
+    "countSuffix": "شريك/شركاء",
+    "form": { "name": "الاسم *", "url": "رابط الموقع", "logoUrl": "رابط الشعار", "sortOrder": "الترتيب" },
+    "table": { "logo": "الشعار", "name": "الاسم", "url": "الرابط", "status": "الحالة", "actions": "إجراءات" },
+    "toast": { "created": "تم إنشاء الشريك", "updated": "تم تحديث الشريك", "deleted": "تم حذف الشريك", "errorSave": "خطأ في الحفظ", "errorDelete": "خطأ في الحذف" }
   },
   "legal": {
     "eyebrow": "معلومات قانونية",

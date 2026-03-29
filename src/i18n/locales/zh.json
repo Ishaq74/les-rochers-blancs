@@ -39,7 +39,18 @@
       "hotelLabel": "酒店",
       "hotelDates": "2026年12月21日至2027年1月7日及2027年2月9日至2027年3月10日（+一月及三月周末）",
       "closedDays": "每周一及周日晚间休息"
-    }
+    },
+    "adminSubtitle": "管理营业时间段",
+    "new": "新时间段",
+    "editTitle": "编辑时间段",
+    "newTitle": "新时间段",
+    "confirmDelete": "删除此时间段？",
+    "noItems": "暂无时间段",
+    "countSuffix": "个时间段",
+    "form": { "season": "季节 *", "year": "年份 *", "restaurantStart": "餐厅开始", "restaurantEnd": "餐厅结束", "hotelStart": "酒店开始", "hotelEnd": "酒店结束", "sortOrder": "排序" },
+    "seasonOptions": { "summer": "夏季", "winter": "冬季" },
+    "table": { "season": "季节", "year": "年份", "restaurant": "餐厅", "hotel": "酒店", "status": "状态", "actions": "操作" },
+    "toast": { "created": "时间段已创建", "updated": "时间段已更新", "deleted": "时间段已删除", "errorSave": "保存失败", "errorDelete": "删除失败" }
   },
   "hotel": {
     "sectionLabel": "住宿",
@@ -154,7 +165,17 @@
   "messages": {
     "title": "消息",
     "subtitle": "查看并处理联系表单消息",
-    "noItems": "暂无消息"
+    "noItems": "暂无消息",
+    "filterAll": "全部",
+    "filterUnread": "未读",
+    "detail": "消息详情",
+    "confirmDelete": "删除此消息？",
+    "countSuffix": "条消息",
+    "markRead": "已读",
+    "markUnread": "未读",
+    "table": { "sender": "发送者", "message": "消息", "language": "语言", "date": "日期", "actions": "操作" },
+    "form": { "name": "姓名", "email": "邮箱", "language": "语言", "date": "日期", "message": "消息" },
+    "toast": { "deleted": "消息已删除", "markedRead": "已标记为已读", "markedUnread": "已标记为未读", "error": "错误" }
   },
   "footer": {
     "brandName": "Les Rochers Blancs",
@@ -207,7 +228,7 @@
     "signOut": "退出登录",
     "nav": {
       "dashboard": "仪表盘",
-      "content": "CMS 内容",
+      "pages": "页面",
       "menu": "餐厅菜单",
       "services": "服务",
       "formations": "培训",
@@ -219,7 +240,11 @@
       "quotes": "报价单",
       "media": "媒体库",
       "theme": "主题",
-      "settings": "设置"
+      "settings": "设置",
+      "dividerHotel": "酒店",
+      "dividerCms": "CMS",
+      "dividerBusiness": "管理",
+      "dividerConfig": "配置"
     }
   },
   "common": {
@@ -245,7 +270,47 @@
     "date": "日期",
     "noResults": "无结果",
     "errorSave": "保存失败",
-    "errorDelete": "删除失败"
+    "errorDelete": "删除失败",
+    "all": "全部",
+    "loading": "加载中…",
+    "previous": "上一页",
+    "next": "下一页",
+    "close": "关闭",
+    "search": "搜索",
+    "confirm": "确认",
+    "sortOrder": "排序",
+    "translations": "翻译",
+    "view": "查看",
+    "type": "类型",
+    "price": "价格",
+    "results": "结果",
+    "description": "描述",
+    "capacity": "容量",
+    "imageUrl": "图片链接",
+    "label": "标签",
+    "year": "年份",
+    "published": "已发布",
+    "draft": "草稿"
+  },
+  "rooms": {
+    "title": "客房",
+    "subtitle": "管理客房和附加服务",
+    "new": "添加客房",
+    "editTitle": "编辑客房",
+    "newTitle": "新客房",
+    "confirmDelete": "删除此客房？",
+    "noItems": "暂无客房",
+    "countSuffix": "间客房",
+    "extras": {
+      "title": "附加服务（早餐、食宿…）",
+      "new": "添加",
+      "editTitle": "编辑附加项",
+      "newTitle": "新附加项",
+      "confirmDelete": "删除此附加项？"
+    },
+    "form": { "slug": "标识 *", "type": "类型 *", "capacity": "容量 *", "pricePerNight": "每晚价格 (€) *", "imageUrl": "图片链接", "sortOrder": "排序" },
+    "table": { "name": "名称", "slug": "标识", "type": "类型", "capacity": "容量", "pricePerNight": "每晚价格", "status": "状态", "actions": "操作" },
+    "toast": { "created": "客房已创建", "updated": "客房已更新", "deleted": "客房已删除", "errorSave": "保存失败", "errorDelete": "删除失败" }
   },
   "dashboard": {
     "title": "控制面板",
@@ -476,6 +541,14 @@
     "noItems": "暂无文章",
     "published": "已发布",
     "draft": "草稿",
+    "filterAll": "全部",
+    "filterPublished": "已发布",
+    "filterDraft": "草稿",
+    "countSuffix": "篇文章",
+    "untitled": "（无标题）",
+    "publishedLabel": "已发布",
+    "selectImage": "选择图片",
+    "markdown": { "bold": "粗体", "italic": "斜体", "link": "链接", "image": "图片" },
     "form": {
       "slug": "标识 (URL)",
       "imageUrl": "封面图片 (URL)",
@@ -511,6 +584,8 @@
     "articleLabel": "文章",
     "approve": "批准",
     "reject": "拒绝",
+    "countSuffix": "条评论",
+    "filterAll": "全部",
     "table": {
       "author": "作者",
       "comment": "评论",
@@ -602,6 +677,13 @@
     "noItems": "暂无上传文件",
     "uploadFirst": "上传您的第一个文件",
     "confirmDelete": "删除此文件？",
+    "uploadTitle": "上传文件",
+    "copyUrl": "复制链接",
+    "countSuffix": "个文件",
+    "uploading": "上传中…",
+    "siteAssets": "网站资源（只读）",
+    "form": { "file": "文件", "alt": "替代文本", "folder": "文件夹" },
+    "filter": { "all": "所有文件夹", "general": "通用", "rooms": "客房", "restaurant": "餐厅", "blog": "博客" },
     "toast": {
       "uploaded": "已上传 {{count}} 个文件",
       "urlCopied": "链接已复制",
@@ -648,6 +730,10 @@
     "subtitle": "配置网站设置",
     "save": "保存",
     "backup": "备份",
+    "addSetting": "添加设置",
+    "noSettings": "暂无设置，请在下方添加。",
+    "form": { "key": "键", "keyPlaceholder": "键 (如: site_name)", "value": "值", "category": "分类" },
+    "types": { "text": "文本", "email": "邮箱", "url": "链接", "textarea": "长文本", "boolean": "布尔值", "number": "数字" },
     "fields": {
       "site_name": "网站名称",
       "site_description": "描述",
@@ -704,7 +790,23 @@
       "prefillDescription": "空字段已从默认翻译填充。点击\"保存\"确认。",
       "saveSuccess": "内容保存成功",
       "saveError": "内容保存失败"
-    }
+    },
+    "pagesTitle": "网站页面",
+    "pagesSubtitle": "管理页面、重新排列区块和编辑内容。",
+    "newPage": "新页面",
+    "createPage": "创建页面",
+    "searchPages": "搜索页面…",
+    "filterAll": "全部",
+    "filterSystem": "系统",
+    "filterCustom": "自定义",
+    "noPages": "未找到页面",
+    "emptyHint": "调整筛选条件或创建新页面。",
+    "system": "系统",
+    "custom": "自定义",
+    "sectionsContent": "区块和内容",
+    "confirmDeletePage": "删除此页面及其所有区块？",
+    "pageForm": { "title": "标题", "slug": "标识 (URL)", "slugHint": "仅限小写字母、数字和连字符。" },
+    "pageToast": { "created": "页面已创建", "deleted": "页面已删除", "deleteError": "删除页面失败", "loadError": "加载页面失败", "titleRequired": "标题和标识为必填项", "slugInvalid": "标识只能包含小写字母、数字和连字符", "slugExists": "此标识已存在" }
   },
   "menuManager": {
     "title": "菜单管理",
@@ -771,7 +873,17 @@
   "partners": {
     "sectionLabel": "合作伙伴",
     "title": "合作伙伴",
-    "description": "与我们地区的专业人士一起增添您在塞姆诺兹住宿期间的放松和逃离时刻。"
+    "description": "与我们地区的专业人士一起增添您在塞姆诺兹住宿期间的放松和逃离时刻。",
+    "adminSubtitle": "管理网站合作伙伴",
+    "new": "添加合作伙伴",
+    "editTitle": "编辑合作伙伴",
+    "newTitle": "新合作伙伴",
+    "confirmDelete": "删除此合作伙伴？",
+    "noItems": "暂无合作伙伴",
+    "countSuffix": "个合作伙伴",
+    "form": { "name": "名称 *", "url": "网站链接", "logoUrl": "Logo链接", "sortOrder": "排序" },
+    "table": { "logo": "Logo", "name": "名称", "url": "链接", "status": "状态", "actions": "操作" },
+    "toast": { "created": "合作伙伴已创建", "updated": "合作伙伴已更新", "deleted": "合作伙伴已删除", "errorSave": "保存失败", "errorDelete": "删除失败" }
   },
   "legal": {
     "eyebrow": "法律信息",

@@ -575,3 +575,32 @@ export const contactMessages = pgTable('contact_messages', {
 }, (table) => [
   index('idx_contact_messages_read').on(table.isRead),
 ]);
+
+// =====================================================
+// PAGES (CMS page management)
+// =====================================================
+
+export const pages = pgTable('pages', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  slug: text('slug').notNull().unique(),
+  title: text('title').notNull(),
+  isSystem: boolean('is_system').notNull().default(false),
+  sortOrder: integer('sort_order').notNull().default(0),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+// =====================================================
+// PAGE SECTION LAYOUT
+// =====================================================
+
+export const pageSections = pgTable('page_sections', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  pageSlug: text('page_slug').notNull().default('accueil'),
+  sectionKey: text('section_key').notNull(),
+  sortOrder: integer('sort_order').notNull().default(0),
+  isVisible: boolean('is_visible').notNull().default(true),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  uniqueIndex('page_sections_slug_key').on(table.pageSlug, table.sectionKey),
+]);

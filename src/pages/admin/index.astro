@@ -73,7 +73,7 @@ const lang = 'fr';
           clients: d.clients,
           reservations: d.pendingReservations,
           blogPosts: d.publishedPosts,
-          comments: d.unreadMessages,
+          comments: d.pendingComments,
         };
         Object.entries(map).forEach(([key, val]) => {
           const el = document.getElementById('stat-' + key);

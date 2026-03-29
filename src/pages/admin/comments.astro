@@ -1,0 +1,161 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import { t } from '@/lib/i18n';
+export const prerender = false;
+const lang = 'fr';
+const i18n = {
+  all: t('comments.filterAll', lang),
+  pending: t('comments.status.pending', lang),
+  approved: t('comments.status.approved', lang),
+  rejected: t('comments.status.rejected', lang),
+  view: t('common.view', lang),
+  approve: t('comments.approve', lang),
+  reject: t('comments.reject', lang),
+  delete: t('common.delete', lang),
+  previous: t('common.previous', lang),
+  next: t('common.next', lang),
+  countSuffix: t('comments.countSuffix', lang),
+  close: t('common.close', lang),
+  emailLabel: t('contact.emailLabel', lang),
+  confirmDelete: t('comments.toast.confirmDelete', lang),
+  toastApproved: t('comments.toast.approved', lang),
+  toastRejected: t('comments.toast.rejected', lang),
+  toastDeleted: t('comments.toast.deleted', lang),
+};
+---
+
+<AdminLayout title={t('comments.title', lang)} activeNav="comments" lang={lang}>
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">{t('comments.title', lang)}</h1>
+        <p class="text-muted-foreground">{t('comments.subtitle', lang)}</p>
+      </div>
+    </div>
+
+    <div class="flex gap-2" id="status-filters">
+      <button data-status="" class="rounded-full px-3 py-1 text-xs font-medium border border-input bg-primary text-primary-foreground">{t('comments.filterAll', lang)}</button>
+      <button data-status="pending" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">{t('comments.status.pending', lang)}</button>
+      <button data-status="approved" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">{t('comments.status.approved', lang)}</button>
+      <button data-status="rejected" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">{t('comments.status.rejected', lang)}</button>
+    </div>
+
+    <div class="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="border-b border-border bg-muted/50">
+          <tr>
+            <th class="px-4 py-3 text-left font-medium">{t('comments.table.author', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('comments.table.comment', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('comments.table.article', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('comments.table.status', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('comments.table.date', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('comments.table.actions', lang)}</th>
+          </tr>
+        </thead>
+        <tbody id="data-tbody"></tbody>
+      </table>
+      <p id="data-empty" class="hidden p-8 text-center text-muted-foreground">{t('comments.noProcessed', lang)}</p>
+    </div>
+    <div id="pagination" class="flex items-center justify-between text-sm text-muted-foreground"></div>
+  </div>
+
+  <!-- Comment Detail Dialog -->
+  <div id="detail-dialog" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50" data-close></div>
+    <div class="fixed inset-y-0 right-0 w-full max-w-md overflow-y-auto bg-card border-l border-border shadow-xl p-6 space-y-4">
+      <h2 class="text-lg font-semibold">{t('comments.table.comment', lang)}</h2>
+      <div class="space-y-3">
+        <div><span class="text-xs text-muted-foreground">{t('comments.table.author', lang)}</span><p id="det-author" class="font-medium"></p></div>
+        <div><span class="text-xs text-muted-foreground">{t('contact.emailLabel', lang)}</span><p id="det-email" class="font-medium"></p></div>
+        <div><span class="text-xs text-muted-foreground">{t('comments.table.article', lang)}</span><p id="det-post"></p></div>
+        <div><span class="text-xs text-muted-foreground">{t('comments.table.date', lang)}</span><p id="det-date"></p></div>
+        <div><span class="text-xs text-muted-foreground">{t('comments.table.comment', lang)}</span><p id="det-content" class="whitespace-pre-wrap bg-muted/50 rounded-md p-3 text-sm max-h-60 overflow-y-auto"></p></div>
+      </div>
+      <div class="flex gap-2 pt-2" id="det-actions"></div>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ i18n }}>
+    const API=(a,b)=>fetch(`/_actions/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());
+    function openD(){document.getElementById('detail-dialog')?.classList.remove('hidden')}function closeD(){document.getElementById('detail-dialog')?.classList.add('hidden')}
+    document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeD));
+
+    let currentPage=1,statusFilter=null;
+    let result={items:[],total:0,totalPages:0};
+
+    document.querySelectorAll('#status-filters button').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        document.querySelectorAll('#status-filters button').forEach(b=>{b.classList.remove('bg-primary','text-primary-foreground');b.classList.add('hover:bg-muted')});
+        btn.classList.add('bg-primary','text-primary-foreground');btn.classList.remove('hover:bg-muted');
+        statusFilter=btn.dataset.status||null;currentPage=1;load();
+      });
+    });
+
+    async function load(){
+      const p={page:currentPage,limit:20};
+      if(statusFilter)p.status=statusFilter;
+      const r=await API('listComments',p);result=r.data??r;render();
+    }
+
+    function getStatus(r){
+      if(r.isApproved) return 'approved';
+      if(r.isRejected) return 'rejected';
+      return 'pending';
+    }
+
+    function statusBadge(s){
+      const cls = s==='approved' ? 'bg-green-100 text-green-800'
+        : s==='rejected' ? 'bg-red-100 text-red-800'
+        : 'bg-yellow-100 text-yellow-800';
+      const label = s==='approved' ? i18n.approved : s==='rejected' ? i18n.rejected : i18n.pending;
+      return `<span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${cls}">${label}</span>`;
+    }
+
+    function render(){
+      const tbody=document.getElementById('data-tbody'),empty=document.getElementById('data-empty');
+      const items=result.items||[];
+      if(!items.length){tbody.innerHTML='';empty.classList.remove('hidden');document.getElementById('pagination').innerHTML='';return;}
+      empty.classList.add('hidden');
+      tbody.innerHTML=items.map(r=>{
+        const d=r.createdAt?new Date(r.createdAt).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+        const preview = r.content.length > 80 ? `${r.content.substring(0,80)}…` : r.content;
+        const s=getStatus(r);
+        return `<tr class="border-b border-border hover:bg-muted/50">
+        <td class="px-4 py-3"><div class="font-medium">${escapeHtml(r.authorName)}</div><div class="text-xs text-muted-foreground">${escapeHtml(r.authorEmail)}</div></td>
+        <td class="px-4 py-3 max-w-xs truncate">${escapeHtml(preview)}</td>
+        <td class="px-4 py-3 text-xs text-muted-foreground">${escapeHtml(r.postSlug||'—')}</td>
+        <td class="px-4 py-3">${statusBadge(s)}</td>
+        <td class="px-4 py-3 text-xs">${escapeHtml(d)}</td>
+        <td class="px-4 py-3 space-x-1">
+          <button onclick="view('${escapeHtml(r.id)}')" class="text-xs text-primary hover:underline">${i18n.view}</button>
+          ${s!=='approved'?`<button onclick="approve('${escapeHtml(r.id)}')" class="text-xs text-green-600 hover:underline">${i18n.approve}</button>`:''}
+          ${s!=='rejected'?`<button onclick="reject('${escapeHtml(r.id)}')" class="text-xs text-yellow-600 hover:underline">${i18n.reject}</button>`:''}
+          <button onclick="del('${escapeHtml(r.id)}')" class="text-xs text-destructive hover:underline">${i18n.delete}</button>
+        </td></tr>`;
+      }).join('');
+      document.getElementById('pagination').innerHTML=`<span>${result.total||0} ${i18n.countSuffix}</span><div class="flex gap-2">${currentPage>1?`<button onclick="goPage(${currentPage-1})" class="text-xs text-primary hover:underline">← ${i18n.previous}</button>`:''}${(result.totalPages||0)>currentPage?`<button onclick="goPage(${currentPage+1})" class="text-xs text-primary hover:underline">${i18n.next} →</button>`:''}</div>`;
+    }
+    window.goPage=p=>{currentPage=p;load()};
+
+    window.view=function(id){
+      const r=(result.items||[]).find(x=>x.id===id);if(!r)return;
+      document.getElementById('det-author').textContent=r.authorName;
+      document.getElementById('det-email').textContent=r.authorEmail;
+      document.getElementById('det-post').textContent=r.postSlug||'—';
+      document.getElementById('det-date').textContent=r.createdAt?new Date(r.createdAt).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+      document.getElementById('det-content').textContent=r.content;
+      const s=getStatus(r);
+      let btns=`<button type="button" data-close class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">${i18n.close}</button>`;
+      if(s!=='approved') btns=`<button type="button" onclick="approve('${escapeHtml(r.id)}');closeD()" class="inline-flex items-center rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700">Approuver</button>`+btns;
+      if(s!=='rejected') btns=`<button type="button" onclick="reject('${escapeHtml(r.id)}');closeD()" class="inline-flex items-center rounded-md bg-yellow-600 px-4 py-2 text-sm font-medium text-white hover:bg-yellow-700">Rejeter</button>`+btns;
+      document.getElementById('det-actions').innerHTML=btns;
+      document.getElementById('det-actions').querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeD));
+      openD();
+    };
+
+    window.approve=async function(id){await API('approveComment',{id});showToast(i18n.toastApproved,'success');load()};
+    window.reject=async function(id){await API('rejectComment',{id});showToast(i18n.toastRejected,'success');load()};
+    window.del=async function(id){if(!confirm(i18n.confirmDelete))return;await API('deleteComment',{id});showToast(i18n.toastDeleted,'success');load()};
+    load();
+  </script>
+</AdminLayout>

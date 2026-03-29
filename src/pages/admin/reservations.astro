@@ -3,6 +3,25 @@ import AdminLayout from '@/layouts/AdminLayout.astro';
 import { t } from '@/lib/i18n';
 export const prerender = false;
 const lang = 'fr';
+const i18n = {
+  all: t('common.all', lang),
+  edit: t('common.edit', lang),
+  delete: t('common.delete', lang),
+  results: t('common.results', lang),
+  previous: t('common.previous', lang),
+  next: t('common.next', lang),
+  newTitle: t('reservations.newTitle', lang),
+  editTitle: t('reservations.editTitle', lang),
+  confirmDelete: t('reservations.confirmDelete', lang),
+  statusPending: t('reservations.status.pending', lang),
+  statusConfirmed: t('reservations.status.confirmed', lang),
+  statusCancelled: t('reservations.status.cancelled', lang),
+  statusCompleted: t('reservations.status.completed', lang),
+  typeRoom: t('reservations.type.room', lang),
+  typeRestaurant: t('reservations.type.restaurant', lang),
+  typeService: t('reservations.type.service', lang),
+  typeFormation: t('reservations.type.formation', lang),
+};
 ---
 
 <AdminLayout title={t('reservations.title', lang)} activeNav="reservations" lang={lang}>
@@ -19,7 +38,7 @@ const lang = 'fr';
     <div class="flex gap-2">
       {['all', 'pending', 'confirmed', 'cancelled', 'completed'].map(s => (
         <button data-filter={s} class:list={['rounded-full px-3 py-1 text-xs font-medium border transition-colors', s === 'all' ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:bg-muted']}>
-          {s === 'all' ? 'Toutes' : t(`reservations.status.${s}`, lang)}
+          {s === 'all' ? t('common.all', lang) : t(`reservations.status.${s}`, lang)}
         </button>
       ))}
     </div>
@@ -78,14 +97,14 @@ const lang = 'fr';
     </div>
   </div>
 
-  <script is:inline>
+  <script is:inline define:vars={{ i18n }}>
     const API = (a,b) => fetch(`/_actions/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());
     function openD(){document.getElementById('edit-dialog')?.classList.remove('hidden')} function closeD(){document.getElementById('edit-dialog')?.classList.add('hidden')}
     document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeD));
 
     const statusColors = { pending:'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400', confirmed:'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400', cancelled:'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400', completed:'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' };
-    const statusLabels = { pending:'En attente', confirmed:'Confirmée', cancelled:'Annulée', completed:'Terminée' };
-    const typeLabels = { room:'Chambre', restaurant:'Restaurant', service:'Service', formation:'Formation' };
+    const statusLabels = { pending:i18n.statusPending, confirmed:i18n.statusConfirmed, cancelled:i18n.statusCancelled, completed:i18n.statusCompleted };
+    const typeLabels = { room:i18n.typeRoom, restaurant:i18n.typeRestaurant, service:i18n.typeService, formation:i18n.typeFormation };
 
     let currentFilter = 'all', currentPage = 1;
     document.querySelectorAll('[data-filter]').forEach(btn => {
@@ -116,16 +135,16 @@ const lang = 'fr';
         <td class="px-4 py-3">${r.totalAmount ? escapeHtml(r.totalAmount)+' €' : '—'}</td>
         <td class="px-4 py-3"><span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[r.status]||""}">${escapeHtml(statusLabels[r.status]||r.status)}</span></td>
         <td class="px-4 py-3 space-x-2">
-          <button onclick="edit('${escapeHtml(r.id)}')" class="text-xs text-primary hover:underline">Modifier</button>
-          <button onclick="del('${escapeHtml(r.id)}')" class="text-xs text-destructive hover:underline">Supprimer</button>
+          <button onclick="edit('${escapeHtml(r.id)}')" class="text-xs text-primary hover:underline">${i18n.edit}</button>
+          <button onclick="del('${escapeHtml(r.id)}')" class="text-xs text-destructive hover:underline">${i18n.delete}</button>
         </td></tr>`).join('');
-      document.getElementById('pagination').innerHTML = `<span>${result.total||0} résultats</span><div class="flex gap-2">${currentPage>1?`<button onclick="goPage(${currentPage-1})" class="text-xs text-primary hover:underline">← Précédent</button>`:''}${(result.totalPages||0)>currentPage?`<button onclick="goPage(${currentPage+1})" class="text-xs text-primary hover:underline">Suivant →</button>`:''}</div>`;
+      document.getElementById('pagination').innerHTML = `<span>${result.total||0} ${i18n.results}</span><div class="flex gap-2">${currentPage>1?`<button onclick="goPage(${currentPage-1})" class="text-xs text-primary hover:underline">← ${i18n.previous}</button>`:''}${(result.totalPages||0)>currentPage?`<button onclick="goPage(${currentPage+1})" class="text-xs text-primary hover:underline">${i18n.next} →</button>`:''}</div>`;
     }
     window.goPage = function(p) { currentPage=p; load(); };
 
     document.getElementById('btn-add')?.addEventListener('click', () => {
       const f = document.getElementById('edit-form'); f.reset(); f.querySelector('[name=id]').value='';
-      document.getElementById('dialog-title').textContent = 'Nouvelle réservation'; openD();
+      document.getElementById('dialog-title').textContent = i18n.newTitle; openD();
     });
     window.edit = function(id) {
       const items = result.items||[]; const r = items.find(x=>x.id===id); if(!r) return;
@@ -135,7 +154,7 @@ const lang = 'fr';
       f.endDate.value = r.endDate ? new Date(r.endDate).toISOString().slice(0,16) : '';
       f.guestsCount.value=r.guestsCount||1; f.totalAmount.value=r.totalAmount||'';
       f.specialRequests.value=r.specialRequests||''; f.notes.value=r.notes||'';
-      document.getElementById('dialog-title').textContent='Modifier la réservation'; openD();
+      document.getElementById('dialog-title').textContent=i18n.editTitle; openD();
     };
     document.getElementById('edit-form')?.addEventListener('submit', async e => {
       e.preventDefault(); const f=e.target; const id=f.querySelector('[name=id]').value||undefined;
@@ -144,7 +163,7 @@ const lang = 'fr';
       await API('saveReservation', { id, type:f.type.value, status:f.status.value, startDate, endDate, guestsCount:parseInt(f.guestsCount.value)||1, totalAmount:f.totalAmount.value||null, specialRequests:f.specialRequests.value||undefined, notes:f.notes.value||undefined });
       closeD(); load();
     });
-    window.del = async id => { if(!confirm('Supprimer cette réservation ?')) return; await API('deleteReservation',{id}); load(); };
+    window.del = async id => { if(!confirm(i18n.confirmDelete)) return; await API('deleteReservation',{id}); load(); };
     load();
   </script>
 </AdminLayout>

@@ -3,6 +3,30 @@ import AdminLayout from '@/layouts/AdminLayout.astro';
 import { t } from '@/lib/i18n';
 export const prerender = false;
 const lang = 'fr';
+const i18n = {
+  upload: t('media.upload', lang),
+  filterAll: t('media.filter.all', lang),
+  filterGeneral: t('media.filter.general', lang),
+  filterRooms: t('media.filter.rooms', lang),
+  filterRestaurant: t('media.filter.restaurant', lang),
+  filterBlog: t('media.filter.blog', lang),
+  siteAssets: t('media.siteAssets', lang),
+  uploadTitle: t('media.uploadTitle', lang),
+  file: t('media.form.file', lang),
+  alt: t('media.form.alt', lang),
+  folder: t('media.form.folder', lang),
+  cancel: t('common.cancel', lang),
+  copyUrl: t('media.copyUrl', lang),
+  delete: t('common.delete', lang),
+  previous: t('common.previous', lang),
+  next: t('common.next', lang),
+  countSuffix: t('media.countSuffix', lang),
+  urlCopied: t('media.toast.urlCopied', lang),
+  uploading: t('media.uploading', lang),
+  errorUpload: t('media.toast.errorUpload', lang),
+  errorDelete: t('media.toast.errorDelete', lang),
+  confirmDelete: t('media.confirmDelete', lang),
+};
 
 const staticAssetsModules = import.meta.glob('@/assets/**/*.{jpg,jpeg,png,webp,gif,svg,avif}', {
   eager: true,
@@ -29,22 +53,22 @@ const staticAssets = Object.entries(staticAssetsModules)
         <h1 class="text-2xl font-bold tracking-tight">{t('media.title', lang)}</h1>
         <p class="text-muted-foreground">{t('media.subtitle', lang)}</p>
       </div>
-      <button id="btn-upload" type="button" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">+ Upload</button>
+      <button id="btn-upload" type="button" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">+ {t('media.upload', lang)}</button>
     </div>
 
     <div class="flex gap-4 items-center">
       <select id="folder-filter" class="flex h-9 rounded-md border border-input bg-background px-3 text-sm">
-        <option value="">Tous les dossiers</option>
-        <option value="general">Général</option>
-        <option value="rooms">Chambres</option>
-        <option value="restaurant">Restaurant</option>
-        <option value="blog">Blog</option>
+        <option value="">{t('media.filter.all', lang)}</option>
+        <option value="general">{t('media.filter.general', lang)}</option>
+        <option value="rooms">{t('media.filter.rooms', lang)}</option>
+        <option value="restaurant">{t('media.filter.restaurant', lang)}</option>
+        <option value="blog">{t('media.filter.blog', lang)}</option>
       </select>
     </div>
 
     <section class="space-y-3">
       <div class="flex items-center justify-between">
-        <h2 class="text-base font-semibold">Assets du site (lecture seule)</h2>
+        <h2 class="text-base font-semibold">{t('media.siteAssets', lang)}</h2>
         <span class="text-xs text-muted-foreground">{staticAssets.length} image(s)</span>
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
@@ -76,30 +100,30 @@ const staticAssets = Object.entries(staticAssetsModules)
     <div class="fixed inset-0 bg-black/50" data-close></div>
     <div class="fixed inset-0 flex items-center justify-center p-4">
       <div class="bg-card rounded-xl border border-border shadow-xl p-6 space-y-4 w-full max-w-md">
-        <h3 class="text-lg font-semibold">Uploader un fichier</h3>
+        <h3 class="text-lg font-semibold">{t('media.uploadTitle', lang)}</h3>
         <form id="upload-form" class="space-y-4" enctype="multipart/form-data">
           <div class="space-y-1">
-            <label class="text-sm font-medium">Fichier</label>
+            <label class="text-sm font-medium">{t('media.form.file', lang)}</label>
             <input name="file" type="file" required accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml,application/pdf" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
             <p class="text-xs text-muted-foreground">Max 10 Mo. JPEG, PNG, WebP, GIF, SVG, PDF.</p>
           </div>
-          <div class="space-y-1"><label class="text-sm font-medium">Texte alternatif</label><input name="altText" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('media.form.alt', lang)}</label><input name="altText" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
           <div class="space-y-1">
-            <label class="text-sm font-medium">Dossier</label>
+            <label class="text-sm font-medium">{t('media.form.folder', lang)}</label>
             <select name="folder" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm">
-              <option value="general">Général</option><option value="rooms">Chambres</option><option value="restaurant">Restaurant</option><option value="blog">Blog</option>
+              <option value="general">{t('media.filter.general', lang)}</option><option value="rooms">{t('media.filter.rooms', lang)}</option><option value="restaurant">{t('media.filter.restaurant', lang)}</option><option value="blog">{t('media.filter.blog', lang)}</option>
             </select>
           </div>
           <div class="flex gap-2">
-            <button type="submit" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90" id="upload-btn">Uploader</button>
-            <button type="button" data-close class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">Annuler</button>
+            <button type="submit" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90" id="upload-btn">{t('media.upload', lang)}</button>
+            <button type="button" data-close class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">{t('common.cancel', lang)}</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 
-  <script is:inline>
+  <script is:inline define:vars={{ i18n }}>
     const API=(a,b)=>fetch(`/_actions/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());
     function openU(){document.getElementById('upload-dialog')?.classList.remove('hidden')}function closeU(){document.getElementById('upload-dialog')?.classList.add('hidden')}
     document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeU));
@@ -116,7 +140,7 @@ const staticAssets = Object.entries(staticAssetsModules)
         const url=el.getAttribute('data-copy-static');
         if(!url) return;
         navigator.clipboard?.writeText(window.location.origin+url)
-          .then(()=>alert('URL copiée !'))
+          .then(()=>alert(i18n.urlCopied))
           .catch(()=>{});
       });
     });
@@ -141,17 +165,17 @@ const staticAssets = Object.entries(staticAssetsModules)
             <p class="text-xs text-muted-foreground">${escapeHtml(r.folder)} · ${(r.fileSize/1024).toFixed(0)} Ko</p>
           </div>
           <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-            <button onclick="copyUrl('${escapeHtml(r.fileUrl)}')" class="rounded-md bg-white px-3 py-1.5 text-xs font-medium text-gray-900 hover:bg-gray-100">Copier URL</button>
-            <button onclick="del('${escapeHtml(r.id)}')" class="rounded-md bg-destructive px-3 py-1.5 text-xs font-medium text-destructive-foreground hover:bg-destructive/90">Supprimer</button>
+            <button onclick="copyUrl('${escapeHtml(r.fileUrl)}')" class="rounded-md bg-white px-3 py-1.5 text-xs font-medium text-gray-900 hover:bg-gray-100">${i18n.copyUrl}</button>
+            <button onclick="del('${escapeHtml(r.id)}')" class="rounded-md bg-destructive px-3 py-1.5 text-xs font-medium text-destructive-foreground hover:bg-destructive/90">${i18n.delete}</button>
           </div>
         </div>`;
       }).join('');
-      document.getElementById('pagination').innerHTML=`<span>${result.total||0} fichier(s)</span><div class="flex gap-2">${currentPage>1?`<button onclick="goPage(${currentPage-1})" class="text-xs text-primary hover:underline">← Précédent</button>`:''}${(result.totalPages||0)>currentPage?`<button onclick="goPage(${currentPage+1})" class="text-xs text-primary hover:underline">Suivant →</button>`:''}</div>`;
+      document.getElementById('pagination').innerHTML=`<span>${result.total||0} ${i18n.countSuffix}</span><div class="flex gap-2">${currentPage>1?`<button onclick="goPage(${currentPage-1})" class="text-xs text-primary hover:underline">← ${i18n.previous}</button>`:''}${(result.totalPages||0)>currentPage?`<button onclick="goPage(${currentPage+1})" class="text-xs text-primary hover:underline">${i18n.next} →</button>`:''}</div>`;
     }
     window.goPage=p=>{currentPage=p;load()};
 
     window.copyUrl=function(url){
-      navigator.clipboard?.writeText(window.location.origin+url).then(()=>alert('URL copiée !')).catch(()=>{});
+      navigator.clipboard?.writeText(window.location.origin+url).then(()=>alert(i18n.urlCopied)).catch(()=>{});
     };
 
     // Upload via FormData (the uploadMedia action uses accept:'form')
@@ -160,16 +184,16 @@ const staticAssets = Object.entries(staticAssetsModules)
       const f=e.target;
       const formData=new FormData(f);
       const btn=document.getElementById('upload-btn');
-      btn.textContent='Upload en cours…';btn.disabled=true;
+      btn.textContent=i18n.uploading;btn.disabled=true;
       try{
         const r=await fetch('/_actions/uploadMedia',{method:'POST',body:formData});
         const data=await r.json();
-        if(data.error){alert('Erreur: '+data.error.message);return;}
+        if(data.error){alert(i18n.errorUpload+': '+data.error.message);return;}
         closeU();load();
-      }catch(err){alert('Erreur upload');}finally{btn.textContent='Uploader';btn.disabled=false;}
+      }catch(err){alert(i18n.errorUpload);}finally{btn.textContent=i18n.upload;btn.disabled=false;}
     });
 
-    window.del=async id=>{if(!confirm('Supprimer ce fichier ?'))return;await API('deleteMedia',{id});load()};
+    window.del=async id=>{if(!confirm(i18n.confirmDelete))return;await API('deleteMedia',{id});load()};
     load();
   </script>
 </AdminLayout>

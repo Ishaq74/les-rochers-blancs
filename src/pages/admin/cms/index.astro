@@ -1,0 +1,389 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import { t } from '@/lib/i18n';
+export const prerender = false;
+const lang = 'fr';
+const i18n = {
+  system: t('contentManager.system', lang),
+  custom: t('contentManager.custom', lang),
+  sectionsContent: t('contentManager.sectionsContent', lang),
+  edit: t('common.edit', lang),
+  delete: t('common.delete', lang),
+  results: t('common.results', lang),
+  confirmDeletePage: t('contentManager.confirmDeletePage', lang),
+  pageDeleted: t('contentManager.pageToast.deleted', lang),
+  deleteError: t('contentManager.pageToast.deleteError', lang),
+  loadError: t('contentManager.pageToast.loadError', lang),
+  titleRequired: t('contentManager.pageToast.titleRequired', lang),
+  slugInvalid: t('contentManager.pageToast.slugInvalid', lang),
+  slugExists: t('contentManager.pageToast.slugExists', lang),
+  pageCreated: t('contentManager.pageToast.created', lang),
+};
+---
+
+<AdminLayout title={t('contentManager.pagesTitle', lang)} activeNav="pages" lang={lang}>
+  <div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">{t('contentManager.pagesTitle', lang)}</h1>
+        <p class="text-sm text-muted-foreground">{t('contentManager.pagesSubtitle', lang)}</p>
+      </div>
+      <button id="btn-add-page" type="button" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 self-start sm:self-auto shrink-0">
+        <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+        {t('contentManager.newPage', lang)}
+      </button>
+    </div>
+
+    <!-- Toolbar: Search + View toggle + Filter -->
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex flex-1 items-center gap-3">
+        <!-- Search -->
+        <div class="relative flex-1 max-w-sm">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="search-input" type="search" placeholder={t('contentManager.searchPages', lang)} class="flex h-9 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+        </div>
+        <!-- Type filter -->
+        <select id="filter-type" class="h-9 rounded-md border border-input bg-background px-3 text-sm">
+          <option value="all">{t('contentManager.filterAll', lang)}</option>
+          <option value="system">{t('contentManager.filterSystem', lang)}</option>
+          <option value="custom">{t('contentManager.filterCustom', lang)}</option>
+        </select>
+      </div>
+      <!-- View mode toggle -->
+      <div class="flex items-center rounded-md border border-input p-0.5 bg-muted/30 self-start sm:self-auto">
+        <button type="button" data-view="cards" class="rounded px-2.5 py-1.5 text-xs font-medium transition-colors bg-background shadow-sm text-foreground" title="Vue cartes">
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </button>
+        <button type="button" data-view="list" class="rounded px-2.5 py-1.5 text-xs font-medium transition-colors text-muted-foreground hover:text-foreground" title="Vue liste">
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><circle cx="3" cy="6" r="1" fill="currentColor"/><circle cx="3" cy="12" r="1" fill="currentColor"/><circle cx="3" cy="18" r="1" fill="currentColor"/></svg>
+        </button>
+        <button type="button" data-view="table" class="rounded px-2.5 py-1.5 text-xs font-medium transition-colors text-muted-foreground hover:text-foreground" title="Vue tableau">
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats bar -->
+    <div id="stats-bar" class="flex items-center gap-4 text-xs text-muted-foreground">
+      <span id="page-count">— pages</span>
+      <span class="text-border">|</span>
+      <span id="filtered-count"></span>
+    </div>
+
+    <!-- Content area -->
+    <div id="pages-container">
+      <div class="flex items-center justify-center py-12">
+        <svg class="size-5 animate-spin text-muted-foreground" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span class="ml-2 text-sm text-muted-foreground">{t('common.loading', lang)}</span>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div id="empty-state" class="hidden">
+      <div class="flex flex-col items-center justify-center py-16 text-center">
+        <svg class="size-12 text-muted-foreground/40 mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 2H6a2 2 0 0 0-2 2v12"/><path d="M10 6h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/></svg>
+        <p class="text-lg font-medium text-muted-foreground">{t('contentManager.noPages', lang)}</p>
+        <p id="empty-hint" class="text-sm text-muted-foreground/70 mt-1">{t('contentManager.emptyHint', lang)}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- New page dialog -->
+  <div id="page-dialog" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" data-close-dialog></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+      <div class="bg-card rounded-xl border border-border shadow-2xl p-6 space-y-4 w-full max-w-md animate-in fade-in zoom-in-95">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold">{t('contentManager.newPage', lang)}</h3>
+          <button type="button" data-close-dialog class="rounded-md p-1 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
+            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button>
+        </div>
+        <div class="space-y-3">
+          <div class="space-y-1.5">
+            <label for="new-page-title" class="text-sm font-medium">{t('contentManager.pageForm.title', lang)}</label>
+            <input id="new-page-title" placeholder="Ex: À propos, Contact…" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+          </div>
+          <div class="space-y-1.5">
+            <label for="new-page-slug" class="text-sm font-medium">{t('contentManager.pageForm.slug', lang)}</label>
+            <div class="flex items-center gap-0">
+              <span class="inline-flex h-9 items-center rounded-l-md border border-r-0 border-input bg-muted px-3 text-xs text-muted-foreground">/</span>
+              <input id="new-page-slug" placeholder="a-propos" class="flex h-9 w-full rounded-r-md border border-input bg-background px-3 text-sm font-mono focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+            </div>
+            <p class="text-xs text-muted-foreground">{t('contentManager.pageForm.slugHint', lang)}</p>
+          </div>
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button id="btn-create-page" type="button" class="inline-flex flex-1 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">{t('contentManager.createPage', lang)}</button>
+          <button type="button" data-close-dialog class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">{t('common.cancel', lang)}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ i18n }}>
+    var API = function(action, body) {
+      return fetch('/_actions/' + action, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      }).then(function(r) { return r.json(); });
+    };
+
+    var pages = [];
+    var viewMode = localStorage.getItem('cms-view') || 'cards';
+    var searchQuery = '';
+    var filterType = 'all';
+
+    // ---- View mode toggle ----
+    document.querySelectorAll('[data-view]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        viewMode = btn.dataset.view;
+        localStorage.setItem('cms-view', viewMode);
+        updateViewButtons();
+        render();
+      });
+    });
+
+    function updateViewButtons() {
+      document.querySelectorAll('[data-view]').forEach(function(btn) {
+        var isActive = btn.dataset.view === viewMode;
+        btn.className = 'rounded px-2.5 py-1.5 text-xs font-medium transition-colors ' +
+          (isActive ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground');
+      });
+    }
+    updateViewButtons();
+
+    // ---- Search ----
+    document.getElementById('search-input')?.addEventListener('input', function() {
+      searchQuery = this.value.toLowerCase().trim();
+      render();
+    });
+
+    // ---- Filter ----
+    document.getElementById('filter-type')?.addEventListener('change', function() {
+      filterType = this.value;
+      render();
+    });
+
+    function getFiltered() {
+      return pages.filter(function(p) {
+        if (filterType === 'system' && !p.isSystem) return false;
+        if (filterType === 'custom' && p.isSystem) return false;
+        if (searchQuery && p.title.toLowerCase().indexOf(searchQuery) === -1 && p.slug.toLowerCase().indexOf(searchQuery) === -1) return false;
+        return true;
+      });
+    }
+
+    // ---- Load ----
+    async function load() {
+      try {
+        var res = await API('listPages', {});
+        var data = res?.data ?? res;
+        pages = Array.isArray(data) ? data : [];
+      } catch (e) {
+        pages = [];
+        showToast(i18n.loadError, 'error');
+      }
+
+      if (!pages.find(function(p) { return p.slug === 'accueil'; })) {
+        await API('savePage', { slug: 'accueil', title: "Page d'accueil", isSystem: true, sortOrder: 0 });
+        return load();
+      }
+
+      document.getElementById('page-count').textContent = pages.length + ' page' + (pages.length > 1 ? 's' : '');
+      render();
+    }
+
+    // ---- Render ----
+    function render() {
+      var container = document.getElementById('pages-container');
+      var emptyState = document.getElementById('empty-state');
+      var filteredCount = document.getElementById('filtered-count');
+      var filtered = getFiltered();
+
+      if (searchQuery || filterType !== 'all') {
+        filteredCount.textContent = filtered.length + ' ' + i18n.results;
+      } else {
+        filteredCount.textContent = '';
+      }
+
+      if (!filtered.length) {
+        container.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      emptyState.classList.add('hidden');
+
+      if (viewMode === 'cards') renderCards(container, filtered);
+      else if (viewMode === 'list') renderList(container, filtered);
+      else renderTable(container, filtered);
+    }
+
+    function renderCards(container, items) {
+      container.innerHTML = '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">' +
+        items.map(function(p) {
+          return '<div class="group rounded-xl border border-border bg-card shadow-sm hover:border-primary/50 hover:shadow-md transition-all overflow-hidden">' +
+            '<a href="/admin/cms/' + escapeHtml(p.slug) + '" class="block p-5 space-y-3">' +
+              '<div class="flex items-center justify-between gap-2">' +
+                '<h3 class="font-semibold text-base group-hover:text-primary transition-colors truncate">' + escapeHtml(p.title) + '</h3>' +
+                (p.isSystem ? '<span class="text-[10px] rounded-full bg-primary/10 text-primary px-2 py-0.5 font-medium uppercase shrink-0">' + i18n.system + '</span>' : '') +
+              '</div>' +
+              '<p class="text-xs text-muted-foreground font-mono">/' + escapeHtml(p.slug) + '</p>' +
+              '<div class="flex items-center gap-2 text-xs text-muted-foreground">' +
+                '<svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="17" width="18" height="4" rx="1"/></svg>' +
+                '<span>' + i18n.sectionsContent + '</span>' +
+                (p.updatedAt ? '<span class="ml-auto text-muted-foreground/60">' + formatDate(p.updatedAt) + '</span>' : '') +
+              '</div>' +
+            '</a>' +
+            (!p.isSystem ? '<div class="border-t border-border px-5 py-2 flex justify-end"><button type="button" data-del="' + escapeHtml(p.slug) + '" class="text-xs text-destructive/70 hover:text-destructive hover:underline transition-colors">' + i18n.delete + '</button></div>' : '') +
+          '</div>';
+        }).join('') +
+      '</div>';
+      bindDeleteButtons(container);
+    }
+
+    function renderList(container, items) {
+      container.innerHTML = '<div class="space-y-1">' +
+        items.map(function(p) {
+          return '<div class="group flex items-center gap-4 rounded-lg border border-transparent hover:border-border hover:bg-card px-4 py-3 transition-all">' +
+            '<div class="size-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">' +
+              '<svg class="size-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 2H6a2 2 0 0 0-2 2v12"/><path d="M10 6h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/></svg>' +
+            '</div>' +
+            '<a href="/admin/cms/' + escapeHtml(p.slug) + '" class="flex-1 min-w-0">' +
+              '<div class="flex items-center gap-2">' +
+                '<span class="font-medium text-sm group-hover:text-primary transition-colors truncate">' + escapeHtml(p.title) + '</span>' +
+                (p.isSystem ? '<span class="text-[9px] rounded-full bg-primary/10 text-primary px-1.5 py-0.5 font-medium uppercase shrink-0">' + i18n.system + '</span>' : '') +
+              '</div>' +
+              '<span class="text-xs text-muted-foreground font-mono">/' + escapeHtml(p.slug) + '</span>' +
+            '</a>' +
+            '<span class="text-xs text-muted-foreground hidden sm:block shrink-0">' + (p.updatedAt ? formatDate(p.updatedAt) : '') + '</span>' +
+            '<div class="flex items-center gap-1 shrink-0">' +
+              '<a href="/admin/cms/' + escapeHtml(p.slug) + '" class="rounded-md p-1.5 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" title="' + i18n.edit + '">' +
+                '<svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/></svg>' +
+              '</a>' +
+              (!p.isSystem ? '<button type="button" data-del="' + escapeHtml(p.slug) + '" class="rounded-md p-1.5 hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="' + i18n.delete + '"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>' : '<div class="w-8"></div>') +
+            '</div>' +
+          '</div>';
+        }).join('') +
+      '</div>';
+      bindDeleteButtons(container);
+    }
+
+    function renderTable(container, items) {
+      container.innerHTML = '<div class="rounded-lg border border-border overflow-hidden"><div class="overflow-x-auto">' +
+        '<table class="w-full text-sm">' +
+          '<thead><tr class="border-b border-border bg-muted/50">' +
+            '<th class="text-left px-4 py-3 font-medium text-muted-foreground">Titre</th>' +
+            '<th class="text-left px-4 py-3 font-medium text-muted-foreground hidden sm:table-cell">Slug</th>' +
+            '<th class="text-left px-4 py-3 font-medium text-muted-foreground hidden md:table-cell">Type</th>' +
+            '<th class="text-left px-4 py-3 font-medium text-muted-foreground hidden md:table-cell">Modifié</th>' +
+            '<th class="text-right px-4 py-3 font-medium text-muted-foreground">Actions</th>' +
+          '</tr></thead>' +
+          '<tbody>' +
+            items.map(function(p, i) {
+              return '<tr class="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">' +
+                '<td class="px-4 py-3"><a href="/admin/cms/' + escapeHtml(p.slug) + '" class="font-medium hover:text-primary transition-colors">' + escapeHtml(p.title) + '</a></td>' +
+                '<td class="px-4 py-3 text-muted-foreground font-mono text-xs hidden sm:table-cell">/' + escapeHtml(p.slug) + '</td>' +
+                '<td class="px-4 py-3 hidden md:table-cell">' +
+                  (p.isSystem ? '<span class="text-[10px] rounded-full bg-primary/10 text-primary px-2 py-0.5 font-medium uppercase">' + i18n.system + '</span>' : '<span class="text-[10px] rounded-full bg-muted text-muted-foreground px-2 py-0.5 font-medium uppercase">' + i18n.custom + '</span>') +
+                '</td>' +
+                '<td class="px-4 py-3 text-xs text-muted-foreground hidden md:table-cell">' + (p.updatedAt ? formatDate(p.updatedAt) : '—') + '</td>' +
+                '<td class="px-4 py-3 text-right"><div class="flex items-center justify-end gap-1">' +
+                  '<a href="/admin/cms/' + escapeHtml(p.slug) + '" class="rounded-md p-1.5 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" title="' + i18n.edit + '"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/></svg></a>' +
+                  (!p.isSystem ? '<button type="button" data-del="' + escapeHtml(p.slug) + '" class="rounded-md p-1.5 hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="' + i18n.delete + '"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>' : '') +
+                '</div></td>' +
+              '</tr>';
+            }).join('') +
+          '</tbody>' +
+        '</table>' +
+      '</div></div>';
+      bindDeleteButtons(container);
+    }
+
+    function bindDeleteButtons(container) {
+      container.querySelectorAll('[data-del]').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var slug = btn.dataset.del;
+          if (!confirm(i18n.confirmDeletePage + ' (' + slug + ')')) return;
+          API('deletePage', { slug: slug }).then(function() {
+            showToast(i18n.pageDeleted, 'success');
+            load();
+          }).catch(function() {
+            showToast(i18n.deleteError, 'error');
+          });
+        });
+      });
+    }
+
+    function formatDate(d) {
+      try {
+        var date = d instanceof Date ? d : new Date(d);
+        return date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+      } catch(e) { return ''; }
+    }
+
+    // ---- Dialog ----
+    function openDialog() {
+      document.getElementById('page-dialog')?.classList.remove('hidden');
+      setTimeout(function() { document.getElementById('new-page-title')?.focus(); }, 100);
+    }
+    function closeDialog() {
+      document.getElementById('page-dialog')?.classList.add('hidden');
+    }
+
+    document.getElementById('btn-add-page')?.addEventListener('click', openDialog);
+    document.querySelectorAll('[data-close-dialog]').forEach(function(el) { el.addEventListener('click', closeDialog); });
+
+    // Close dialog on Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeDialog();
+    });
+
+    // Auto-generate slug from title
+    document.getElementById('new-page-title')?.addEventListener('input', function() {
+      var slug = this.value
+        .toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+      document.getElementById('new-page-slug').value = slug;
+    });
+
+    document.getElementById('btn-create-page')?.addEventListener('click', async function() {
+      var btn = this;
+      var title = (document.getElementById('new-page-title')?.value || '').trim();
+      var slug = (document.getElementById('new-page-slug')?.value || '').trim();
+      if (!title || !slug) {
+        showToast(i18n.titleRequired, 'warning');
+        return;
+      }
+      if (!/^[a-z0-9-]+$/.test(slug)) {
+        showToast(i18n.slugInvalid, 'warning');
+        return;
+      }
+      if (pages.find(function(p) { return p.slug === slug; })) {
+        showToast(i18n.slugExists, 'warning');
+        return;
+      }
+      btn.disabled = true;
+      try {
+        await API('savePage', { slug: slug, title: title, isSystem: false, sortOrder: pages.length });
+        closeDialog();
+        document.getElementById('new-page-title').value = '';
+        document.getElementById('new-page-slug').value = '';
+        showToast(i18n.pageCreated + ' : ' + title, 'success');
+        await load();
+      } catch (err) {
+        showToast('Erreur : ' + (err.message || 'Échec de la création'), 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    load();
+  </script>
+</AdminLayout>

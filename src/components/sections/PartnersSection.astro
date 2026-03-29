@@ -1,10 +1,10 @@
 ---
 import { Icon } from 'astro-icon/components';
-import { t } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
 import { db } from '@/db';
 import { partners as partnersTable } from '@/db/schema';
 import { eq, asc } from 'drizzle-orm';
+import { cms } from '@/lib/settings';
 
 // Static fallback imports
 import alpesBivouac from '@/assets/partners/alpes_bivouac.webp';
@@ -64,6 +64,11 @@ try {
 } catch {
   partners = fallbackPartners;
 }
+
+const [partnersTitle, partnersDescription] = await Promise.all([
+  cms('partners', 'title', lang, 'partners.title'),
+  cms('partners', 'description', lang, 'partners.description'),
+]);
 ---
 
 <section id="partners" class="relative overflow-hidden section-padding bg-cream">
@@ -74,11 +79,11 @@ try {
     <!-- Header -->
     <div class="text-center mb-section animate-fade-up">
       <h2 class="heading-section mb-3">
-        {t('partners.title', lang)}
+        {partnersTitle}
       </h2>
       <div class="heading-accent-bar"><span class="heading-accent-bar-diamond"></span></div>
       <p class="section-subtitle max-w-2xl mx-auto">
-        {t('partners.description', lang)}
+        {partnersDescription}
       </p>
     </div>
 

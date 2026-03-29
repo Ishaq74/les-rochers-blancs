@@ -3,6 +3,15 @@ import AdminLayout from '@/layouts/AdminLayout.astro';
 import { t } from '@/lib/i18n';
 export const prerender = false;
 const lang = 'fr';
+const i18n = {
+  loading: t('common.loading', lang),
+  addSetting: t('settings.addSetting', lang),
+  keyPlaceholder: t('settings.form.keyPlaceholder', lang),
+  value: t('settings.form.value', lang),
+  category: t('settings.form.category', lang),
+  add: t('common.add', lang),
+  noSettings: t('settings.noSettings', lang),
+};
 ---
 
 <AdminLayout title={t('theme.title', lang)} activeNav="theme" lang={lang}>
@@ -12,28 +21,28 @@ const lang = 'fr';
       <p class="text-muted-foreground">{t('theme.subtitle', lang)}</p>
     </div>
 
-    <div id="loading" class="p-8 text-center text-muted-foreground">Chargement…</div>
+    <div id="loading" class="p-8 text-center text-muted-foreground">{t('common.loading', lang)}</div>
 
     <div id="theme-form" class="hidden space-y-6">
       <!-- Categories will be rendered dynamically -->
       <div id="categories-container" class="space-y-8"></div>
 
       <div class="border-t border-border pt-6 space-y-4">
-        <h3 class="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Ajouter un paramètre</h3>
+        <h3 class="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t('settings.addSetting', lang)}</h3>
         <div class="grid grid-cols-4 gap-4">
-          <input id="new-key" placeholder="Clé (ex: primary-color)" class="flex h-9 rounded-md border border-input bg-background px-3 text-sm" />
-          <input id="new-value" placeholder="Valeur (ex: #2563eb)" class="flex h-9 rounded-md border border-input bg-background px-3 text-sm" />
+          <input id="new-key" placeholder={t('settings.form.keyPlaceholder', lang)} class="flex h-9 rounded-md border border-input bg-background px-3 text-sm" />
+          <input id="new-value" placeholder={t('settings.form.value', lang)} class="flex h-9 rounded-md border border-input bg-background px-3 text-sm" />
           <select id="new-type" class="flex h-9 rounded-md border border-input bg-background px-3 text-sm">
             <option value="color">Couleur</option><option value="text">Texte</option><option value="number">Nombre</option><option value="font">Police</option>
           </select>
-          <input id="new-category" placeholder="Catégorie" value="general" class="flex h-9 rounded-md border border-input bg-background px-3 text-sm" />
+          <input id="new-category" placeholder={t('settings.form.category', lang)} value="general" class="flex h-9 rounded-md border border-input bg-background px-3 text-sm" />
         </div>
-        <button id="btn-add" type="button" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">+ Ajouter</button>
+        <button id="btn-add" type="button" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">+ {t('common.add', lang)}</button>
       </div>
     </div>
   </div>
 
-  <script is:inline>
+  <script is:inline define:vars={{ i18n }}>
     const API=(a,b)=>fetch(`/_actions/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());
 
     let settings=[];
@@ -55,7 +64,7 @@ const lang = 'fr';
 
       const container=document.getElementById('categories-container');
       const cats=Object.keys(categories).sort();
-      if(!cats.length){container.innerHTML='<p class="text-muted-foreground">Aucun paramètre de thème. Ajoutez-en ci-dessous.</p>';return;}
+      if(!cats.length){container.innerHTML=`<p class="text-muted-foreground">${escapeHtml(i18n.noSettings)}</p>`;return;}
 
       container.innerHTML=cats.map(cat=>`
         <div class="rounded-xl border border-border bg-card shadow-sm overflow-hidden">

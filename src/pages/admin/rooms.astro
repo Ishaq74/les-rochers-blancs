@@ -3,16 +3,28 @@ import AdminLayout from '@/layouts/AdminLayout.astro';
 import { t, LOCALES } from '@/lib/i18n';
 export const prerender = false;
 const lang = 'fr';
+const i18n = {
+  active: t('common.active', lang),
+  inactive: t('common.inactive', lang),
+  edit: t('common.edit', lang),
+  delete: t('common.delete', lang),
+  roomNewTitle: t('rooms.newTitle', lang),
+  roomEditTitle: t('rooms.editTitle', lang),
+  roomConfirmDelete: t('rooms.confirmDelete', lang),
+  extraNewTitle: t('rooms.extras.newTitle', lang),
+  extraEditTitle: t('rooms.extras.editTitle', lang),
+  extraConfirmDelete: t('rooms.extras.confirmDelete', lang),
+};
 ---
 
 <AdminLayout title={t('nav.rooms', lang)} activeNav="rooms" lang={lang}>
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-bold tracking-tight">Chambres</h1>
-        <p class="text-muted-foreground">Gérez les chambres et les extras</p>
+        <h1 class="text-2xl font-bold tracking-tight">{t('rooms.title', lang)}</h1>
+        <p class="text-muted-foreground">{t('rooms.subtitle', lang)}</p>
       </div>
-      <button id="btn-add-room" type="button" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">+ Ajouter</button>
+      <button id="btn-add-room" type="button" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">+ {t('rooms.new', lang)}</button>
     </div>
 
     <!-- Rooms table -->
@@ -20,32 +32,32 @@ const lang = 'fr';
       <table class="w-full text-sm">
         <thead class="border-b border-border bg-muted/50">
           <tr>
-            <th class="px-4 py-3 text-left font-medium">Nom</th>
-            <th class="px-4 py-3 text-left font-medium">Slug</th>
-            <th class="px-4 py-3 text-left font-medium">Type</th>
-            <th class="px-4 py-3 text-left font-medium">Capacité</th>
-            <th class="px-4 py-3 text-left font-medium">Prix/nuit</th>
+            <th class="px-4 py-3 text-left font-medium">{t('rooms.table.name', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('rooms.table.slug', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('rooms.table.type', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('rooms.table.capacity', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('rooms.table.pricePerNight', lang)}</th>
             <th class="px-4 py-3 text-left font-medium">{t('common.status', lang)}</th>
             <th class="px-4 py-3 text-left font-medium">{t('common.actions', lang)}</th>
           </tr>
         </thead>
         <tbody id="rooms-tbody"></tbody>
       </table>
-      <p id="rooms-empty" class="hidden p-8 text-center text-muted-foreground">{t('common.noResults', lang)}</p>
+      <p id="rooms-empty" class="hidden p-8 text-center text-muted-foreground">{t('rooms.noItems', lang)}</p>
     </div>
 
     <!-- Room Extras -->
     <div class="flex items-center justify-between">
-      <h2 class="text-xl font-semibold">Extras (petit-déjeuner, pension…)</h2>
-      <button id="btn-add-extra" type="button" class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium hover:bg-muted transition-colors">+ Extra</button>
+      <h2 class="text-xl font-semibold">{t('rooms.extras.title', lang)}</h2>
+      <button id="btn-add-extra" type="button" class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium hover:bg-muted transition-colors">+ {t('rooms.extras.new', lang)}</button>
     </div>
     <div class="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
       <table class="w-full text-sm">
         <thead class="border-b border-border bg-muted/50">
           <tr>
-            <th class="px-4 py-3 text-left font-medium">Label</th>
-            <th class="px-4 py-3 text-left font-medium">Slug</th>
-            <th class="px-4 py-3 text-left font-medium">Prix</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.label', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('rooms.table.slug', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.price', lang)}</th>
             <th class="px-4 py-3 text-left font-medium">{t('common.status', lang)}</th>
             <th class="px-4 py-3 text-left font-medium">{t('common.actions', lang)}</th>
           </tr>
@@ -60,16 +72,16 @@ const lang = 'fr';
   <div id="room-dialog" class="fixed inset-0 z-50 hidden">
     <div class="fixed inset-0 bg-black/50" data-close></div>
     <div class="fixed inset-y-0 right-0 w-full max-w-lg overflow-y-auto bg-card border-l border-border shadow-xl p-6 space-y-4">
-      <h2 id="room-dialog-title" class="text-lg font-semibold">Chambre</h2>
+      <h2 id="room-dialog-title" class="text-lg font-semibold">{t('rooms.newTitle', lang)}</h2>
       <form id="room-form" class="space-y-4">
         <input type="hidden" name="id" />
         <div class="grid grid-cols-2 gap-4">
           <div class="space-y-1">
-            <label class="text-sm font-medium">Slug *</label>
+            <label class="text-sm font-medium">{t('rooms.form.slug', lang)}</label>
             <input name="slug" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
           </div>
           <div class="space-y-1">
-            <label class="text-sm font-medium">Type *</label>
+            <label class="text-sm font-medium">{t('rooms.form.type', lang)}</label>
             <select name="roomType" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm">
               <option value="single">Single</option>
               <option value="double">Double</option>
@@ -81,19 +93,19 @@ const lang = 'fr';
             </select>
           </div>
           <div class="space-y-1">
-            <label class="text-sm font-medium">Capacité *</label>
+            <label class="text-sm font-medium">{t('rooms.form.capacity', lang)}</label>
             <input name="capacity" type="number" min="1" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
           </div>
           <div class="space-y-1">
-            <label class="text-sm font-medium">Prix/nuit (€) *</label>
+            <label class="text-sm font-medium">{t('rooms.form.pricePerNight', lang)}</label>
             <input name="pricePerNight" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
           </div>
           <div class="space-y-1">
-            <label class="text-sm font-medium">Image URL</label>
+            <label class="text-sm font-medium">{t('rooms.form.imageUrl', lang)}</label>
             <input name="imageUrl" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
           </div>
           <div class="space-y-1">
-            <label class="text-sm font-medium">Ordre</label>
+            <label class="text-sm font-medium">{t('rooms.form.sortOrder', lang)}</label>
             <input name="sortOrder" type="number" value="0" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
           </div>
         </div>
@@ -103,7 +115,7 @@ const lang = 'fr';
         </div>
         <!-- Translations tabs -->
         <div>
-          <p class="text-sm font-medium mb-2">Traductions</p>
+          <p class="text-sm font-medium mb-2">{t('common.translations', lang)}</p>
           <div class="flex gap-1 border-b border-border" id="room-locale-tabs">
             {LOCALES.map((loc, i) => (
               <button type="button" data-locale={loc} class:list={['px-3 py-1.5 text-sm font-medium border-b-2 transition-colors', i === 0 ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground']}>{loc.toUpperCase()}</button>
@@ -112,11 +124,11 @@ const lang = 'fr';
           {LOCALES.map((loc, i) => (
             <div data-locale-panel={loc} class:list={['space-y-3 pt-3', i !== 0 && 'hidden']}>
               <div class="space-y-1">
-                <label class="text-sm font-medium">Nom ({loc.toUpperCase()}) *</label>
+                <label class="text-sm font-medium">{t('common.name', lang)} ({loc.toUpperCase()}) *</label>
                 <input name={`trans_${loc}_name`} required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
               </div>
               <div class="space-y-1">
-                <label class="text-sm font-medium">Description ({loc.toUpperCase()})</label>
+                <label class="text-sm font-medium">{t('common.description', lang)} ({loc.toUpperCase()})</label>
                 <textarea name={`trans_${loc}_description`} rows="3" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"></textarea>
               </div>
             </div>
@@ -134,20 +146,20 @@ const lang = 'fr';
   <div id="extra-dialog" class="fixed inset-0 z-50 hidden">
     <div class="fixed inset-0 bg-black/50" data-close></div>
     <div class="fixed inset-y-0 right-0 w-full max-w-md overflow-y-auto bg-card border-l border-border shadow-xl p-6 space-y-4">
-      <h2 id="extra-dialog-title" class="text-lg font-semibold">Extra</h2>
+      <h2 id="extra-dialog-title" class="text-lg font-semibold">{t('rooms.extras.newTitle', lang)}</h2>
       <form id="extra-form" class="space-y-4">
         <input type="hidden" name="id" />
         <div class="grid grid-cols-2 gap-4">
           <div class="space-y-1">
-            <label class="text-sm font-medium">Slug *</label>
+            <label class="text-sm font-medium">{t('rooms.form.slug', lang)}</label>
             <input name="slug" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
           </div>
           <div class="space-y-1">
-            <label class="text-sm font-medium">Prix</label>
+            <label class="text-sm font-medium">{t('common.price', lang)}</label>
             <input name="price" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
           </div>
           <div class="space-y-1">
-            <label class="text-sm font-medium">Ordre</label>
+            <label class="text-sm font-medium">{t('common.sortOrder', lang)}</label>
             <input name="sortOrder" type="number" value="0" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
           </div>
         </div>
@@ -156,7 +168,7 @@ const lang = 'fr';
           <label for="extra-active" class="text-sm">{t('common.active', lang)}</label>
         </div>
         <div>
-          <p class="text-sm font-medium mb-2">Traductions</p>
+          <p class="text-sm font-medium mb-2">{t('common.translations', lang)}</p>
           <div class="flex gap-1 border-b border-border" id="extra-locale-tabs">
             {LOCALES.map((loc, i) => (
               <button type="button" data-locale={loc} class:list={['px-3 py-1.5 text-sm font-medium border-b-2 transition-colors', i === 0 ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground']}>{loc.toUpperCase()}</button>
@@ -165,7 +177,7 @@ const lang = 'fr';
           {LOCALES.map((loc, i) => (
             <div data-locale-panel={loc} class:list={['space-y-3 pt-3', i !== 0 && 'hidden']}>
               <div class="space-y-1">
-                <label class="text-sm font-medium">Label ({loc.toUpperCase()}) *</label>
+                <label class="text-sm font-medium">{t('common.label', lang)} ({loc.toUpperCase()}) *</label>
                 <input name={`trans_${loc}_label`} required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
               </div>
             </div>
@@ -179,7 +191,7 @@ const lang = 'fr';
     </div>
   </div>
 
-  <script is:inline define:vars={{ locales: LOCALES }}>
+  <script is:inline define:vars={{ locales: LOCALES, i18n }}>
     const API = (action, body) => fetch(`/_actions/${action}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(r => r.json());
 
     // Tab switching helper
@@ -232,10 +244,10 @@ const lang = 'fr';
           <td class="px-4 py-3">${escapeHtml(r.roomType)}</td>
           <td class="px-4 py-3">${escapeHtml(String(r.capacity))}</td>
           <td class="px-4 py-3">${escapeHtml(r.pricePerNight)} €</td>
-          <td class="px-4 py-3"><span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${r.isActive ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}">${r.isActive ? 'Actif' : 'Inactif'}</span></td>
+          <td class="px-4 py-3"><span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${r.isActive ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}">${r.isActive ? i18n.active : i18n.inactive}</span></td>
           <td class="px-4 py-3 space-x-2">
-            <button onclick="editRoom('${escapeHtml(r.id)}')" class="text-xs text-primary hover:underline">Modifier</button>
-            <button onclick="delRoom('${escapeHtml(r.id)}')" class="text-xs text-destructive hover:underline">Supprimer</button>
+            <button onclick="editRoom('${escapeHtml(r.id)}')" class="text-xs text-primary hover:underline">${i18n.edit}</button>
+            <button onclick="delRoom('${escapeHtml(r.id)}')" class="text-xs text-destructive hover:underline">${i18n.delete}</button>
           </td>
         </tr>`;
       }).join('');
@@ -259,14 +271,14 @@ const lang = 'fr';
         const descEl = f.querySelector(`[name=trans_${loc}_description]`);
         if (descEl) descEl.value = tr.description || '';
       });
-      document.getElementById('room-dialog-title').textContent = 'Modifier la chambre';
+      document.getElementById('room-dialog-title').textContent = i18n.roomEditTitle;
       openDialog('room-dialog');
     };
 
     document.getElementById('btn-add-room')?.addEventListener('click', () => {
       document.getElementById('room-form').reset();
       document.getElementById('room-form').querySelector('[name=id]').value = '';
-      document.getElementById('room-dialog-title').textContent = 'Nouvelle chambre';
+      document.getElementById('room-dialog-title').textContent = i18n.roomNewTitle;
       openDialog('room-dialog');
     });
 
@@ -295,7 +307,7 @@ const lang = 'fr';
     });
 
     window.delRoom = async function(id) {
-      if (!confirm('Supprimer cette chambre ?')) return;
+      if (!confirm(i18n.roomConfirmDelete)) return;
       await API('deleteRoom', { id });
       loadRooms();
     };
@@ -318,10 +330,10 @@ const lang = 'fr';
           <td class="px-4 py-3 font-medium">${escapeHtml(frTrans?.label || '—')}</td>
           <td class="px-4 py-3 text-muted-foreground">${escapeHtml(r.slug)}</td>
           <td class="px-4 py-3">${escapeHtml(r.price || '—')}</td>
-          <td class="px-4 py-3"><span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${r.isActive ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}">${r.isActive ? 'Actif' : 'Inactif'}</span></td>
+          <td class="px-4 py-3"><span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${r.isActive ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}">${r.isActive ? i18n.active : i18n.inactive}</span></td>
           <td class="px-4 py-3 space-x-2">
-            <button onclick="editExtra('${escapeHtml(r.id)}')" class="text-xs text-primary hover:underline">Modifier</button>
-            <button onclick="delExtra('${escapeHtml(r.id)}')" class="text-xs text-destructive hover:underline">Supprimer</button>
+            <button onclick="editExtra('${escapeHtml(r.id)}')" class="text-xs text-primary hover:underline">${i18n.edit}</button>
+            <button onclick="delExtra('${escapeHtml(r.id)}')" class="text-xs text-destructive hover:underline">${i18n.delete}</button>
           </td>
         </tr>`;
       }).join('');
@@ -340,14 +352,14 @@ const lang = 'fr';
         const tr = r.translations?.find(t => t.locale === loc) || {};
         f.querySelector(`[name=trans_${loc}_label]`).value = tr.label || '';
       });
-      document.getElementById('extra-dialog-title').textContent = 'Modifier l\'extra';
+      document.getElementById('extra-dialog-title').textContent = i18n.extraEditTitle;
       openDialog('extra-dialog');
     };
 
     document.getElementById('btn-add-extra')?.addEventListener('click', () => {
       document.getElementById('extra-form').reset();
       document.getElementById('extra-form').querySelector('[name=id]').value = '';
-      document.getElementById('extra-dialog-title').textContent = 'Nouvel extra';
+      document.getElementById('extra-dialog-title').textContent = i18n.extraNewTitle;
       openDialog('extra-dialog');
     });
 
@@ -372,7 +384,7 @@ const lang = 'fr';
     });
 
     window.delExtra = async function(id) {
-      if (!confirm('Supprimer cet extra ?')) return;
+      if (!confirm(i18n.extraConfirmDelete)) return;
       await API('deleteRoomExtra', { id });
       loadExtras();
     };

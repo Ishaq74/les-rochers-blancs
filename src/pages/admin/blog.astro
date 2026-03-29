@@ -4,6 +4,34 @@ import { t, LOCALES } from '@/lib/i18n';
 export const prerender = false;
 const lang = 'fr';
 const locales = LOCALES;
+const i18n = {
+  all: t('blog.filterAll', lang),
+  publishedFilter: t('blog.filterPublished', lang),
+  draftFilter: t('blog.filterDraft', lang),
+  titleFr: `${t('blog.table.title', lang)} (FR)`,
+  slug: t('common.slug', lang),
+  status: t('common.status', lang),
+  views: t('blog.table.views', lang),
+  date: t('blog.table.date', lang),
+  edit: t('common.edit', lang),
+  delete: t('common.delete', lang),
+  previous: t('common.previous', lang),
+  next: t('common.next', lang),
+  countSuffix: t('blog.countSuffix', lang),
+  untitled: t('blog.untitled', lang),
+  published: t('blog.publishedLabel', lang),
+  draft: t('blog.draft', lang),
+  newTitle: t('blog.newTitle', lang),
+  editTitle: t('blog.editTitle', lang),
+  confirmDelete: t('blog.confirmDelete', lang),
+  imageUrl: t('blog.form.imageUrl', lang),
+  selectImage: t('blog.selectImage', lang),
+  markdownBold: t('blog.markdown.bold', lang),
+  markdownItalic: t('blog.markdown.italic', lang),
+  markdownLink: t('blog.markdown.link', lang),
+  markdownImage: t('blog.markdown.image', lang),
+  close: t('common.close', lang),
+};
 ---
 
 <AdminLayout title={t('blog.title', lang)} activeNav="blog" lang={lang}>
@@ -17,20 +45,20 @@ const locales = LOCALES;
     </div>
 
     <div class="flex gap-2" id="pub-filters">
-      <button data-pub="" class="rounded-full px-3 py-1 text-xs font-medium border border-input bg-primary text-primary-foreground">Tous</button>
-      <button data-pub="true" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">Publiés</button>
-      <button data-pub="false" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">Brouillons</button>
+      <button data-pub="" class="rounded-full px-3 py-1 text-xs font-medium border border-input bg-primary text-primary-foreground">{t('blog.filterAll', lang)}</button>
+      <button data-pub="true" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">{t('blog.filterPublished', lang)}</button>
+      <button data-pub="false" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">{t('blog.filterDraft', lang)}</button>
     </div>
 
     <div class="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
       <table class="w-full text-sm">
         <thead class="border-b border-border bg-muted/50">
           <tr>
-            <th class="px-4 py-3 text-left font-medium">Titre (FR)</th>
-            <th class="px-4 py-3 text-left font-medium">Slug</th>
-            <th class="px-4 py-3 text-left font-medium">Statut</th>
-            <th class="px-4 py-3 text-left font-medium">Vues</th>
-            <th class="px-4 py-3 text-left font-medium">Date</th>
+            <th class="px-4 py-3 text-left font-medium">{t('blog.table.title', lang)} (FR)</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.slug', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.status', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('blog.table.views', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('blog.table.date', lang)}</th>
             <th class="px-4 py-3 text-left font-medium">{t('common.actions', lang)}</th>
           </tr>
         </thead>
@@ -51,10 +79,10 @@ const locales = LOCALES;
         <div class="grid grid-cols-2 gap-4">
           <div class="space-y-1"><label class="text-sm font-medium">Slug</label><input name="slug" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
           <div class="space-y-1">
-            <label class="text-sm font-medium">Image URL</label>
+            <label class="text-sm font-medium">{t('blog.form.imageUrl', lang)}</label>
             <div class="flex gap-2">
               <input name="imageUrl" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
-              <button type="button" id="pick-cover-image" class="shrink-0 rounded-md border border-input px-3 text-xs hover:bg-muted">Choisir</button>
+              <button type="button" id="pick-cover-image" class="shrink-0 rounded-md border border-input px-3 text-xs hover:bg-muted">{t('blog.selectImage', lang)}</button>
             </div>
           </div>
         </div>
@@ -82,10 +110,10 @@ const locales = LOCALES;
                     <label class="text-sm font-medium">Contenu ({l})</label>
                     <div class="flex items-center gap-2 text-xs">
                       <button type="button" class="rounded border border-input px-2 py-1" data-md-action="h2" data-locale={l}>H2</button>
-                      <button type="button" class="rounded border border-input px-2 py-1" data-md-action="bold" data-locale={l}>Gras</button>
-                      <button type="button" class="rounded border border-input px-2 py-1" data-md-action="italic" data-locale={l}>Italique</button>
-                      <button type="button" class="rounded border border-input px-2 py-1" data-md-action="link" data-locale={l}>Lien</button>
-                      <button type="button" class="rounded border border-input px-2 py-1" data-md-action="image" data-locale={l}>Image</button>
+                      <button type="button" class="rounded border border-input px-2 py-1" data-md-action="bold" data-locale={l}>{t('blog.markdown.bold', lang)}</button>
+                      <button type="button" class="rounded border border-input px-2 py-1" data-md-action="italic" data-locale={l}>{t('blog.markdown.italic', lang)}</button>
+                      <button type="button" class="rounded border border-input px-2 py-1" data-md-action="link" data-locale={l}>{t('blog.markdown.link', lang)}</button>
+                      <button type="button" class="rounded border border-input px-2 py-1" data-md-action="image" data-locale={l}>{t('blog.markdown.image', lang)}</button>
                       <button type="button" class="rounded border border-input px-2 py-1" data-md-action="preview" data-locale={l}>Preview</button>
                     </div>
                   </div>
@@ -110,20 +138,20 @@ const locales = LOCALES;
   </div>
 
   <!-- Media picker dialog -->
-  <div id="media-dialog" class="fixed inset-0 z-[60] hidden">
+  <div id="media-dialog" class="fixed inset-0 z-60 hidden">
     <div class="fixed inset-0 bg-black/50" data-close-media></div>
     <div class="fixed inset-0 flex items-center justify-center p-4">
       <div class="bg-card rounded-xl border border-border shadow-xl p-6 space-y-4 w-full max-w-4xl max-h-[85vh] overflow-hidden">
         <div class="flex items-center justify-between">
-          <h3 class="text-lg font-semibold">Sélectionner une image</h3>
-          <button type="button" data-close-media class="text-sm text-muted-foreground hover:text-foreground">Fermer</button>
+          <h3 class="text-lg font-semibold">{t('blog.selectImage', lang)}</h3>
+          <button type="button" data-close-media class="text-sm text-muted-foreground hover:text-foreground">{t('common.close', lang)}</button>
         </div>
         <div id="media-picker-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 overflow-y-auto max-h-[65vh]"></div>
       </div>
     </div>
   </div>
 
-  <script is:inline define:vars={{ locales }}>
+  <script is:inline define:vars={{ locales, i18n }}>
     const API=(a,b)=>fetch(`/_actions/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());
     function openD(){document.getElementById('edit-dialog')?.classList.remove('hidden')}function closeD(){document.getElementById('edit-dialog')?.classList.add('hidden')}
     document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeD));
@@ -239,23 +267,23 @@ const locales = LOCALES;
         const frT=(r.translations||[]).find(t=>t.locale==='fr');
         const d=r.createdAt?new Date(r.createdAt).toLocaleDateString('fr-FR'):'';
         return `<tr class="border-b border-border hover:bg-muted/50">
-        <td class="px-4 py-3 font-medium">${escapeHtml(frT?.title||'(sans titre)')}</td>
+        <td class="px-4 py-3 font-medium">${escapeHtml(frT?.title||i18n.untitled)}</td>
         <td class="px-4 py-3 text-xs text-muted-foreground">${escapeHtml(r.slug)}</td>
-        <td class="px-4 py-3"><span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${r.isPublished?'bg-green-100 text-green-800':'bg-gray-100 text-gray-800'}">${r.isPublished?'Publié':'Brouillon'}</span></td>
+        <td class="px-4 py-3"><span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${r.isPublished?'bg-green-100 text-green-800':'bg-gray-100 text-gray-800'}">${r.isPublished?i18n.published:i18n.draft}</span></td>
         <td class="px-4 py-3 text-sm">${r.viewsCount||0}</td>
         <td class="px-4 py-3 text-xs">${escapeHtml(d)}</td>
         <td class="px-4 py-3 space-x-2">
-          <button onclick="edit('${escapeHtml(r.id)}')" class="text-xs text-primary hover:underline">Modifier</button>
-          <button onclick="del('${escapeHtml(r.id)}')" class="text-xs text-destructive hover:underline">Supprimer</button>
+          <button onclick="edit('${escapeHtml(r.id)}')" class="text-xs text-primary hover:underline">${i18n.edit}</button>
+          <button onclick="del('${escapeHtml(r.id)}')" class="text-xs text-destructive hover:underline">${i18n.delete}</button>
         </td></tr>`;
       }).join('');
-      document.getElementById('pagination').innerHTML=`<span>${result.total||0} article(s)</span><div class="flex gap-2">${currentPage>1?`<button onclick="goPage(${currentPage-1})" class="text-xs text-primary hover:underline">← Précédent</button>`:''}${(result.totalPages||0)>currentPage?`<button onclick="goPage(${currentPage+1})" class="text-xs text-primary hover:underline">Suivant →</button>`:''}</div>`;
+      document.getElementById('pagination').innerHTML=`<span>${result.total||0} ${i18n.countSuffix}</span><div class="flex gap-2">${currentPage>1?`<button onclick="goPage(${currentPage-1})" class="text-xs text-primary hover:underline">← ${i18n.previous}</button>`:''}${(result.totalPages||0)>currentPage?`<button onclick="goPage(${currentPage+1})" class="text-xs text-primary hover:underline">${i18n.next} →</button>`:''}</div>`;
     }
     window.goPage=p=>{currentPage=p;load()};
 
     document.getElementById('btn-add')?.addEventListener('click',()=>{
       const f=document.getElementById('edit-form');f.reset();f.querySelector('[name=id]').value='';
-      document.getElementById('dialog-title').textContent='Nouvel article';openD();
+      document.getElementById('dialog-title').textContent=i18n.newTitle;openD();
     });
     document.getElementById('pick-cover-image')?.addEventListener('click',()=>openMediaDialog('cover'));
     document.querySelectorAll('[data-close-media]').forEach(el=>el.addEventListener('click',closeMediaDialog));
@@ -308,7 +336,7 @@ const locales = LOCALES;
         const mt=f.querySelector(`[name=metaTitle_${l}]`);if(mt)mt.value=tr?.metaTitle||'';
         const md=f.querySelector(`[name=metaDescription_${l}]`);if(md)md.value=tr?.metaDescription||'';
       });
-      document.getElementById('dialog-title').textContent='Modifier l\'article';openD();
+      document.getElementById('dialog-title').textContent=i18n.editTitle;openD();
     };
 
     document.getElementById('edit-form')?.addEventListener('submit',async e=>{
@@ -319,7 +347,7 @@ const locales = LOCALES;
       closeD();load();
     });
 
-    window.del=async id=>{if(!confirm('Supprimer cet article ?'))return;await API('deleteBlogPost',{id});load()};
+    window.del=async id=>{if(!confirm(i18n.confirmDelete))return;await API('deleteBlogPost',{id});load()};
     load();
   </script>
 </AdminLayout>

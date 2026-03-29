@@ -3,6 +3,31 @@ import AdminLayout from '@/layouts/AdminLayout.astro';
 import { t } from '@/lib/i18n';
 export const prerender = false;
 const lang = 'fr';
+const i18n = {
+  edit: t('common.edit', lang),
+  delete: t('common.delete', lang),
+  previous: t('common.previous', lang),
+  next: t('common.next', lang),
+  notes: t('common.notes', lang),
+  newTitle: t('invoices.newTitle', lang),
+  editTitle: t('invoices.editTitle', lang),
+  confirmDelete: t('invoices.confirmDelete', lang),
+  statusDraft: t('invoices.status.draft', lang),
+  statusSent: t('invoices.status.sent', lang),
+  statusPaid: t('invoices.status.paid', lang),
+  statusOverdue: t('invoices.status.overdue', lang),
+  statusCancelled: t('invoices.status.cancelled', lang),
+  number: t('invoices.table.number', lang),
+  client: t('invoices.table.client', lang),
+  date: t('invoices.table.date', lang),
+  dueDate: t('invoices.table.dueDate', lang),
+  total: t('invoices.table.total', lang),
+  countSuffix: t('invoices.table.number', lang),
+  descPlaceholder: t('invoices.form.descriptionPlaceholder', lang),
+  lines: t('invoices.form.lines', lang),
+  addLine: t('invoices.form.addLine', lang),
+  subtotal: t('invoices.form.subtotal', lang),
+};
 ---
 
 <AdminLayout title={t('invoices.title', lang)} activeNav="invoices" lang={lang}>
@@ -16,24 +41,24 @@ const lang = 'fr';
     </div>
 
     <div class="flex gap-2 flex-wrap" id="status-filters">
-      <button data-status="" class="rounded-full px-3 py-1 text-xs font-medium border border-input bg-primary text-primary-foreground">Tous</button>
-      <button data-status="draft" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">Brouillon</button>
-      <button data-status="sent" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">Envoyée</button>
-      <button data-status="paid" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">Payée</button>
-      <button data-status="overdue" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">En retard</button>
-      <button data-status="cancelled" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">Annulée</button>
+      <button data-status="" class="rounded-full px-3 py-1 text-xs font-medium border border-input bg-primary text-primary-foreground">{t('common.all', lang)}</button>
+      <button data-status="draft" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">{t('invoices.status.draft', lang)}</button>
+      <button data-status="sent" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">{t('invoices.status.sent', lang)}</button>
+      <button data-status="paid" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">{t('invoices.status.paid', lang)}</button>
+      <button data-status="overdue" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">{t('invoices.status.overdue', lang)}</button>
+      <button data-status="cancelled" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">{t('invoices.status.cancelled', lang)}</button>
     </div>
 
     <div class="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
       <table class="w-full text-sm">
         <thead class="border-b border-border bg-muted/50">
           <tr>
-            <th class="px-4 py-3 text-left font-medium">N° Facture</th>
-            <th class="px-4 py-3 text-left font-medium">Client</th>
-            <th class="px-4 py-3 text-left font-medium">Statut</th>
-            <th class="px-4 py-3 text-left font-medium">Date</th>
-            <th class="px-4 py-3 text-left font-medium">Échéance</th>
-            <th class="px-4 py-3 text-right font-medium">Total</th>
+            <th class="px-4 py-3 text-left font-medium">{t('invoices.table.number', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('invoices.table.client', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.status', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('invoices.table.date', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('invoices.table.dueDate', lang)}</th>
+            <th class="px-4 py-3 text-right font-medium">{t('invoices.table.total', lang)}</th>
             <th class="px-4 py-3 text-left font-medium">{t('common.actions', lang)}</th>
           </tr>
         </thead>
@@ -52,36 +77,36 @@ const lang = 'fr';
       <form id="edit-form" class="space-y-4">
         <input type="hidden" name="id" />
         <div class="grid grid-cols-2 gap-4">
-          <div class="space-y-1"><label class="text-sm font-medium">N° Facture</label><input name="invoiceNumber" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
-          <div class="space-y-1"><label class="text-sm font-medium">Statut</label>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('invoices.form.number', lang)}</label><input name="invoiceNumber" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('invoices.form.status', lang)}</label>
             <select name="status" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm">
-              <option value="draft">Brouillon</option><option value="sent">Envoyée</option><option value="paid">Payée</option><option value="overdue">En retard</option><option value="cancelled">Annulée</option>
+              <option value="draft">{t('invoices.status.draft', lang)}</option><option value="sent">{t('invoices.status.sent', lang)}</option><option value="paid">{t('invoices.status.paid', lang)}</option><option value="overdue">{t('invoices.status.overdue', lang)}</option><option value="cancelled">{t('invoices.status.cancelled', lang)}</option>
             </select>
           </div>
         </div>
-        <div class="space-y-1"><label class="text-sm font-medium">ID Client</label><input name="clientId" placeholder="UUID client (optionnel)" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        <div class="space-y-1"><label class="text-sm font-medium">{t('invoices.form.client', lang)}</label><input name="clientId" placeholder={t('invoices.form.clientPlaceholder', lang)} class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
         <div class="grid grid-cols-2 gap-4">
-          <div class="space-y-1"><label class="text-sm font-medium">Date émission</label><input name="issueDate" type="date" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
-          <div class="space-y-1"><label class="text-sm font-medium">Date échéance</label><input name="dueDate" type="date" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('invoices.form.issueDate', lang)}</label><input name="issueDate" type="date" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('invoices.form.dueDate', lang)}</label><input name="dueDate" type="date" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
         </div>
         <div class="grid grid-cols-2 gap-4">
-          <div class="space-y-1"><label class="text-sm font-medium">Taux TVA (%)</label><input name="taxRate" type="number" step="0.01" value="20" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('invoices.form.taxRate', lang)}</label><input name="taxRate" type="number" step="0.01" value="20" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
           <div class="space-y-1"><label class="text-sm font-medium">ID Réservation</label><input name="reservationId" placeholder="UUID (optionnel)" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
         </div>
 
         <!-- Line Items -->
         <div class="space-y-2">
-          <div class="flex items-center justify-between"><label class="text-sm font-medium">Lignes</label><button type="button" id="add-line" class="text-xs text-primary hover:underline">+ Ajouter une ligne</button></div>
+          <div class="flex items-center justify-between"><label class="text-sm font-medium">{t('invoices.form.lines', lang)}</label><button type="button" id="add-line" class="text-xs text-primary hover:underline">+ {t('invoices.form.addLine', lang)}</button></div>
           <div id="lines-container" class="space-y-2"></div>
         </div>
 
         <div class="grid grid-cols-3 gap-4 bg-muted/50 rounded-md p-3 text-sm">
-          <div>Sous-total : <span id="calc-subtotal">0.00</span> €</div>
+          <div>{t('invoices.form.subtotal', lang)} : <span id="calc-subtotal">0.00</span> €</div>
           <div>TVA : <span id="calc-tax">0.00</span> €</div>
-          <div class="font-bold">Total : <span id="calc-total">0.00</span> €</div>
+          <div class="font-bold">{t('invoices.form.totalTTC', lang)} : <span id="calc-total">0.00</span> €</div>
         </div>
 
-        <div class="space-y-1"><label class="text-sm font-medium">Notes</label><textarea name="notes" rows="2" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"></textarea></div>
+        <div class="space-y-1"><label class="text-sm font-medium">{t('common.notes', lang)}</label><textarea name="notes" rows="2" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"></textarea></div>
 
         <div class="flex gap-2 pt-2">
           <button type="submit" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('common.save', lang)}</button>
@@ -91,7 +116,7 @@ const lang = 'fr';
     </div>
   </div>
 
-  <script is:inline>
+  <script is:inline define:vars={{ i18n }}>
     const API = (a,b) => fetch(`/_actions/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());
     function openD(){document.getElementById('edit-dialog')?.classList.remove('hidden')} function closeD(){document.getElementById('edit-dialog')?.classList.add('hidden')}
     document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeD));
@@ -99,7 +124,7 @@ const lang = 'fr';
     let currentPage=1, currentStatus='';
     let result={items:[],total:0,totalPages:0};
 
-    const statusLabels = {draft:'Brouillon',sent:'Envoyée',paid:'Payée',overdue:'En retard',cancelled:'Annulée'};
+    const statusLabels = {draft:i18n.statusDraft,sent:i18n.statusSent,paid:i18n.statusPaid,overdue:i18n.statusOverdue,cancelled:i18n.statusCancelled};
     const statusColors = {draft:'bg-gray-100 text-gray-800',sent:'bg-blue-100 text-blue-800',paid:'bg-green-100 text-green-800',overdue:'bg-red-100 text-red-800',cancelled:'bg-gray-100 text-gray-500'};
 
     document.querySelectorAll('#status-filters button').forEach(btn => {
@@ -128,10 +153,10 @@ const lang = 'fr';
         <td class="px-4 py-3">${escapeHtml(r.dueDate||'')}</td>
         <td class="px-4 py-3 text-right font-medium">${escapeHtml(r.total||'0')} €</td>
         <td class="px-4 py-3 space-x-2">
-          <button onclick="edit('${escapeHtml(r.id)}')" class="text-xs text-primary hover:underline">Modifier</button>
-          <button onclick="del('${escapeHtml(r.id)}')" class="text-xs text-destructive hover:underline">Supprimer</button>
+          <button onclick="edit('${escapeHtml(r.id)}')" class="text-xs text-primary hover:underline">${i18n.edit}</button>
+          <button onclick="del('${escapeHtml(r.id)}')" class="text-xs text-destructive hover:underline">${i18n.delete}</button>
         </td></tr>`).join('');
-      document.getElementById('pagination').innerHTML=`<span>${result.total||0} facture(s)</span><div class="flex gap-2">${currentPage>1?`<button onclick="goPage(${currentPage-1})" class="text-xs text-primary hover:underline">← Précédent</button>`:''}${(result.totalPages||0)>currentPage?`<button onclick="goPage(${currentPage+1})" class="text-xs text-primary hover:underline">Suivant →</button>`:''}</div>`;
+      document.getElementById('pagination').innerHTML=`<span>${result.total||0} facture(s)</span><div class="flex gap-2">${currentPage>1?`<button onclick="goPage(${currentPage-1})" class="text-xs text-primary hover:underline">← ${i18n.previous}</button>`:''}${(result.totalPages||0)>currentPage?`<button onclick="goPage(${currentPage+1})" class="text-xs text-primary hover:underline">${i18n.next} →</button>`:''}</div>`;
     }
     window.goPage=p=>{currentPage=p;load()};
 
@@ -140,7 +165,7 @@ const lang = 'fr';
     function addLine(desc='',qty='1',price='',total=''){
       const i=lineIdx++;
       const div=document.createElement('div'); div.className='grid grid-cols-[1fr_60px_80px_80px_30px] gap-2 items-center'; div.dataset.line=i;
-      div.innerHTML=`<input name="line_desc_${i}" placeholder="Description" value="${escapeHtml(desc)}" required class="flex h-8 w-full rounded-md border border-input bg-background px-2 text-sm"><input name="line_qty_${i}" type="number" step="0.01" min="0" value="${escapeHtml(qty)}" class="flex h-8 w-full rounded-md border border-input bg-background px-2 text-sm" onchange="recalc()"><input name="line_price_${i}" type="number" step="0.01" min="0" value="${escapeHtml(price)}" placeholder="P.U." class="flex h-8 w-full rounded-md border border-input bg-background px-2 text-sm" onchange="recalc()"><span class="text-sm text-right line-total">${escapeHtml(total||'0.00')}</span><button type="button" onclick="this.parentElement.remove();recalc()" class="text-destructive text-xs">✕</button>`;
+      div.innerHTML=`<input name="line_desc_${i}" placeholder="${i18n.descPlaceholder}" value="${escapeHtml(desc)}" required class="flex h-8 w-full rounded-md border border-input bg-background px-2 text-sm"><input name="line_qty_${i}" type="number" step="0.01" min="0" value="${escapeHtml(qty)}" class="flex h-8 w-full rounded-md border border-input bg-background px-2 text-sm" onchange="recalc()"><input name="line_price_${i}" type="number" step="0.01" min="0" value="${escapeHtml(price)}" placeholder="P.U." class="flex h-8 w-full rounded-md border border-input bg-background px-2 text-sm" onchange="recalc()"><span class="text-sm text-right line-total">${escapeHtml(total||'0.00')}</span><button type="button" onclick="this.parentElement.remove();recalc()" class="text-destructive text-xs">✕</button>`;
       document.getElementById('lines-container').appendChild(div);
       recalc();
     }
@@ -168,7 +193,7 @@ const lang = 'fr';
       f.querySelector('[name=issueDate]').value=new Date().toISOString().slice(0,10);
       f.querySelector('[name=dueDate]').value=new Date(Date.now()+30*86400000).toISOString().slice(0,10);
       clearLines(); addLine();
-      document.getElementById('dialog-title').textContent='Nouvelle facture'; openD();
+      document.getElementById('dialog-title').textContent=i18n.newTitle; openD();
     });
 
     window.edit=async function(id){
@@ -182,7 +207,7 @@ const lang = 'fr';
       clearLines();
       // We don't have line items in list response — create empty line for edit
       addLine();
-      document.getElementById('dialog-title').textContent='Modifier la facture'; openD();
+      document.getElementById('dialog-title').textContent=i18n.editTitle; openD();
     };
 
     document.getElementById('edit-form')?.addEventListener('submit',async e=>{
@@ -202,7 +227,7 @@ const lang = 'fr';
       await API('saveInvoice',{id,invoiceNumber:f.invoiceNumber.value,clientId:f.clientId.value||undefined,reservationId:f.reservationId.value||undefined,status:f.status.value,issueDate:f.issueDate.value,dueDate:f.dueDate.value,subtotal:sub.toFixed(2),taxRate:rate.toString(),taxAmount:tax.toFixed(2),total:(sub+tax).toFixed(2),notes:f.notes.value||undefined,items});
       closeD();load();
     });
-    window.del=async id=>{if(!confirm('Supprimer cette facture ?'))return;await API('deleteInvoice',{id});load()};
+    window.del=async id=>{if(!confirm(i18n.confirmDelete))return;await API('deleteInvoice',{id});load()};
     load();
   </script>
 </AdminLayout>

@@ -89,11 +89,13 @@ export const server = {
       const [reservationsCount] = await db.select({ value: count() }).from(schema.reservations).where(eq(schema.reservations.status, 'pending'));
       const [postsCount] = await db.select({ value: count() }).from(schema.blogPosts).where(eq(schema.blogPosts.isPublished, true));
       const [messagesCount] = await db.select({ value: count() }).from(schema.contactMessages).where(eq(schema.contactMessages.isRead, false));
+      const [pendingCommentsCount] = await db.select({ value: count() }).from(schema.comments).where(and(eq(schema.comments.isApproved, false), eq(schema.comments.isRejected, false)));
       return {
         clients: clientsCount.value,
         pendingReservations: reservationsCount.value,
         publishedPosts: postsCount.value,
         unreadMessages: messagesCount.value,
+        pendingComments: pendingCommentsCount.value,
       };
     },
   }),
@@ -160,7 +162,7 @@ export const server = {
       slug: z.string().min(1),
       roomType: z.enum(['single', 'double', 'twin', 'triple', 'quad', 'five', 'suite']),
       capacity: z.number().int().positive(),
-      pricePerNight: z.string(),
+      pricePerNight: z.string().regex(/^\d+(\.\d{1,2})?$/, 'Must be a valid price (e.g. 120 or 120.50)'),
       imageUrl: z.string().optional(),
       isActive: z.boolean().default(true),
       sortOrder: z.number().int().default(0),
@@ -663,7 +665,7 @@ export const server = {
       id: uuidField.optional(),
       categoryId: uuidField,
       slug: z.string().min(1),
-      price: z.string(),
+      price: z.string().regex(/^\d+(\.\d{1,2})?$/, 'Must be a valid price (e.g. 12 or 12.50)'),
       imageUrl: z.string().optional(),
       isVegetarian: z.boolean().default(false),
       isVegan: z.boolean().default(false),
@@ -796,6 +798,80 @@ export const server = {
     handler: async (input, ctx) => {
       adminGuard(ctx);
       await db.delete(schema.blogPosts).where(eq(schema.blogPosts.id, input.id));
+      return { success: true };
+    },
+  }),
+
+  // -------------------------------------------------
+  // COMMENTS
+  // -------------------------------------------------
+  listComments: defineAction({
+    input: z.object({
+      ...paginationInput,
+      status: z.enum(['pending', 'approved', 'rejected']).optional(),
+    }),
+    handler: async (input, ctx) => {
+      adminGuard(ctx);
+      const { offset, limit } = paginate(input.page, input.limit);
+
+      const conditions = input.status === 'pending'
+        ? and(eq(schema.comments.isApproved, false), eq(schema.comments.isRejected, false))
+        : input.status === 'approved'
+          ? eq(schema.comments.isApproved, true)
+          : input.status === 'rejected'
+            ? eq(schema.comments.isRejected, true)
+            : undefined;
+
+      const rows = await db.select({
+        id: schema.comments.id,
+        postId: schema.comments.postId,
+        authorName: schema.comments.authorName,
+        authorEmail: schema.comments.authorEmail,
+        content: schema.comments.content,
+        isApproved: schema.comments.isApproved,
+        isRejected: schema.comments.isRejected,
+        createdAt: schema.comments.createdAt,
+        postSlug: schema.blogPosts.slug,
+      })
+        .from(schema.comments)
+        .leftJoin(schema.blogPosts, eq(schema.comments.postId, schema.blogPosts.id))
+        .where(conditions)
+        .orderBy(desc(schema.comments.createdAt))
+        .limit(limit)
+        .offset(offset);
+
+      const [total] = await db.select({ value: count() }).from(schema.comments).where(conditions);
+      return { items: rows, total: total.value, page: input.page, totalPages: Math.ceil(total.value / input.limit) };
+    },
+  }),
+
+  approveComment: defineAction({
+    input: z.object({ id: uuidField }),
+    handler: async (input, ctx) => {
+      adminGuard(ctx);
+      await db.update(schema.comments)
+        .set({ isApproved: true, isRejected: false })
+        .where(eq(schema.comments.id, input.id));
+      return { success: true };
+    },
+  }),
+
+  rejectComment: defineAction({
+    input: z.object({ id: uuidField }),
+    handler: async (input, ctx) => {
+      adminGuard(ctx);
+      await db.update(schema.comments)
+        .set({ isRejected: true, isApproved: false })
+        .where(eq(schema.comments.id, input.id));
+      return { success: true };
+    },
+  }),
+
+  deleteComment: defineAction({
+    input: z.object({ id: uuidField }),
+    handler: async (input, ctx) => {
+      adminGuard(ctx);
+      await db.delete(schema.comments).where(eq(schema.comments.id, input.id));
       return { success: true };
     },
   }),
@@ -1340,6 +1416,118 @@ export const server = {
         metaTitle: trans?.metaTitle ?? '',
         metaDescription: trans?.metaDescription ?? '',
       };
+    },
+  }),
+
+  // -------------------------------------------------
+  // PAGES (CMS page management)
+  // -------------------------------------------------
+  listPages: defineAction({
+    handler: async (_input, ctx) => {
+      adminGuard(ctx);
+      return db.select().from(schema.pages).orderBy(asc(schema.pages.sortOrder));
+    },
+  }),
+
+  savePage: defineAction({
+    input: z.object({
+      slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/),
+      title: z.string().min(1).max(200),
+      isSystem: z.boolean().default(false),
+      sortOrder: z.number().int().min(0).default(0),
+    }),
+    handler: async (input, ctx) => {
+      adminGuard(ctx);
+      const [row] = await db.insert(schema.pages).values({
+        slug: input.slug,
+        title: input.title,
+        isSystem: input.isSystem,
+        sortOrder: input.sortOrder,
+        updatedAt: new Date(),
+      }).onConflictDoUpdate({
+        target: schema.pages.slug,
+        set: {
+          title: input.title,
+          sortOrder: input.sortOrder,
+          updatedAt: new Date(),
+        },
+      }).returning();
+      return row;
+    },
+  }),
+
+  deletePage: defineAction({
+    input: z.object({ slug: z.string().min(1) }),
+    handler: async (input, ctx) => {
+      adminGuard(ctx);
+      // Prevent deleting system pages
+      const [page] = await db.select().from(schema.pages).where(eq(schema.pages.slug, input.slug));
+      if (page?.isSystem) {
+        throw new ActionError({ code: 'BAD_REQUEST', message: 'Cannot delete system page' });
+      }
+      // Delete associated sections
+      await db.delete(schema.pageSections).where(eq(schema.pageSections.pageSlug, input.slug));
+      await db.delete(schema.pages).where(eq(schema.pages.slug, input.slug));
+      return { success: true };
+    },
+  }),
+
+  // -------------------------------------------------
+  // PAGE SECTIONS (ordering & visibility)
+  // -------------------------------------------------
+  listPageSections: defineAction({
+    input: z.object({ pageSlug: z.string().default('accueil') }),
+    handler: async (input, ctx) => {
+      adminGuard(ctx);
+      return db.select().from(schema.pageSections)
+        .where(eq(schema.pageSections.pageSlug, input.pageSlug))
+        .orderBy(asc(schema.pageSections.sortOrder));
+    },
+  }),
+
+  savePageSections: defineAction({
+    input: z.object({
+      pageSlug: z.string().default('accueil'),
+      sections: z.array(z.object({
+        sectionKey: z.string().min(1).max(50),
+        sortOrder: z.number().int().min(0),
+        isVisible: z.boolean(),
+      })),
+    }),
+    handler: async (input, ctx) => {
+      adminGuard(ctx);
+      // Remove sections no longer in the list
+      const currentKeys = input.sections.map(s => s.sectionKey);
+      const existing = await db.select({ sectionKey: schema.pageSections.sectionKey })
+        .from(schema.pageSections)
+        .where(eq(schema.pageSections.pageSlug, input.pageSlug));
+      for (const row of existing) {
+        if (!currentKeys.includes(row.sectionKey)) {
+          await db.delete(schema.pageSections)
+            .where(and(
+              eq(schema.pageSections.pageSlug, input.pageSlug),
+              eq(schema.pageSections.sectionKey, row.sectionKey),
+            ));
+        }
+      }
+      // Upsert sections
+      for (const s of input.sections) {
+        await db.insert(schema.pageSections).values({
+          pageSlug: input.pageSlug,
+          sectionKey: s.sectionKey,
+          sortOrder: s.sortOrder,
+          isVisible: s.isVisible,
+          updatedAt: new Date(),
+        }).onConflictDoUpdate({
+          target: [schema.pageSections.pageSlug, schema.pageSections.sectionKey],
+          set: {
+            sortOrder: s.sortOrder,
+            isVisible: s.isVisible,
+            updatedAt: new Date(),
+          },
+        });
+      }
+      return { success: true };
     },
   }),
 };

@@ -10,6 +10,7 @@ import winterImage from '@/assets/season-winter.jpg';
 import { db } from '@/db';
 import { rooms as roomsTable, roomTranslations, roomExtras as roomExtrasTable, roomExtraTranslations } from '@/db/schema';
 import { eq, asc } from 'drizzle-orm';
+import { cms } from '@/lib/settings';
 
 interface Props {
   lang: Locale;
@@ -64,10 +65,21 @@ if (useFallback) {
   }));
 }
 
+const [hotelTitle, hotelSubtitle, hotelDescription, hotelDescription2, hotelGroupNote, hotelClosingNote, hotelPricingTitle, hotelExtrasTitle] = await Promise.all([
+  cms('hotel', 'title', lang, 'hotel.title'),
+  cms('hotel', 'subtitle', lang, 'hotel.subtitle'),
+  cms('hotel', 'description', lang, 'hotel.description'),
+  cms('hotel', 'description2', lang, 'hotel.description2'),
+  cms('hotel', 'groupNote', lang, 'hotel.groupNote'),
+  cms('hotel', 'closingNote', lang, 'hotel.closingNote'),
+  cms('hotel', 'pricingTitle', lang, 'hotel.pricingTitle'),
+  cms('hotel', 'extrasTitle', lang, 'hotel.extras.title'),
+]);
+
 const carouselImages = [
-  { src: roomImage, alt: t('hotel.title', lang) },
-  { src: summerImage, alt: t('hotel.title', lang) },
-  { src: winterImage, alt: t('hotel.title', lang) },
+  { src: roomImage, alt: hotelTitle },
+  { src: summerImage, alt: hotelTitle },
+  { src: winterImage, alt: hotelTitle },
 ];
 ---
 
@@ -79,11 +91,11 @@ const carouselImages = [
     <!-- Header -->
     <div class="text-center mb-section animate-fade-up">
       <h2 class="heading-section mb-3">
-        {t('hotel.title', lang)}
+        {hotelTitle}
       </h2>
       <div class="heading-accent-bar"><span class="heading-accent-bar-diamond"></span></div>
       <p class="font-serif text-xl text-muted-foreground italic">
-        {t('hotel.subtitle', lang)}
+        {hotelSubtitle}
       </p>
     </div>
 
@@ -117,28 +129,28 @@ const carouselImages = [
         <!-- Description -->
         <div class="mb-8">
           <p class="text-muted-foreground leading-relaxed mb-4 text-base">
-            {t('hotel.description', lang)}
+            {hotelDescription}
           </p>
           <p class="text-muted-foreground leading-relaxed mb-6 text-base">
-            {t('hotel.description2', lang)}
+            {hotelDescription2}
           </p>
           <div class="bg-accent/10 rounded-lg p-4 mb-6">
             <div class="flex items-start gap-3">
               <Icon name="mdi:information-outline" />
               <p class="text-sm text-muted-foreground">
-                {t('hotel.groupNote', lang)}
+                {hotelGroupNote}
               </p>
             </div>
           </div>
           <p class="text-sm text-muted-foreground italic">
-            {t('hotel.closingNote', lang)}
+            {hotelClosingNote}
           </p>
         </div>
 
         <!-- Rooms Pricing - 2 Column Grid -->
         <div>
           <h3 class="heading-subsection mb-6">
-            {t('hotel.pricingTitle', lang)}
+            {hotelPricingTitle}
           </h3>
           <div class="grid grid-cols-2 gap-item">
             {roomsData.map((room) => (
@@ -166,7 +178,7 @@ const carouselImages = [
       <div class="bg-secondary rounded-xl p-8">
         <h3 class="heading-subsection mb-6 flex items-center gap-2">
           <Icon name="mdi:check-circle" />
-          {t('hotel.extras.title', lang)}
+          {hotelExtrasTitle}
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-item">
           {extrasData.map((extra) => (

@@ -3,6 +3,23 @@ import AdminLayout from '@/layouts/AdminLayout.astro';
 import { t } from '@/lib/i18n';
 export const prerender = false;
 const lang = 'fr';
+const i18n = {
+  all: t('messages.filterAll', lang),
+  unread: t('messages.filterUnread', lang),
+  detail: t('messages.detail', lang),
+  close: t('common.close', lang),
+  previous: t('common.previous', lang),
+  next: t('common.next', lang),
+  view: t('common.view', lang),
+  delete: t('common.delete', lang),
+  countSuffix: t('messages.countSuffix', lang),
+  markRead: t('messages.markRead', lang),
+  markUnread: t('messages.markUnread', lang),
+  confirmDelete: t('messages.confirmDelete', lang),
+  toastDeleted: t('messages.toast.deleted', lang),
+  toastMarkedRead: t('messages.toast.markedRead', lang),
+  toastMarkedUnread: t('messages.toast.markedUnread', lang),
+};
 ---
 
 <AdminLayout title={t('messages.title', lang)} activeNav="messages" lang={lang}>
@@ -15,8 +32,8 @@ const lang = 'fr';
     </div>
 
     <div class="flex gap-2" id="read-filters">
-      <button data-unread="" class="rounded-full px-3 py-1 text-xs font-medium border border-input bg-primary text-primary-foreground">Tous</button>
-      <button data-unread="true" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">Non lus</button>
+      <button data-unread="" class="rounded-full px-3 py-1 text-xs font-medium border border-input bg-primary text-primary-foreground">{t('messages.filterAll', lang)}</button>
+      <button data-unread="true" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">{t('messages.filterUnread', lang)}</button>
     </div>
 
     <div class="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
@@ -24,10 +41,10 @@ const lang = 'fr';
         <thead class="border-b border-border bg-muted/50">
           <tr>
             <th class="px-4 py-3 text-left font-medium w-6"></th>
-            <th class="px-4 py-3 text-left font-medium">Expéditeur</th>
-            <th class="px-4 py-3 text-left font-medium">Message</th>
-            <th class="px-4 py-3 text-left font-medium">Langue</th>
-            <th class="px-4 py-3 text-left font-medium">Date</th>
+            <th class="px-4 py-3 text-left font-medium">{t('messages.table.sender', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('messages.table.message', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('messages.table.language', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('messages.table.date', lang)}</th>
             <th class="px-4 py-3 text-left font-medium">{t('common.actions', lang)}</th>
           </tr>
         </thead>
@@ -42,21 +59,21 @@ const lang = 'fr';
   <div id="detail-dialog" class="fixed inset-0 z-50 hidden">
     <div class="fixed inset-0 bg-black/50" data-close></div>
     <div class="fixed inset-y-0 right-0 w-full max-w-md overflow-y-auto bg-card border-l border-border shadow-xl p-6 space-y-4">
-      <h2 class="text-lg font-semibold">Détail du message</h2>
+      <h2 class="text-lg font-semibold">{t('messages.detail', lang)}</h2>
       <div class="space-y-3">
-        <div><span class="text-xs text-muted-foreground">Nom</span><p id="det-name" class="font-medium"></p></div>
-        <div><span class="text-xs text-muted-foreground">Email</span><p id="det-email" class="font-medium"></p></div>
-        <div><span class="text-xs text-muted-foreground">Langue</span><p id="det-locale"></p></div>
-        <div><span class="text-xs text-muted-foreground">Date</span><p id="det-date"></p></div>
-        <div><span class="text-xs text-muted-foreground">Message</span><p id="det-message" class="whitespace-pre-wrap bg-muted/50 rounded-md p-3 text-sm max-h-60 overflow-y-auto"></p></div>
+        <div><span class="text-xs text-muted-foreground">{t('messages.form.name', lang)}</span><p id="det-name" class="font-medium"></p></div>
+        <div><span class="text-xs text-muted-foreground">{t('messages.form.email', lang)}</span><p id="det-email" class="font-medium"></p></div>
+        <div><span class="text-xs text-muted-foreground">{t('messages.form.language', lang)}</span><p id="det-locale"></p></div>
+        <div><span class="text-xs text-muted-foreground">{t('messages.form.date', lang)}</span><p id="det-date"></p></div>
+        <div><span class="text-xs text-muted-foreground">{t('messages.form.message', lang)}</span><p id="det-message" class="whitespace-pre-wrap bg-muted/50 rounded-md p-3 text-sm max-h-60 overflow-y-auto"></p></div>
       </div>
       <div class="flex gap-2 pt-2">
-        <button type="button" data-close class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">Fermer</button>
+        <button type="button" data-close class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">{t('common.close', lang)}</button>
       </div>
     </div>
   </div>
 
-  <script is:inline>
+  <script is:inline define:vars={{ i18n }}>
     const API=(a,b)=>fetch(`/_actions/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());
     function openD(){document.getElementById('detail-dialog')?.classList.remove('hidden')}function closeD(){document.getElementById('detail-dialog')?.classList.add('hidden')}
     document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeD));
@@ -93,12 +110,12 @@ const lang = 'fr';
         <td class="px-4 py-3"><span class="inline-flex rounded-full bg-muted px-2 py-0.5 text-xs">${escapeHtml(r.locale||'fr')}</span></td>
         <td class="px-4 py-3 text-xs">${d}</td>
         <td class="px-4 py-3 space-x-2">
-          <button onclick="view('${r.id}')" class="text-xs text-primary hover:underline">Voir</button>
-          <button onclick="toggleRead('${r.id}',${r.isRead})" class="text-xs ${r.isRead?'text-yellow-600':'text-green-600'} hover:underline">${r.isRead?'Non lu':'Lu'}</button>
-          <button onclick="del('${r.id}')" class="text-xs text-destructive hover:underline">Supprimer</button>
+          <button onclick="view('${r.id}')" class="text-xs text-primary hover:underline">${i18n.view}</button>
+          <button onclick="toggleRead('${r.id}',${r.isRead})" class="text-xs ${r.isRead?'text-yellow-600':'text-green-600'} hover:underline">${r.isRead?i18n.markUnread:i18n.markRead}</button>
+          <button onclick="del('${r.id}')" class="text-xs text-destructive hover:underline">${i18n.delete}</button>
         </td></tr>`;
       }).join('');
-      document.getElementById('pagination').innerHTML=`<span>${result.total||0} message(s)</span><div class="flex gap-2">${currentPage>1?`<button onclick="goPage(${currentPage-1})" class="text-xs text-primary hover:underline">← Précédent</button>`:''}${(result.totalPages||0)>currentPage?`<button onclick="goPage(${currentPage+1})" class="text-xs text-primary hover:underline">Suivant →</button>`:''}</div>`;
+      document.getElementById('pagination').innerHTML=`<span>${result.total||0} ${i18n.countSuffix}</span><div class="flex gap-2">${currentPage>1?`<button onclick="goPage(${currentPage-1})" class="text-xs text-primary hover:underline">← ${i18n.previous}</button>`:''}${(result.totalPages||0)>currentPage?`<button onclick="goPage(${currentPage+1})" class="text-xs text-primary hover:underline">${i18n.next} →</button>`:''}</div>`;
     }
     window.goPage=p=>{currentPage=p;load()};
 
@@ -114,9 +131,11 @@ const lang = 'fr';
     };
 
     window.toggleRead=async function(id,isRead){
-      await API('markMessageRead',{id,isRead:!isRead});load();
+      await API('markMessageRead',{id,isRead:!isRead});
+      showToast(!isRead ? i18n.toastMarkedRead : i18n.toastMarkedUnread, 'success');
+      load();
     };
-    window.del=async id=>{if(!confirm('Supprimer ce message ?'))return;await API('deleteContactMessage',{id});load()};
+    window.del=async id=>{if(!confirm(i18n.confirmDelete))return;await API('deleteContactMessage',{id});showToast(i18n.toastDeleted,'success');load()};
     load();
   </script>
 </AdminLayout>

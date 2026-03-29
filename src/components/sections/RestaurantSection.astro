@@ -1,5 +1,4 @@
 ---
-import { t } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/starwind/carousel';
 import { Button } from '@/components/starwind/button';
@@ -8,6 +7,7 @@ import { Image } from 'astro:assets';
 import restaurantImage from '@/assets/restaurant.jpg';
 import summerImage from '@/assets/season-summer.jpg';
 import heroImage from '@/assets/hero-mountain.jpg';
+import { cms, getSetting } from '@/lib/settings';
 
 interface Props {
   lang: Locale;
@@ -15,12 +15,30 @@ interface Props {
 
 const { lang } = Astro.props;
 
+// CMS-driven content with i18n fallback
+const [restTitle, restSubtitle, restDescription, groupTitle, groupDescription, contactUs, pricingTitle] = await Promise.all([
+  cms('restaurant', 'title', lang),
+  cms('restaurant', 'subtitle', lang),
+  cms('restaurant', 'description', lang),
+  cms('restaurant', 'groupTitle', lang),
+  cms('restaurant', 'groupDescription', lang),
+  cms('restaurant', 'contactUs', lang),
+  cms('restaurant', 'pricingTitle', lang),
+]);
+
+const contactEmail = await getSetting('contact_email', 'contact.emailValue', lang);
+
 const pricingKeys = ['dailySpecial', 'specialty', 'menu', 'childMenu'] as const;
+const pricingItems = await Promise.all(
+  pricingKeys.map(async (key) => ({
+    label: await cms('restaurant', `pricing.${key}`, lang, `restaurant.pricing.${key}`),
+  }))
+);
 
 const carouselImages = [
-  { src: restaurantImage, alt: t('restaurant.title', lang) },
-  { src: summerImage, alt: t('restaurant.title', lang) },
-  { src: heroImage, alt: t('restaurant.title', lang) },
+  { src: restaurantImage, alt: restTitle },
+  { src: summerImage, alt: restTitle },
+  { src: heroImage, alt: restTitle },
 ];
 ---
 
@@ -32,11 +50,11 @@ const carouselImages = [
     <!-- Header -->
     <div class="text-center mb-section animate-fade-up">
       <h2 class="heading-section mb-3">
-        {t('restaurant.title', lang)}
+        {restTitle}
       </h2>
       <div class="heading-accent-bar"><span class="heading-accent-bar-diamond"></span></div>
       <p class="font-serif text-xl text-muted-foreground italic">
-        {t('restaurant.subtitle', lang)}
+        {restSubtitle}
       </p>
     </div>
 
@@ -70,20 +88,20 @@ const carouselImages = [
         <!-- Description -->
         <div class="mb-8">
           <p class="text-muted-foreground leading-relaxed mb-6 text-base">
-            {t('restaurant.description', lang)}
+            {restDescription}
           </p>
 
           <!-- Group / Seminars -->
           <div class="bg-accent/10 rounded-lg p-5">
             <h3 class="heading-card mb-2 flex items-center gap-2">
               <Icon name="mdi:account-group" class="size-4 text-accent" />
-              {t('restaurant.groupTitle', lang)}
+              {groupTitle}
             </h3>
             <p class="text-sm text-muted-foreground mb-3">
-              {t('restaurant.groupDescription', lang)}
+              {groupDescription}
             </p>
-            <Button href={`mailto:${t('contact.emailValue', lang)}`} variant="outline" size="sm" class="font-semibold">
-              {t('restaurant.contactUs', lang)}
+            <Button href={`mailto:${contactEmail}`} variant="outline" size="sm" class="font-semibold">
+              {contactUs}
             </Button>
           </div>
         </div>
@@ -92,13 +110,13 @@ const carouselImages = [
         <div>
           <h3 class="heading-subsection mb-6 flex items-center gap-2">
             <Icon name="mdi:silverware-fork-knife" class="size-5 text-accent" />
-            {t('restaurant.pricingTitle', lang)}
+            {pricingTitle}
           </h3>
           <div class="grid grid-cols-2 gap-item mb-6">
-            {pricingKeys.map((key) => (
+            {pricingItems.map((item) => (
               <div class="bg-card border border-border rounded-xl p-5">
                 <p class="text-sm text-foreground font-medium leading-relaxed">
-                  {t(`restaurant.pricing.${key}`, lang)}
+                  {item.label}
                 </p>
               </div>
             ))}

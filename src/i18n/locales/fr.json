@@ -39,6 +39,41 @@
       "hotelLabel": "Hôtel",
       "hotelDates": "Du 21/12/26 au 7/1/27 et du 9/2/27 au 10/3/27 (+week-end janvier et mars)",
       "closedDays": "Fermé le Lundi et le Dimanche Soir"
+    },
+    "adminSubtitle": "Gérez les périodes d'ouverture de l'établissement",
+    "new": "Nouvelle période",
+    "editTitle": "Modifier la période",
+    "newTitle": "Nouvelle période",
+    "confirmDelete": "Supprimer cette période ?",
+    "noItems": "Aucune période",
+    "countSuffix": "période(s)",
+    "form": {
+      "season": "Saison *",
+      "year": "Année *",
+      "restaurantStart": "Restaurant début",
+      "restaurantEnd": "Restaurant fin",
+      "hotelStart": "Hôtel début",
+      "hotelEnd": "Hôtel fin",
+      "sortOrder": "Ordre"
+    },
+    "seasonOptions": {
+      "summer": "Été",
+      "winter": "Hiver"
+    },
+    "table": {
+      "season": "Saison",
+      "year": "Année",
+      "restaurant": "Restaurant",
+      "hotel": "Hôtel",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "toast": {
+      "created": "Période créée",
+      "updated": "Période mise à jour",
+      "deleted": "Période supprimée",
+      "errorSave": "Erreur lors de la sauvegarde",
+      "errorDelete": "Erreur lors de la suppression"
     }
   },
   "hotel": {
@@ -154,7 +189,34 @@
   "messages": {
     "title": "Messages",
     "subtitle": "Consultez et traitez les messages de contact",
-    "noItems": "Aucun message"
+    "noItems": "Aucun message",
+    "filterAll": "Tous",
+    "filterUnread": "Non lus",
+    "detail": "Détail du message",
+    "confirmDelete": "Supprimer ce message ?",
+    "countSuffix": "message(s)",
+    "markRead": "Lu",
+    "markUnread": "Non lu",
+    "table": {
+      "sender": "Expéditeur",
+      "message": "Message",
+      "language": "Langue",
+      "date": "Date",
+      "actions": "Actions"
+    },
+    "form": {
+      "name": "Nom",
+      "email": "Email",
+      "language": "Langue",
+      "date": "Date",
+      "message": "Message"
+    },
+    "toast": {
+      "deleted": "Message supprimé",
+      "markedRead": "Marqué comme lu",
+      "markedUnread": "Marqué comme non lu",
+      "error": "Erreur"
+    }
   },
   "footer": {
     "brandName": "Les Rochers Blancs",
@@ -207,7 +269,7 @@
     "signOut": "Déconnexion",
     "nav": {
       "dashboard": "Dashboard",
-      "content": "Contenu CMS",
+      "pages": "Pages",
       "menu": "Menus Restaurant",
       "services": "Services",
       "formations": "Formations",
@@ -219,7 +281,11 @@
       "quotes": "Devis",
       "media": "Médiathèque",
       "theme": "Thème",
-      "settings": "Paramètres"
+      "settings": "Paramètres",
+      "dividerHotel": "Hôtel",
+      "dividerCms": "CMS",
+      "dividerBusiness": "Gestion",
+      "dividerConfig": "Configuration"
     }
   },
   "common": {
@@ -245,7 +311,68 @@
     "date": "Date",
     "noResults": "Aucun résultat",
     "errorSave": "Erreur lors de la sauvegarde",
-    "errorDelete": "Erreur lors de la suppression"
+    "errorDelete": "Erreur lors de la suppression",
+    "all": "Tous",
+    "loading": "Chargement…",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "close": "Fermer",
+    "search": "Rechercher",
+    "confirm": "Confirmer",
+    "sortOrder": "Ordre",
+    "translations": "Traductions",
+    "view": "Voir",
+    "type": "Type",
+    "price": "Prix",
+    "results": "résultats",
+    "description": "Description",
+    "capacity": "Capacité",
+    "imageUrl": "Image URL",
+    "label": "Label",
+    "year": "Année",
+    "published": "Publié",
+    "draft": "Brouillon"
+  },
+  "rooms": {
+    "title": "Chambres",
+    "subtitle": "Gérez les chambres et les extras",
+    "new": "Ajouter une chambre",
+    "editTitle": "Modifier la chambre",
+    "newTitle": "Nouvelle chambre",
+    "confirmDelete": "Supprimer cette chambre ?",
+    "noItems": "Aucune chambre",
+    "countSuffix": "chambre(s)",
+    "extras": {
+      "title": "Extras (petit-déjeuner, pension…)",
+      "new": "Ajouter un extra",
+      "editTitle": "Modifier l'extra",
+      "newTitle": "Nouvel extra",
+      "confirmDelete": "Supprimer cet extra ?"
+    },
+    "form": {
+      "slug": "Slug *",
+      "type": "Type *",
+      "capacity": "Capacité *",
+      "pricePerNight": "Prix/nuit (€) *",
+      "imageUrl": "Image URL",
+      "sortOrder": "Ordre"
+    },
+    "table": {
+      "name": "Nom",
+      "slug": "Slug",
+      "type": "Type",
+      "capacity": "Capacité",
+      "pricePerNight": "Prix/nuit",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "toast": {
+      "created": "Chambre créée",
+      "updated": "Chambre mise à jour",
+      "deleted": "Chambre supprimée",
+      "errorSave": "Erreur lors de la sauvegarde",
+      "errorDelete": "Erreur lors de la suppression"
+    }
   },
   "dashboard": {
     "title": "Dashboard",
@@ -381,6 +508,14 @@
     "confirmDelete": "Supprimer ce devis ?",
     "confirmConvert": "Convertir ce devis en facture ?",
     "noItems": "Aucun devis",
+    "countSuffix": "devis",
+    "convert": {
+      "title": "Convertir en facture",
+      "invoiceNumber": "N° Facture",
+      "dueDate": "Date échéance",
+      "submit": "Convertir",
+      "toInvoice": "→ Facture"
+    },
     "form": {
       "number": "Numéro de devis",
       "client": "Client",
@@ -476,6 +611,19 @@
     "noItems": "Aucun article",
     "published": "Publié",
     "draft": "Brouillon",
+    "filterAll": "Tous",
+    "filterPublished": "Publiés",
+    "filterDraft": "Brouillons",
+    "countSuffix": "article(s)",
+    "untitled": "(sans titre)",
+    "publishedLabel": "Publié",
+    "selectImage": "Sélectionner une image",
+    "markdown": {
+      "bold": "Gras",
+      "italic": "Italique",
+      "link": "Lien",
+      "image": "Image"
+    },
     "form": {
       "slug": "Slug (URL)",
       "imageUrl": "Image de couverture (URL)",
@@ -511,6 +659,8 @@
     "articleLabel": "Article",
     "approve": "Approuver",
     "reject": "Rejeter",
+    "countSuffix": "commentaire(s)",
+    "filterAll": "Tous",
     "table": {
       "author": "Auteur",
       "comment": "Commentaire",
@@ -602,6 +752,23 @@
     "noItems": "Aucun fichier uploadé",
     "uploadFirst": "Uploader votre premier fichier",
     "confirmDelete": "Supprimer ce fichier ?",
+    "uploadTitle": "Uploader un fichier",
+    "copyUrl": "Copier URL",
+    "countSuffix": "fichier(s)",
+    "uploading": "Upload en cours…",
+    "siteAssets": "Assets du site (lecture seule)",
+    "form": {
+      "file": "Fichier",
+      "alt": "Texte alternatif",
+      "folder": "Dossier"
+    },
+    "filter": {
+      "all": "Tous les dossiers",
+      "general": "Général",
+      "rooms": "Chambres",
+      "restaurant": "Restaurant",
+      "blog": "Blog"
+    },
     "toast": {
       "uploaded": "{{count}} fichier(s) uploadé(s)",
       "urlCopied": "URL copiée",
@@ -648,6 +815,22 @@
     "subtitle": "Configurez les paramètres du site",
     "save": "Sauvegarder",
     "backup": "Backup",
+    "addSetting": "Ajouter un paramètre",
+    "noSettings": "Aucun paramètre. Ajoutez-en ci-dessous.",
+    "form": {
+      "key": "Clé",
+      "keyPlaceholder": "Clé (ex: site_name)",
+      "value": "Valeur",
+      "category": "Catégorie"
+    },
+    "types": {
+      "text": "Texte",
+      "email": "Email",
+      "url": "URL",
+      "textarea": "Texte long",
+      "boolean": "Booléen",
+      "number": "Nombre"
+    },
     "fields": {
       "site_name": "Nom du site",
       "site_description": "Description",
@@ -704,6 +887,34 @@
       "prefillDescription": "Les champs vides ont été remplis depuis les traductions par défaut. Cliquez sur \"Sauvegarder\" pour enregistrer.",
       "saveSuccess": "Contenu sauvegardé avec succès",
       "saveError": "Impossible de sauvegarder le contenu"
+    },
+    "pagesTitle": "Pages du site",
+    "pagesSubtitle": "Gérez les pages, réorganisez leurs sections et modifiez le contenu.",
+    "newPage": "Nouvelle page",
+    "createPage": "Créer la page",
+    "searchPages": "Rechercher une page…",
+    "filterAll": "Toutes",
+    "filterSystem": "Système",
+    "filterCustom": "Personnalisées",
+    "noPages": "Aucune page trouvée",
+    "emptyHint": "Modifiez vos filtres ou créez une nouvelle page.",
+    "system": "Système",
+    "custom": "Perso",
+    "sectionsContent": "Sections & contenu",
+    "confirmDeletePage": "Supprimer la page et toutes ses sections ?",
+    "pageForm": {
+      "title": "Titre",
+      "slug": "Slug (URL)",
+      "slugHint": "Lettres minuscules, chiffres et tirets uniquement."
+    },
+    "pageToast": {
+      "created": "Page créée",
+      "deleted": "Page supprimée",
+      "deleteError": "Erreur lors de la suppression",
+      "loadError": "Erreur de chargement des pages",
+      "titleRequired": "Titre et slug requis",
+      "slugInvalid": "Le slug ne peut contenir que des lettres minuscules, chiffres et tirets",
+      "slugExists": "Ce slug existe déjà"
     }
   },
   "menuManager": {
@@ -771,7 +982,34 @@
   "partners": {
     "sectionLabel": "Partenaires",
     "title": "Nos Partenaires",
-    "description": "Augmentez vos moments de détente et d'évasion durant votre séjour au Semnoz avec les professionnels de notre région."
+    "description": "Augmentez vos moments de détente et d'évasion durant votre séjour au Semnoz avec les professionnels de notre région.",
+    "adminSubtitle": "Gérez les partenaires du site",
+    "new": "Ajouter un partenaire",
+    "editTitle": "Modifier le partenaire",
+    "newTitle": "Nouveau partenaire",
+    "confirmDelete": "Supprimer ce partenaire ?",
+    "noItems": "Aucun partenaire",
+    "countSuffix": "partenaire(s)",
+    "form": {
+      "name": "Nom *",
+      "url": "URL du site",
+      "logoUrl": "Logo URL",
+      "sortOrder": "Ordre"
+    },
+    "table": {
+      "logo": "Logo",
+      "name": "Nom",
+      "url": "URL",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "toast": {
+      "created": "Partenaire créé",
+      "updated": "Partenaire mis à jour",
+      "deleted": "Partenaire supprimé",
+      "errorSave": "Erreur lors de la sauvegarde",
+      "errorDelete": "Erreur lors de la suppression"
+    }
   },
   "legal": {
     "eyebrow": "Informations légales",

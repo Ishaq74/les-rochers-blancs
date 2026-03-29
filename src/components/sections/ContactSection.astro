@@ -2,12 +2,21 @@
 import { Icon } from 'astro-icon/components';
 import { t } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
+import { getSetting } from '@/lib/settings';
 
 interface Props {
   lang: Locale;
 }
 
 const { lang } = Astro.props;
+
+// Fetch from DB site_settings with i18n fallback
+const [phone, email, address, hours] = await Promise.all([
+  getSetting('contact_phone', 'contact.phoneValue', lang),
+  getSetting('contact_email', 'contact.emailValue', lang),
+  getSetting('contact_address', 'contact.addressValue', lang),
+  getSetting('contact_hours', 'contact.hoursValue', lang),
+]);
 ---
 
 <section id="contact" class="relative overflow-hidden section-padding bg-background" aria-labelledby="contact-heading">
@@ -33,7 +42,7 @@ const { lang } = Astro.props;
             </div>
             <div>
               <p class="font-semibold text-foreground mb-1">{t('contact.addressLabel', lang)}</p>
-              <p class="text-muted-foreground">{t('contact.addressValue', lang)}</p>
+              <p class="text-muted-foreground">{address}</p>
             </div>
           </div>
 
@@ -43,7 +52,7 @@ const { lang } = Astro.props;
             </div>
             <div>
               <p class="font-semibold text-foreground mb-1">{t('contact.phoneLabel', lang)}</p>
-              <p class="text-muted-foreground">{t('contact.phoneValue', lang)}</p>
+              <p class="text-muted-foreground">{phone}</p>
             </div>
           </div>
 
@@ -53,7 +62,7 @@ const { lang } = Astro.props;
             </div>
             <div>
               <p class="font-semibold text-foreground mb-1">{t('contact.emailLabel', lang)}</p>
-              <p class="text-muted-foreground">{t('contact.emailValue', lang)}</p>
+              <p class="text-muted-foreground">{email}</p>
             </div>
           </div>
 
@@ -63,7 +72,7 @@ const { lang } = Astro.props;
             </div>
             <div>
               <p class="font-semibold text-foreground mb-1">{t('contact.hoursLabel', lang)}</p>
-              <p class="text-muted-foreground">{t('contact.hoursValue', lang)}</p>
+              <p class="text-muted-foreground">{hours}</p>
             </div>
           </div>
         </address>

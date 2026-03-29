@@ -3,46 +3,65 @@ import AdminLayout from '@/layouts/AdminLayout.astro';
 import { t } from '@/lib/i18n';
 export const prerender = false;
 const lang = 'fr';
+const i18n = {
+  title: t('partners.title', lang),
+  subtitle: t('partners.adminSubtitle', lang),
+  new: t('partners.new', lang),
+  edit: t('common.edit', lang),
+  delete: t('common.delete', lang),
+  active: t('common.active', lang),
+  inactive: t('common.inactive', lang),
+  newTitle: t('partners.newTitle', lang),
+  editTitle: t('partners.editTitle', lang),
+  confirmDelete: t('partners.confirmDelete', lang),
+  noItems: t('partners.noItems', lang),
+  tableLogo: t('partners.table.logo', lang),
+  tableUrl: t('partners.table.url', lang),
+  formName: t('partners.form.name', lang),
+  formUrl: t('partners.form.url', lang),
+  formLogoUrl: t('partners.form.logoUrl', lang),
+  formSortOrder: t('partners.form.sortOrder', lang),
+};
 ---
 
-<AdminLayout title="Partenaires" activeNav="partners" lang={lang}>
+<AdminLayout title={t('partners.title', lang)} activeNav="partners" lang={lang}>
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-bold tracking-tight">Partenaires</h1>
-        <p class="text-muted-foreground">Gérez les partenaires affichés sur le site</p>
+        <h1 class="text-2xl font-bold tracking-tight">{t('partners.title', lang)}</h1>
+        <p class="text-muted-foreground">{t('partners.adminSubtitle', lang)}</p>
       </div>
-      <button id="btn-add" type="button" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">+ Ajouter</button>
+      <button id="btn-add" type="button" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">+ {t('partners.new', lang)}</button>
     </div>
     <div class="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
       <table class="w-full text-sm">
         <thead class="border-b border-border bg-muted/50">
           <tr>
-            <th class="px-4 py-3 text-left font-medium">Logo</th>
+            <th class="px-4 py-3 text-left font-medium">{t('partners.table.logo', lang)}</th>
             <th class="px-4 py-3 text-left font-medium">{t('common.name', lang)}</th>
-            <th class="px-4 py-3 text-left font-medium">Slug</th>
-            <th class="px-4 py-3 text-left font-medium">URL</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.slug', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('partners.table.url', lang)}</th>
             <th class="px-4 py-3 text-left font-medium">{t('common.status', lang)}</th>
             <th class="px-4 py-3 text-left font-medium">{t('common.actions', lang)}</th>
           </tr>
         </thead>
         <tbody id="data-tbody"></tbody>
       </table>
-      <p id="data-empty" class="hidden p-8 text-center text-muted-foreground">{t('common.noResults', lang)}</p>
+      <p id="data-empty" class="hidden p-8 text-center text-muted-foreground">{t('partners.noItems', lang)}</p>
     </div>
   </div>
 
   <div id="edit-dialog" class="fixed inset-0 z-50 hidden">
     <div class="fixed inset-0 bg-black/50" data-close></div>
     <div class="fixed inset-y-0 right-0 w-full max-w-md overflow-y-auto bg-card border-l border-border shadow-xl p-6 space-y-4">
-      <h2 id="dialog-title" class="text-lg font-semibold">Partenaire</h2>
+      <h2 id="dialog-title" class="text-lg font-semibold">{t('partners.newTitle', lang)}</h2>
       <form id="edit-form" class="space-y-4">
         <input type="hidden" name="id" />
-        <div class="space-y-1"><label class="text-sm font-medium">{t('common.name', lang)} *</label><input name="name" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
-        <div class="space-y-1"><label class="text-sm font-medium">Slug *</label><input name="slug" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
-        <div class="space-y-1"><label class="text-sm font-medium">URL du site</label><input name="websiteUrl" type="url" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
-        <div class="space-y-1"><label class="text-sm font-medium">Logo URL</label><input name="logoUrl" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
-        <div class="space-y-1"><label class="text-sm font-medium">Ordre</label><input name="sortOrder" type="number" value="0" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        <div class="space-y-1"><label class="text-sm font-medium">{t('partners.form.name', lang)}</label><input name="name" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        <div class="space-y-1"><label class="text-sm font-medium">{t('common.slug', lang)} *</label><input name="slug" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        <div class="space-y-1"><label class="text-sm font-medium">{t('partners.form.url', lang)}</label><input name="websiteUrl" type="url" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        <div class="space-y-1"><label class="text-sm font-medium">{t('partners.form.logoUrl', lang)}</label><input name="logoUrl" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        <div class="space-y-1"><label class="text-sm font-medium">{t('partners.form.sortOrder', lang)}</label><input name="sortOrder" type="number" value="0" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
         <div class="flex items-center gap-2">
           <input type="checkbox" name="isActive" id="is-active" checked class="rounded border-input" />
           <label for="is-active" class="text-sm">{t('common.active', lang)}</label>
@@ -55,7 +74,7 @@ const lang = 'fr';
     </div>
   </div>
 
-  <script is:inline>
+  <script is:inline define:vars={{ i18n }}>
     const API = (a, b) => fetch(`/_actions/${a}`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b) }).then(r=>r.json());
     function openD() { document.getElementById('edit-dialog')?.classList.remove('hidden'); }
     function closeD() { document.getElementById('edit-dialog')?.classList.add('hidden'); }
@@ -88,27 +107,27 @@ const lang = 'fr';
         <td class="px-4 py-3 font-medium">${escapeHtml(r.name)}</td>
         <td class="px-4 py-3 text-muted-foreground">${escapeHtml(r.slug)}</td>
         <td class="px-4 py-3 text-xs">${safeWebsiteUrl ? `<a href="${escapeHtml(safeWebsiteUrl)}" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">${escapeHtml(safeWebsiteUrl)}</a>` : '—'}</td>
-        <td class="px-4 py-3"><span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${r.isActive ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}">${r.isActive ? 'Actif' : 'Inactif'}</span></td>
+          <td class="px-4 py-3"><span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${r.isActive ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}">${r.isActive ? i18n.active : i18n.inactive}</span></td>
         <td class="px-4 py-3 space-x-2">
-          <button onclick="edit('${r.id}')" class="text-xs text-primary hover:underline">Modifier</button>
-          <button onclick="del('${r.id}')" class="text-xs text-destructive hover:underline">Supprimer</button>
+          <button onclick="edit('${r.id}')" class="text-xs text-primary hover:underline">${i18n.edit}</button>
+          <button onclick="del('${r.id}')" class="text-xs text-destructive hover:underline">${i18n.delete}</button>
         </td></tr>`;
       }).join('');
     }
-    document.getElementById('btn-add')?.addEventListener('click', () => { document.getElementById('edit-form').reset(); document.getElementById('edit-form').querySelector('[name=id]').value=''; document.getElementById('dialog-title').textContent='Nouveau partenaire'; openD(); });
+    document.getElementById('btn-add')?.addEventListener('click', () => { document.getElementById('edit-form').reset(); document.getElementById('edit-form').querySelector('[name=id]').value=''; document.getElementById('dialog-title').textContent=i18n.newTitle; openD(); });
     window.edit = function(id) {
       const r = data.find(x=>x.id===id); if(!r) return; const f = document.getElementById('edit-form');
       f.querySelector('[name=id]').value=r.id; f.name.value=r.name; f.slug.value=r.slug;
       f.websiteUrl.value=r.websiteUrl||''; f.logoUrl.value=r.logoUrl||''; f.sortOrder.value=r.sortOrder||0;
       f.querySelector('[name=isActive]').checked=r.isActive;
-      document.getElementById('dialog-title').textContent='Modifier le partenaire'; openD();
+      document.getElementById('dialog-title').textContent=i18n.editTitle; openD();
     };
     document.getElementById('edit-form')?.addEventListener('submit', async e => {
       e.preventDefault(); const f=e.target; const id=f.querySelector('[name=id]').value||undefined;
       await API('savePartner', { id, name:f.name.value, slug:f.slug.value, websiteUrl:f.websiteUrl.value||undefined, logoUrl:f.logoUrl.value||undefined, isActive:f.querySelector('[name=isActive]').checked, sortOrder:parseInt(f.sortOrder.value)||0 });
       closeD(); load();
     });
-    window.del = async id => { if(!confirm('Supprimer ce partenaire ?')) return; await API('deletePartner',{id}); load(); };
+    window.del = async id => { if(!confirm(i18n.confirmDelete)) return; await API('deletePartner',{id}); load(); };
     load();
   </script>
 </AdminLayout>

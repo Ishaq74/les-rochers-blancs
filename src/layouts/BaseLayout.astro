@@ -1,9 +1,10 @@
 ---
 import "@/styles/starwind.css";
 import { Font } from 'astro:assets';
-import { t, isRtl, type Locale } from '@/lib/i18n';
+import { isRtl, type Locale } from '@/lib/i18n';
 import SEOHead from '@/components/seo/SEOHead.astro';
 import JsonLd from '@/components/seo/JsonLd.astro';
+import { getThemeCssOverrides, getSetting } from '@/lib/settings';
 
 interface Props {
   title?: string;
@@ -32,7 +33,10 @@ const {
   author,
   jsonLd,
 } = Astro.props;
-const pageTitle = title || t('footer.brandName', lang);
+
+const themeCss = await getThemeCssOverrides();
+const brandName = await getSetting('brand_name', 'footer.brandName', lang);
+const pageTitle = title || brandName;
 const dir = isRtl(lang) ? 'rtl' : 'ltr';
 ---
 
@@ -60,6 +64,7 @@ const dir = isRtl(lang) ? 'rtl' : 'ltr';
       author={author}
     />
     {jsonLd && <JsonLd data={jsonLd} />}
+    {themeCss && <style set:html={themeCss} />}
     <Font cssVariable="--font-playfair" />
     <Font cssVariable="--font-cormorant" />
     <Font cssVariable="--font-manrope" />

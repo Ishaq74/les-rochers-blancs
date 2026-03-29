@@ -39,6 +39,41 @@
       "hotelLabel": "Hotel",
       "hotelDates": "From 21/12/26 to 7/1/27 and from 9/2/27 to 10/3/27 (+weekends January and March)",
       "closedDays": "Closed on Mondays and Sunday Evenings"
+    },
+    "adminSubtitle": "Manage the establishment's opening periods",
+    "new": "New period",
+    "editTitle": "Edit period",
+    "newTitle": "New period",
+    "confirmDelete": "Delete this period?",
+    "noItems": "No periods",
+    "countSuffix": "period(s)",
+    "form": {
+      "season": "Season *",
+      "year": "Year *",
+      "restaurantStart": "Restaurant start",
+      "restaurantEnd": "Restaurant end",
+      "hotelStart": "Hotel start",
+      "hotelEnd": "Hotel end",
+      "sortOrder": "Sort order"
+    },
+    "seasonOptions": {
+      "summer": "Summer",
+      "winter": "Winter"
+    },
+    "table": {
+      "season": "Season",
+      "year": "Year",
+      "restaurant": "Restaurant",
+      "hotel": "Hotel",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "toast": {
+      "created": "Period created",
+      "updated": "Period updated",
+      "deleted": "Period deleted",
+      "errorSave": "Error saving",
+      "errorDelete": "Error deleting"
     }
   },
   "hotel": {
@@ -154,7 +189,34 @@
   "messages": {
     "title": "Messages",
     "subtitle": "Review and process contact messages",
-    "noItems": "No messages"
+    "noItems": "No messages",
+    "filterAll": "All",
+    "filterUnread": "Unread",
+    "detail": "Message detail",
+    "confirmDelete": "Delete this message?",
+    "countSuffix": "message(s)",
+    "markRead": "Read",
+    "markUnread": "Unread",
+    "table": {
+      "sender": "Sender",
+      "message": "Message",
+      "language": "Language",
+      "date": "Date",
+      "actions": "Actions"
+    },
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "language": "Language",
+      "date": "Date",
+      "message": "Message"
+    },
+    "toast": {
+      "deleted": "Message deleted",
+      "markedRead": "Marked as read",
+      "markedUnread": "Marked as unread",
+      "error": "Error"
+    }
   },
   "footer": {
     "brandName": "Les Rochers Blancs",
@@ -207,7 +269,7 @@
     "signOut": "Sign out",
     "nav": {
       "dashboard": "Dashboard",
-      "content": "CMS Content",
+      "pages": "Pages",
       "menu": "Restaurant Menus",
       "services": "Services",
       "formations": "Trainings",
@@ -219,7 +281,11 @@
       "quotes": "Quotes",
       "media": "Media Library",
       "theme": "Theme",
-      "settings": "Settings"
+      "settings": "Settings",
+      "dividerHotel": "Hotel",
+      "dividerCms": "CMS",
+      "dividerBusiness": "Management",
+      "dividerConfig": "Configuration"
     }
   },
   "common": {
@@ -245,7 +311,68 @@
     "date": "Date",
     "noResults": "No results",
     "errorSave": "Error saving",
-    "errorDelete": "Error deleting"
+    "errorDelete": "Error deleting",
+    "all": "All",
+    "loading": "Loading…",
+    "previous": "Previous",
+    "next": "Next",
+    "close": "Close",
+    "search": "Search",
+    "confirm": "Confirm",
+    "sortOrder": "Sort order",
+    "translations": "Translations",
+    "view": "View",
+    "type": "Type",
+    "price": "Price",
+    "results": "results",
+    "description": "Description",
+    "capacity": "Capacity",
+    "imageUrl": "Image URL",
+    "label": "Label",
+    "year": "Year",
+    "published": "Published",
+    "draft": "Draft"
+  },
+  "rooms": {
+    "title": "Rooms",
+    "subtitle": "Manage rooms and extras",
+    "new": "Add a room",
+    "editTitle": "Edit room",
+    "newTitle": "New room",
+    "confirmDelete": "Delete this room?",
+    "noItems": "No rooms",
+    "countSuffix": "room(s)",
+    "extras": {
+      "title": "Extras (breakfast, board…)",
+      "new": "Add an extra",
+      "editTitle": "Edit extra",
+      "newTitle": "New extra",
+      "confirmDelete": "Delete this extra?"
+    },
+    "form": {
+      "slug": "Slug *",
+      "type": "Type *",
+      "capacity": "Capacity *",
+      "pricePerNight": "Price/night (€) *",
+      "imageUrl": "Image URL",
+      "sortOrder": "Sort order"
+    },
+    "table": {
+      "name": "Name",
+      "slug": "Slug",
+      "type": "Type",
+      "capacity": "Capacity",
+      "pricePerNight": "Price/night",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "toast": {
+      "created": "Room created",
+      "updated": "Room updated",
+      "deleted": "Room deleted",
+      "errorSave": "Error saving",
+      "errorDelete": "Error deleting"
+    }
   },
   "dashboard": {
     "title": "Dashboard",
@@ -381,6 +508,14 @@
     "confirmDelete": "Delete this quote?",
     "confirmConvert": "Convert this quote to an invoice?",
     "noItems": "No quotes",
+    "countSuffix": "quote(s)",
+    "convert": {
+      "title": "Convert to invoice",
+      "invoiceNumber": "Invoice No.",
+      "dueDate": "Due date",
+      "submit": "Convert",
+      "toInvoice": "→ Invoice"
+    },
     "form": {
       "number": "Quote number",
       "client": "Client",
@@ -476,6 +611,19 @@
     "noItems": "No posts",
     "published": "Published",
     "draft": "Draft",
+    "filterAll": "All",
+    "filterPublished": "Published",
+    "filterDraft": "Drafts",
+    "countSuffix": "post(s)",
+    "untitled": "(untitled)",
+    "publishedLabel": "Published",
+    "selectImage": "Select an image",
+    "markdown": {
+      "bold": "Bold",
+      "italic": "Italic",
+      "link": "Link",
+      "image": "Image"
+    },
     "form": {
       "slug": "Slug (URL)",
       "imageUrl": "Cover image (URL)",
@@ -511,6 +659,8 @@
     "articleLabel": "Post",
     "approve": "Approve",
     "reject": "Reject",
+    "countSuffix": "comment(s)",
+    "filterAll": "All",
     "table": {
       "author": "Author",
       "comment": "Comment",
@@ -602,6 +752,23 @@
     "noItems": "No files uploaded",
     "uploadFirst": "Upload your first file",
     "confirmDelete": "Delete this file?",
+    "uploadTitle": "Upload a file",
+    "copyUrl": "Copy URL",
+    "countSuffix": "file(s)",
+    "uploading": "Uploading…",
+    "siteAssets": "Site assets (read-only)",
+    "form": {
+      "file": "File",
+      "alt": "Alt text",
+      "folder": "Folder"
+    },
+    "filter": {
+      "all": "All folders",
+      "general": "General",
+      "rooms": "Rooms",
+      "restaurant": "Restaurant",
+      "blog": "Blog"
+    },
     "toast": {
       "uploaded": "{{count}} file(s) uploaded",
       "urlCopied": "URL copied",
@@ -648,6 +815,22 @@
     "subtitle": "Configure site settings",
     "save": "Save",
     "backup": "Backup",
+    "addSetting": "Add a setting",
+    "noSettings": "No settings. Add one below.",
+    "form": {
+      "key": "Key",
+      "keyPlaceholder": "Key (e.g., site_name)",
+      "value": "Value",
+      "category": "Category"
+    },
+    "types": {
+      "text": "Text",
+      "email": "Email",
+      "url": "URL",
+      "textarea": "Long text",
+      "boolean": "Boolean",
+      "number": "Number"
+    },
     "fields": {
       "site_name": "Site name",
       "site_description": "Description",
@@ -704,6 +887,34 @@
       "prefillDescription": "Empty fields have been filled from default translations. Click \"Save\" to save.",
       "saveSuccess": "Content saved successfully",
       "saveError": "Unable to save content"
+    },
+    "pagesTitle": "Site Pages",
+    "pagesSubtitle": "Manage pages, reorder sections and edit content.",
+    "newPage": "New page",
+    "createPage": "Create page",
+    "searchPages": "Search a page…",
+    "filterAll": "All",
+    "filterSystem": "System",
+    "filterCustom": "Custom",
+    "noPages": "No pages found",
+    "emptyHint": "Adjust your filters or create a new page.",
+    "system": "System",
+    "custom": "Custom",
+    "sectionsContent": "Sections & content",
+    "confirmDeletePage": "Delete this page and all its sections?",
+    "pageForm": {
+      "title": "Title",
+      "slug": "Slug (URL)",
+      "slugHint": "Lowercase letters, numbers and hyphens only."
+    },
+    "pageToast": {
+      "created": "Page created",
+      "deleted": "Page deleted",
+      "deleteError": "Error deleting page",
+      "loadError": "Error loading pages",
+      "titleRequired": "Title and slug required",
+      "slugInvalid": "Slug can only contain lowercase letters, numbers and hyphens",
+      "slugExists": "This slug already exists"
     }
   },
   "menuManager": {
@@ -771,7 +982,34 @@
   "partners": {
     "sectionLabel": "Partners",
     "title": "Our Partners",
-    "description": "Enhance your relaxation and escape moments during your stay at Semnoz with the professionals of our region."
+    "description": "Enhance your relaxation and escape moments during your stay at Semnoz with the professionals of our region.",
+    "adminSubtitle": "Manage site partners",
+    "new": "Add a partner",
+    "editTitle": "Edit partner",
+    "newTitle": "New partner",
+    "confirmDelete": "Delete this partner?",
+    "noItems": "No partners",
+    "countSuffix": "partner(s)",
+    "form": {
+      "name": "Name *",
+      "url": "Website URL",
+      "logoUrl": "Logo URL",
+      "sortOrder": "Sort order"
+    },
+    "table": {
+      "logo": "Logo",
+      "name": "Name",
+      "url": "URL",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "toast": {
+      "created": "Partner created",
+      "updated": "Partner updated",
+      "deleted": "Partner deleted",
+      "errorSave": "Error saving",
+      "errorDelete": "Error deleting"
+    }
   },
   "legal": {
     "eyebrow": "Legal information",

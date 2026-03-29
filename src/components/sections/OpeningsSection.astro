@@ -8,6 +8,7 @@ import winterImage from '@/assets/season-winter.jpg';
 import { db } from '@/db';
 import { openings as openingsTable, openingTranslations } from '@/db/schema';
 import { eq, asc, desc } from 'drizzle-orm';
+import { cms } from '@/lib/settings';
 
 interface Props {
   lang: Locale;
@@ -140,9 +141,12 @@ if (useFallback) {
   ];
 }
 
-const openLabel = t('openings.statusOpen', lang);
-const closedLabel = t('openings.statusClosed', lang);
-const openingLabel = t('openings.openingLabel', lang);
+const [sectionTitle, openLabel, closedLabel, openingLabel] = await Promise.all([
+  cms('openings', 'title', lang, 'openings.title'),
+  cms('openings', 'statusOpen', lang, 'openings.statusOpen'),
+  cms('openings', 'statusClosed', lang, 'openings.statusClosed'),
+  cms('openings', 'openingLabel', lang, 'openings.openingLabel'),
+]);
 ---
 
 <section id="openings" class="relative overflow-hidden section-padding bg-secondary" aria-labelledby="openings-heading">
@@ -152,7 +156,7 @@ const openingLabel = t('openings.openingLabel', lang);
 
     <div class="text-center mb-section animate-fade-up">
       <h2 id="openings-heading" class="heading-section">
-        {t('openings.title', lang)}
+        {sectionTitle}
       </h2>
       <div class="heading-accent-bar"><span class="heading-accent-bar-diamond"></span></div>
     </div>

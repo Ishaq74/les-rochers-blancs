@@ -3,6 +3,51 @@ import AdminLayout from '@/layouts/AdminLayout.astro';
 import { t } from '@/lib/i18n';
 export const prerender = false;
 const lang = 'fr';
+const i18n = {
+  all: t('common.all', lang),
+  edit: t('common.edit', lang),
+  delete: t('common.delete', lang),
+  previous: t('common.previous', lang),
+  next: t('common.next', lang),
+  notes: t('common.notes', lang),
+  status: t('common.status', lang),
+  newTitle: t('quotes.newTitle', lang),
+  editTitle: t('quotes.editTitle', lang),
+  confirmDelete: t('quotes.confirmDelete', lang),
+  countSuffix: t('quotes.countSuffix', lang),
+  statusDraft: t('quotes.status.draft', lang),
+  statusSent: t('quotes.status.sent', lang),
+  statusAccepted: t('quotes.status.accepted', lang),
+  statusRejected: t('quotes.status.rejected', lang),
+  statusExpired: t('quotes.status.expired', lang),
+  statusConverted: t('quotes.status.converted', lang),
+  convertTitle: t('quotes.convert.title', lang),
+  convertInvoiceNumber: t('quotes.convert.invoiceNumber', lang),
+  convertDueDate: t('quotes.convert.dueDate', lang),
+  convertSubmit: t('quotes.convert.submit', lang),
+  convertToInvoice: t('quotes.convert.toInvoice', lang),
+  tableNumber: t('quotes.table.number', lang),
+  tableClient: t('quotes.table.client', lang),
+  tableDate: t('quotes.table.date', lang),
+  tableValidity: t('quotes.table.validity', lang),
+  tableTotal: t('quotes.table.total', lang),
+  formNumber: t('quotes.form.number', lang),
+  formClient: t('quotes.form.client', lang),
+  formClientPlaceholder: t('quotes.form.clientPlaceholder', lang),
+  formStatus: t('quotes.form.status', lang),
+  formIssueDate: t('quotes.form.issueDate', lang),
+  formValidUntil: t('quotes.form.validUntil', lang),
+  formTaxRate: t('quotes.form.taxRate', lang),
+  formLines: t('quotes.form.lines', lang),
+  formAddLine: t('quotes.form.addLine', lang),
+  formDescPlaceholder: t('quotes.form.descriptionPlaceholder', lang),
+  formQtyPlaceholder: t('quotes.form.qtyPlaceholder', lang),
+  formPricePlaceholder: t('quotes.form.pricePlaceholder', lang),
+  formSubtotal: t('quotes.form.subtotal', lang),
+  formTax: t('quotes.form.tax', lang),
+  formTotalTtc: t('quotes.form.totalTTC', lang),
+};
+const taxLabel = t('quotes.form.tax', lang).replace('{{rate}}', '20');
 ---
 
 <AdminLayout title={t('quotes.title', lang)} activeNav="quotes" lang={lang}>
@@ -16,25 +61,25 @@ const lang = 'fr';
     </div>
 
     <div class="flex gap-2 flex-wrap" id="status-filters">
-      <button data-status="" class="rounded-full px-3 py-1 text-xs font-medium border border-input bg-primary text-primary-foreground">Tous</button>
-      <button data-status="draft" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">Brouillon</button>
-      <button data-status="sent" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">Envoyé</button>
-      <button data-status="accepted" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">Accepté</button>
-      <button data-status="rejected" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">Rejeté</button>
-      <button data-status="expired" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">Expiré</button>
-      <button data-status="converted" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">Converti</button>
+      <button data-status="" class="rounded-full px-3 py-1 text-xs font-medium border border-input bg-primary text-primary-foreground">{t('common.all', lang)}</button>
+      <button data-status="draft" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">{t('quotes.status.draft', lang)}</button>
+      <button data-status="sent" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">{t('quotes.status.sent', lang)}</button>
+      <button data-status="accepted" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">{t('quotes.status.accepted', lang)}</button>
+      <button data-status="rejected" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">{t('quotes.status.rejected', lang)}</button>
+      <button data-status="expired" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">{t('quotes.status.expired', lang)}</button>
+      <button data-status="converted" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">{t('quotes.status.converted', lang)}</button>
     </div>
 
     <div class="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
       <table class="w-full text-sm">
         <thead class="border-b border-border bg-muted/50">
           <tr>
-            <th class="px-4 py-3 text-left font-medium">N° Devis</th>
-            <th class="px-4 py-3 text-left font-medium">Client</th>
-            <th class="px-4 py-3 text-left font-medium">Statut</th>
-            <th class="px-4 py-3 text-left font-medium">Date</th>
-            <th class="px-4 py-3 text-left font-medium">Validité</th>
-            <th class="px-4 py-3 text-right font-medium">Total</th>
+            <th class="px-4 py-3 text-left font-medium">{t('quotes.table.number', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('quotes.table.client', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.status', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('quotes.table.date', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('quotes.table.validity', lang)}</th>
+            <th class="px-4 py-3 text-right font-medium">{t('quotes.table.total', lang)}</th>
             <th class="px-4 py-3 text-left font-medium">{t('common.actions', lang)}</th>
           </tr>
         </thead>
@@ -46,17 +91,17 @@ const lang = 'fr';
   </div>
 
   <!-- Convert to Invoice Dialog -->
-  <div id="convert-dialog" class="fixed inset-0 z-[60] hidden">
+  <div id="convert-dialog" class="fixed inset-0 z-60 hidden">
     <div class="fixed inset-0 bg-black/50" data-close-convert></div>
     <div class="fixed inset-0 flex items-center justify-center p-4">
       <div class="bg-card rounded-xl border border-border shadow-xl p-6 space-y-4 w-full max-w-sm">
-        <h3 class="text-lg font-semibold">Convertir en facture</h3>
+        <h3 class="text-lg font-semibold">{t('quotes.convert.title', lang)}</h3>
         <form id="convert-form" class="space-y-4">
           <input type="hidden" name="quoteId" />
-          <div class="space-y-1"><label class="text-sm font-medium">N° Facture</label><input name="invoiceNumber" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
-          <div class="space-y-1"><label class="text-sm font-medium">Date échéance</label><input name="dueDate" type="date" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('quotes.convert.invoiceNumber', lang)}</label><input name="invoiceNumber" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('quotes.convert.dueDate', lang)}</label><input name="dueDate" type="date" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
           <div class="flex gap-2">
-            <button type="submit" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">Convertir</button>
+            <button type="submit" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('quotes.convert.submit', lang)}</button>
             <button type="button" data-close-convert class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">Annuler</button>
           </div>
         </form>
@@ -72,32 +117,32 @@ const lang = 'fr';
       <form id="edit-form" class="space-y-4">
         <input type="hidden" name="id" />
         <div class="grid grid-cols-2 gap-4">
-          <div class="space-y-1"><label class="text-sm font-medium">N° Devis</label><input name="quoteNumber" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
-          <div class="space-y-1"><label class="text-sm font-medium">Statut</label>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('quotes.form.number', lang)}</label><input name="quoteNumber" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('quotes.form.status', lang)}</label>
             <select name="status" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm">
-              <option value="draft">Brouillon</option><option value="sent">Envoyé</option><option value="accepted">Accepté</option><option value="rejected">Rejeté</option><option value="expired">Expiré</option>
+              <option value="draft">{t('quotes.status.draft', lang)}</option><option value="sent">{t('quotes.status.sent', lang)}</option><option value="accepted">{t('quotes.status.accepted', lang)}</option><option value="rejected">{t('quotes.status.rejected', lang)}</option><option value="expired">{t('quotes.status.expired', lang)}</option>
             </select>
           </div>
         </div>
-        <div class="space-y-1"><label class="text-sm font-medium">ID Client</label><input name="clientId" placeholder="UUID client (optionnel)" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        <div class="space-y-1"><label class="text-sm font-medium">{t('quotes.form.client', lang)}</label><input name="clientId" placeholder={t('quotes.form.clientPlaceholder', lang)} class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
         <div class="grid grid-cols-2 gap-4">
-          <div class="space-y-1"><label class="text-sm font-medium">Date émission</label><input name="issueDate" type="date" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
-          <div class="space-y-1"><label class="text-sm font-medium">Valide jusqu'au</label><input name="validUntil" type="date" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('quotes.form.issueDate', lang)}</label><input name="issueDate" type="date" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('quotes.form.validUntil', lang)}</label><input name="validUntil" type="date" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
         </div>
-        <div class="space-y-1"><label class="text-sm font-medium">Taux TVA (%)</label><input name="taxRate" type="number" step="0.01" value="20" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        <div class="space-y-1"><label class="text-sm font-medium">{t('quotes.form.taxRate', lang)}</label><input name="taxRate" type="number" step="0.01" value="20" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
 
         <div class="space-y-2">
-          <div class="flex items-center justify-between"><label class="text-sm font-medium">Lignes</label><button type="button" id="add-line" class="text-xs text-primary hover:underline">+ Ajouter une ligne</button></div>
+          <div class="flex items-center justify-between"><label class="text-sm font-medium">{t('quotes.form.lines', lang)}</label><button type="button" id="add-line" class="text-xs text-primary hover:underline">+ {t('quotes.form.addLine', lang)}</button></div>
           <div id="lines-container" class="space-y-2"></div>
         </div>
 
         <div class="grid grid-cols-3 gap-4 bg-muted/50 rounded-md p-3 text-sm">
-          <div>Sous-total : <span id="calc-subtotal">0.00</span> €</div>
-          <div>TVA : <span id="calc-tax">0.00</span> €</div>
-          <div class="font-bold">Total : <span id="calc-total">0.00</span> €</div>
+          <div>{t('quotes.form.subtotal', lang)} : <span id="calc-subtotal">0.00</span> €</div>
+          <div>{taxLabel} : <span id="calc-tax">0.00</span> €</div>
+          <div class="font-bold">{t('quotes.form.totalTTC', lang)} : <span id="calc-total">0.00</span> €</div>
         </div>
 
-        <div class="space-y-1"><label class="text-sm font-medium">Notes</label><textarea name="notes" rows="2" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"></textarea></div>
+        <div class="space-y-1"><label class="text-sm font-medium">{t('common.notes', lang)}</label><textarea name="notes" rows="2" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"></textarea></div>
 
         <div class="flex gap-2 pt-2">
           <button type="submit" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('common.save', lang)}</button>
@@ -107,7 +152,7 @@ const lang = 'fr';
     </div>
   </div>
 
-  <script is:inline>
+  <script is:inline define:vars={{ i18n }}>
     const API=(a,b)=>fetch(`/_actions/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());
     function openD(){document.getElementById('edit-dialog')?.classList.remove('hidden')}function closeD(){document.getElementById('edit-dialog')?.classList.add('hidden')}
     document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeD));
@@ -116,7 +161,7 @@ const lang = 'fr';
     let currentPage=1,currentStatus='';
     let result={items:[],total:0,totalPages:0};
 
-    const statusLabels={draft:'Brouillon',sent:'Envoyé',accepted:'Accepté',rejected:'Rejeté',expired:'Expiré',converted:'Converti'};
+    const statusLabels={draft:i18n.statusDraft,sent:i18n.statusSent,accepted:i18n.statusAccepted,rejected:i18n.statusRejected,expired:i18n.statusExpired,converted:i18n.statusConverted};
     const statusColors={draft:'bg-gray-100 text-gray-800',sent:'bg-blue-100 text-blue-800',accepted:'bg-green-100 text-green-800',rejected:'bg-red-100 text-red-800',expired:'bg-yellow-100 text-yellow-800',converted:'bg-purple-100 text-purple-800'};
 
     document.querySelectorAll('#status-filters button').forEach(btn=>{
@@ -144,11 +189,11 @@ const lang = 'fr';
         <td class="px-4 py-3">${escapeHtml(r.validUntil||'')}</td>
         <td class="px-4 py-3 text-right font-medium">${escapeHtml(r.total||'0')} €</td>
         <td class="px-4 py-3 space-x-2">
-          <button onclick="edit('${escapeHtml(r.id)}')" class="text-xs text-primary hover:underline">Modifier</button>
-          ${r.status!=='converted'?`<button onclick="convertQ('${escapeHtml(r.id)}')" class="text-xs text-green-600 hover:underline">→ Facture</button>`:''}
-          <button onclick="del('${escapeHtml(r.id)}')" class="text-xs text-destructive hover:underline">Supprimer</button>
+          <button onclick="edit('${escapeHtml(r.id)}')" class="text-xs text-primary hover:underline">${i18n.edit}</button>
+          ${r.status!=='converted'?`<button onclick="convertQ('${escapeHtml(r.id)}')" class="text-xs text-green-600 hover:underline">${i18n.convertToInvoice}</button>`:''}
+          <button onclick="del('${escapeHtml(r.id)}')" class="text-xs text-destructive hover:underline">${i18n.delete}</button>
         </td></tr>`).join('');
-      document.getElementById('pagination').innerHTML=`<span>${result.total||0} devis</span><div class="flex gap-2">${currentPage>1?`<button onclick="goPage(${currentPage-1})" class="text-xs text-primary hover:underline">← Précédent</button>`:''}${(result.totalPages||0)>currentPage?`<button onclick="goPage(${currentPage+1})" class="text-xs text-primary hover:underline">Suivant →</button>`:''}</div>`;
+      document.getElementById('pagination').innerHTML=`<span>${result.total||0} ${i18n.countSuffix}</span><div class="flex gap-2">${currentPage>1?`<button onclick="goPage(${currentPage-1})" class="text-xs text-primary hover:underline">← ${i18n.previous}</button>`:''}${(result.totalPages||0)>currentPage?`<button onclick="goPage(${currentPage+1})" class="text-xs text-primary hover:underline">${i18n.next} →</button>`:''}</div>`;
     }
     window.goPage=p=>{currentPage=p;load()};
 
@@ -157,7 +202,7 @@ const lang = 'fr';
     function addLine(desc='',qty='1',price='',total=''){
       const i=lineIdx++;
       const div=document.createElement('div');div.className='grid grid-cols-[1fr_60px_80px_80px_30px] gap-2 items-center';div.dataset.line=i;
-      div.innerHTML=`<input name="line_desc_${i}" placeholder="Description" value="${escapeHtml(desc)}" required class="flex h-8 w-full rounded-md border border-input bg-background px-2 text-sm"><input name="line_qty_${i}" type="number" step="0.01" min="0" value="${escapeHtml(qty)}" class="flex h-8 w-full rounded-md border border-input bg-background px-2 text-sm" onchange="recalc()"><input name="line_price_${i}" type="number" step="0.01" min="0" value="${escapeHtml(price)}" placeholder="P.U." class="flex h-8 w-full rounded-md border border-input bg-background px-2 text-sm" onchange="recalc()"><span class="text-sm text-right line-total">${escapeHtml(total||'0.00')}</span><button type="button" onclick="this.parentElement.remove();recalc()" class="text-destructive text-xs">✕</button>`;
+      div.innerHTML=`<input name="line_desc_${i}" placeholder="${i18n.formDescPlaceholder}" value="${escapeHtml(desc)}" required class="flex h-8 w-full rounded-md border border-input bg-background px-2 text-sm"><input name="line_qty_${i}" type="number" step="0.01" min="0" value="${escapeHtml(qty)}" class="flex h-8 w-full rounded-md border border-input bg-background px-2 text-sm" onchange="recalc()"><input name="line_price_${i}" type="number" step="0.01" min="0" value="${escapeHtml(price)}" placeholder="${i18n.formPricePlaceholder}" class="flex h-8 w-full rounded-md border border-input bg-background px-2 text-sm" onchange="recalc()"><span class="text-sm text-right line-total">${escapeHtml(total||'0.00')}</span><button type="button" onclick="this.parentElement.remove();recalc()" class="text-destructive text-xs">✕</button>`;
       document.getElementById('lines-container').appendChild(div);recalc();
     }
     document.getElementById('add-line')?.addEventListener('click',()=>addLine());
@@ -184,7 +229,7 @@ const lang = 'fr';
       f.querySelector('[name=issueDate]').value=new Date().toISOString().slice(0,10);
       f.querySelector('[name=validUntil]').value=new Date(Date.now()+30*86400000).toISOString().slice(0,10);
       clearLines();addLine();
-      document.getElementById('dialog-title').textContent='Nouveau devis';openD();
+      document.getElementById('dialog-title').textContent=i18n.newTitle;openD();
     });
 
     window.edit=function(id){
@@ -195,7 +240,7 @@ const lang = 'fr';
       f.issueDate.value=r.issueDate;f.validUntil.value=r.validUntil;
       f.taxRate.value=r.taxRate||'20';f.notes.value=r.notes||'';
       clearLines();addLine();
-      document.getElementById('dialog-title').textContent='Modifier le devis';openD();
+      document.getElementById('dialog-title').textContent=i18n.editTitle;openD();
     };
 
     document.getElementById('edit-form')?.addEventListener('submit',async e=>{
@@ -227,7 +272,7 @@ const lang = 'fr';
       document.getElementById('convert-dialog')?.classList.add('hidden');load();
     });
 
-    window.del=async id=>{if(!confirm('Supprimer ce devis ?'))return;await API('deleteQuote',{id});load()};
+    window.del=async id=>{if(!confirm(i18n.confirmDelete))return;await API('deleteQuote',{id});load()};
     load();
   </script>
 </AdminLayout>

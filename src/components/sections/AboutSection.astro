@@ -1,7 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components';
-import { t } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
+import { cms } from '@/lib/settings';
 
 interface Props {
   lang: Locale;
@@ -9,11 +9,27 @@ interface Props {
 
 const { lang } = Astro.props;
 
+const [sectionLabel, aboutTitle, aboutSubtitle, aboutDescription] = await Promise.all([
+  cms('about', 'sectionLabel', lang),
+  cms('about', 'title', lang),
+  cms('about', 'subtitle', lang),
+  cms('about', 'description', lang),
+]);
+
 const values = [
   { key: 'tradition', icon: 'mdi:image-filter-hdr' },
   { key: 'nature', icon: 'mdi:leaf' },
   { key: 'excellence', icon: 'mdi:star' },
 ] as const;
+
+// CMS-driven value cards with i18n fallback
+const valueCards = await Promise.all(
+  values.map(async (v) => ({
+    icon: v.icon,
+    title: await cms('about', `values.${v.key}.title`, lang, `about.values.${v.key}.title`),
+    description: await cms('about', `values.${v.key}.description`, lang, `about.values.${v.key}.description`),
+  }))
+);
 ---
 
 <section id="about" class="section-padding bg-cream">
@@ -21,34 +37,34 @@ const values = [
     <!-- Header -->
     <div class="text-center mb-16 max-w-3xl mx-auto animate-fade-up">
       <span class="text-accent font-medium tracking-[0.2em] uppercase text-sm mb-3 block">
-        {t('about.sectionLabel', lang)}
+        {sectionLabel}
       </span>
       <h2 class="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">
-        {t('about.title', lang)}
+        {aboutTitle}
       </h2>
       <p class="font-serif text-xl text-muted-foreground mb-4 italic">
-        {t('about.subtitle', lang)}
+        {aboutSubtitle}
       </p>
       <p class="text-muted-foreground leading-relaxed">
-        {t('about.description', lang)}
+        {aboutDescription}
       </p>
     </div>
 
     <!-- Values -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-      {values.map((value, index) => (
+      {valueCards.map((card, index) => (
         <div
           class="text-center p-8 bg-background rounded-lg shadow-soft animate-fade-up"
           style={`animation-delay: ${index * 0.15}s;`}
         >
           <div class="w-16 h-16 mx-auto mb-6 rounded-full bg-accent/10 flex items-center justify-center">
-            <Icon name={value.icon} size={32} />
+            <Icon name={card.icon} size={32} />
           </div>
           <h3 class="font-serif text-2xl font-semibold text-foreground mb-3">
-            {t(`about.values.${value.key}.title`, lang)}
+            {card.title}
           </h3>
           <p class="text-muted-foreground">
-            {t(`about.values.${value.key}.description`, lang)}
+            {card.description}
           </p>
         </div>
       ))}
