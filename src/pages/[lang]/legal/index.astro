@@ -1,0 +1,111 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Navbar from '@/components/layout/Navbar.astro';
+import Footer from '@/components/layout/Footer.astro';
+import { Badge } from '@/components/starwind/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/starwind/tabs';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/starwind/accordion';
+import { t, getSection, LOCALES, type Locale } from '@/lib/i18n';
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return LOCALES.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params as { lang: Locale };
+
+const legal = getSection('legal', lang) as {
+  eyebrow: string;
+  heading: string;
+  sections: Array<{
+    id: string;
+    title: string;
+    intro?: string;
+    items: Array<{ question: string; answer: string }>;
+  }>;
+};
+
+const sections = legal.sections ?? [];
+const firstTab = sections.length > 0 ? `section-0` : '';
+
+const pageTitle = `${legal.heading} — ${t('footer.brandName', lang)}`;
+const description = legal.eyebrow;
+---
+
+<BaseLayout title={pageTitle} description={description} lang={lang} canonicalPath={`/${lang}/legal`}>
+  <Navbar lang={lang} />
+  <main>
+    <section class="mx-auto w-full max-w-5xl px-4 py-16 md:py-24">
+      <div class="mb-12">
+        <Badge variant="primary" size="sm">{legal.eyebrow}</Badge>
+        <h1 class="font-heading mt-3 text-3xl font-semibold tracking-tight md:text-4xl lg:text-5xl">
+          {legal.heading}
+        </h1>
+      </div>
+
+      <div class="min-h-96">
+        <Tabs defaultValue={firstTab}>
+        <TabsList class="mb-8 flex w-full flex-wrap gap-2">
+          {sections.map((section, i) => (
+            <TabsTrigger value={`section-${i}`}>
+              {section.title}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+
+        {sections.map((section, i) => (
+          <TabsContent value={`section-${i}`}>
+            {section.intro && (
+              <p class="text-muted-foreground mb-6 text-pretty leading-relaxed">
+                {section.intro}
+              </p>
+            )}
+            <Accordion type="single">
+              {section.items.map((item, j) => (
+                <AccordionItem value={`section-${i}-item-${j}`}>
+                  <AccordionTrigger>{item.question}</AccordionTrigger>
+                  <AccordionContent>
+                    <p class="text-muted-foreground leading-relaxed whitespace-pre-line">
+                      {item.answer}
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </TabsContent>
+        ))}
+      </Tabs>
+      </div>
+    </section>
+  </main>
+  <Footer lang={lang} />
+</BaseLayout>
+
+<script>
+  let legalController: AbortController | null = null;
+
+  function activateTabFromHash() {
+    const hash = window.location.hash.replace('#', '');
+    if (!hash) return;
+
+    const trigger = document.querySelector<HTMLButtonElement>(
+      `[role="tab"][data-value="${CSS.escape(hash)}"]`
+    );
+    if (trigger) trigger.click();
+
+    const target = document.getElementById(hash);
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function initLegal() {
+    legalController?.abort();
+    legalController = new AbortController();
+    window.addEventListener('hashchange', activateTabFromHash, { signal: legalController.signal });
+    activateTabFromHash();
+  }
+
+  initLegal();
+  document.addEventListener('astro:after-swap', initLegal);
+  document.addEventListener('astro:before-swap', () => { legalController?.abort(); legalController = null; });
+</script>

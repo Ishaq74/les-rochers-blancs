@@ -106,10 +106,10 @@ const isValidExternalUrl = (url: string) => /^https?:\/\//i.test(url);
         &copy; {currentYear} {t('footer.brandName', lang)}. {t('footer.rights', lang)}.
       </p>
       <div class="flex gap-6 text-sm">
-        <a href="#access" class="text-primary-foreground/60 hover:text-accent transition-colors">
+        <a href={`/${lang}/legal#section-0`} class="text-primary-foreground/60 hover:text-accent transition-colors">
           {t('footer.legal', lang)}
         </a>
-        <a href="#access" class="text-primary-foreground/60 hover:text-accent transition-colors">
+        <a href={`/${lang}/legal#section-1`} class="text-primary-foreground/60 hover:text-accent transition-colors">
           {t('footer.privacy', lang)}
         </a>
       </div>

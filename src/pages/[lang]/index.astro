@@ -21,9 +21,39 @@ export function getStaticPaths() {
 const { lang } = Astro.params as { lang: Locale };
 const title = `${t('hero.title', lang)} — ${t('footer.brandName', lang)}`;
 const description = t('hero.tagline', lang);
+
+const siteUrl = (import.meta.env.SITE_URL || 'https://lesrochersblancs.fr').replace(/\/$/, '');
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Les Rochers Blancs',
+    url: `${siteUrl}/${lang}/`,
+    inLanguage: lang,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Hotel',
+    name: 'Les Rochers Blancs',
+    url: `${siteUrl}/${lang}/`,
+    description,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: t('contact.addressValue', lang),
+      addressLocality: 'Bourg-Saint-Maurice',
+      addressRegion: 'Savoie',
+      postalCode: '73700',
+      addressCountry: 'FR',
+    },
+    telephone: t('contact.phoneValue', lang),
+    email: t('contact.emailValue', lang),
+    hasMap: 'https://maps.google.com/?q=Les+Rochers+Blancs+Bourg-Saint-Maurice',
+  },
+];
 ---
 
-<BaseLayout title={title} description={description} lang={lang}>
+<BaseLayout title={title} description={description} lang={lang} jsonLd={jsonLd}>
   <Navbar lang={lang} />
   <main>
     <HeroSection lang={lang} />

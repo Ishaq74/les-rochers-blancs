@@ -7,6 +7,9 @@ import { Image } from 'astro:assets';
 import roomImage from '@/assets/room-suite.jpg';
 import summerImage from '@/assets/season-summer.jpg';
 import winterImage from '@/assets/season-winter.jpg';
+import { db } from '@/db';
+import { rooms as roomsTable, roomTranslations, roomExtras as roomExtrasTable, roomExtraTranslations } from '@/db/schema';
+import { eq, asc } from 'drizzle-orm';
 
 interface Props {
   lang: Locale;
@@ -14,16 +17,52 @@ interface Props {
 
 const { lang } = Astro.props;
 
-const roomKeys = ['single', 'double1', 'double2', 'triple', 'quad', 'five'] as const;
-const extraKeys = [
-  'breakfast',
-  'halfBoard',
-  'halfBoardChild',
-  'fullBoard',
-  'singleSupplement',
-  'fullBoardChild',
-  'taxAndDog',
-] as const;
+// ------- Fetch rooms from DB with i18n fallback -------
+interface RoomDisplay { name: string; price: string }
+interface ExtraDisplay { label: string }
+
+let roomsData: RoomDisplay[] = [];
+let extrasData: ExtraDisplay[] = [];
+let useFallback = false;
+
+try {
+  const [dbRooms, dbRoomTrans, dbExtras, dbExtraTrans] = await Promise.all([
+    db.select().from(roomsTable).where(eq(roomsTable.isActive, true)).orderBy(asc(roomsTable.sortOrder)),
+    db.select().from(roomTranslations).where(eq(roomTranslations.locale, lang)),
+    db.select().from(roomExtrasTable).where(eq(roomExtrasTable.isActive, true)).orderBy(asc(roomExtrasTable.sortOrder)),
+    db.select().from(roomExtraTranslations).where(eq(roomExtraTranslations.locale, lang)),
+  ]);
+
+  if (dbRooms.length > 0) {
+    const transMap = new Map(dbRoomTrans.map(tr => [tr.roomId, tr]));
+    roomsData = dbRooms.map(r => ({
+      name: transMap.get(r.id)?.name ?? r.slug,
+      price: r.pricePerNight,
+    }));
+
+    const extraTransMap = new Map(dbExtraTrans.map(tr => [tr.extraId, tr]));
+    extrasData = dbExtras.map(e => ({
+      label: extraTransMap.get(e.id)?.label ?? (e.price ? `${e.slug} — ${e.price}€` : e.slug),
+    }));
+  } else {
+    useFallback = true;
+  }
+} catch {
+  useFallback = true;
+}
+
+// Fallback to i18n keys
+if (useFallback) {
+  const roomKeys = ['single', 'double1', 'double2', 'triple', 'quad', 'five'] as const;
+  const extraKeys = ['breakfast', 'halfBoard', 'halfBoardChild', 'fullBoard', 'singleSupplement', 'fullBoardChild', 'taxAndDog'] as const;
+  roomsData = roomKeys.map(key => ({
+    name: t(`hotel.rooms.${key}.name`, lang),
+    price: t(`hotel.rooms.${key}.price`, lang),
+  }));
+  extrasData = extraKeys.map(key => ({
+    label: t(`hotel.extras.${key}`, lang),
+  }));
+}
 
 const carouselImages = [
   { src: roomImage, alt: t('hotel.title', lang) },
@@ -56,7 +95,7 @@ const carouselImages = [
           <CarouselContent>
             {carouselImages.map((img) => (
               <CarouselItem>
-                <div class="relative w-full aspect-[3/4] overflow-hidden rounded-xl shadow-large">
+                <div class="relative w-full aspect-3/4 overflow-hidden rounded-xl shadow-large">
                   <Image
                     src={img.src}
                     alt={img.alt}
@@ -85,7 +124,7 @@ const carouselImages = [
           </p>
           <div class="bg-accent/10 rounded-lg p-4 mb-6">
             <div class="flex items-start gap-3">
-              <Icon name="mdi:information-outline" class="size-5 text-accent mt-0.5 flex-shrink-0" />
+              <Icon name="mdi:information-outline" />
               <p class="text-sm text-muted-foreground">
                 {t('hotel.groupNote', lang)}
               </p>
@@ -102,18 +141,18 @@ const carouselImages = [
             {t('hotel.pricingTitle', lang)}
           </h3>
           <div class="grid grid-cols-2 gap-item">
-            {roomKeys.map((key) => (
+            {roomsData.map((room) => (
               <div class="card-elevated p-4">
                 <div class="flex items-center gap-2 mb-2">
                   <div class="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
-                    <Icon name="mdi:account-group" class="size-4 text-accent" />
+                    <Icon name="mdi:account-group" />
                   </div>
                 </div>
                 <p class="text-sm font-medium text-foreground mb-2">
-                  {t(`hotel.rooms.${key}.name`, lang)}
+                  {room.name}
                 </p>
                 <p class="text-lg font-bold text-gradient-gold font-serif">
-                  {t(`hotel.rooms.${key}.price`, lang)}€
+                  {room.price}€
                 </p>
               </div>
             ))}
@@ -126,14 +165,14 @@ const carouselImages = [
     <div class="my-section animate-fade-up">
       <div class="bg-secondary rounded-xl p-8">
         <h3 class="heading-subsection mb-6 flex items-center gap-2">
-          <Icon name="mdi:check-circle" class="size-5 text-accent" />
-          {t('hotel.extrasTitle', lang)}
+          <Icon name="mdi:check-circle" />
+          {t('hotel.extras.title', lang)}
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-item">
-          {extraKeys.map((key) => (
+          {extrasData.map((extra) => (
             <p class="text-sm text-muted-foreground flex items-start gap-2">
-              <span class="text-accent mt-1.5 flex-shrink-0">•</span>
-              {t(`hotel.extras.${key}`, lang)}
+              <span class="text-accent mt-1.5 shrink-0">•</span>
+              {extra.label}
             </p>
           ))}
         </div>

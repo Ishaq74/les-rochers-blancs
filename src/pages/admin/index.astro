@@ -1,0 +1,87 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import { t } from '@/lib/i18n';
+export const prerender = false;
+const lang = 'fr';
+---
+
+<AdminLayout title={t('dashboard.title', lang)} activeNav="dashboard" lang={lang}>
+  <div class="space-y-6">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight">{t('dashboard.title', lang)}</h1>
+      <p class="text-muted-foreground">{t('dashboard.welcome', lang)}</p>
+    </div>
+
+    <!-- Stats cards -->
+    <div id="stats-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {['clients', 'reservations', 'blogPosts', 'comments'].map(key => (
+        <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+          <p class="text-sm font-medium text-muted-foreground">{t(`dashboard.stats.${key}.title`, lang)}</p>
+          <p class="mt-1 text-3xl font-bold" id={`stat-${key}`}>—</p>
+          <p class="text-xs text-muted-foreground">{t(`dashboard.stats.${key}.description`, lang) || t(`dashboard.stats.${key}.pendingDescription`, lang)}</p>
+        </div>
+      ))}
+    </div>
+
+    <!-- Quick actions -->
+    <div class="rounded-xl border border-border bg-card p-6 shadow-sm">
+      <h2 class="text-lg font-semibold">{t('dashboard.quickActions.title', lang)}</h2>
+      <p class="text-sm text-muted-foreground">{t('dashboard.quickActions.description', lang)}</p>
+      <div class="mt-4 flex flex-wrap gap-3">
+        <a href="/admin/reservations" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
+          {t('dashboard.quickActions.newReservation', lang)}
+        </a>
+        <a href="/admin/clients" class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-muted transition-colors">
+          {t('dashboard.quickActions.addClient', lang)}
+        </a>
+        <a href="/admin/invoices" class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-muted transition-colors">
+          {t('dashboard.quickActions.createInvoice', lang)}
+        </a>
+        <a href="/admin/quotes" class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-muted transition-colors">
+          {t('dashboard.quickActions.createQuote', lang)}
+        </a>
+        <a href="/admin/blog" class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-muted transition-colors">
+          {t('dashboard.quickActions.writeArticle', lang)}
+        </a>
+      </div>
+    </div>
+
+    <!-- Languages info -->
+    <div class="rounded-xl border border-border bg-card p-6 shadow-sm">
+      <h2 class="text-lg font-semibold">{t('dashboard.languages.title', lang)}</h2>
+      <p class="text-sm text-muted-foreground">{t('dashboard.languages.description', lang)}</p>
+      <div class="mt-4 flex gap-2">
+        {['FR', 'EN', 'AR', 'ZH'].map(code => (
+          <span class="inline-flex items-center rounded-full border border-border px-3 py-1 text-xs font-medium">{code}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    (async function loadStats() {
+      try {
+        const res = await fetch('/_actions/getDashboardStats', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: '{}',
+        });
+        if (!res.ok) throw new Error('API error');
+        const json = await res.json();
+        const d = json.data ?? json;
+        const map = {
+          clients: d.clients,
+          reservations: d.pendingReservations,
+          blogPosts: d.publishedPosts,
+          comments: d.unreadMessages,
+        };
+        Object.entries(map).forEach(([key, val]) => {
+          const el = document.getElementById('stat-' + key);
+          if (el) el.textContent = String(val ?? 0);
+        });
+      } catch {
+        document.querySelectorAll('[id^="stat-"]').forEach(el => { el.textContent = '—'; el.title = 'Erreur de chargement'; });
+      }
+    })();
+  </script>
+</AdminLayout>

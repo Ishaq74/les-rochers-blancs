@@ -13,7 +13,7 @@ const { lang } = Astro.props;
 <section id="contact" class="relative overflow-hidden section-padding bg-background" aria-labelledby="contact-heading">
   <div class="container-wide mx-auto">
     <!-- Watermark -->
-    <Icon name="mdi:email-outline" size={280} class="section-watermark top-right text-foreground" aria-hidden="true" />
+    <Icon name="mdi:email-outline" class="section-watermark top-right text-foreground" size={280} aria-hidden="true" />
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
       <!-- Info -->
@@ -29,7 +29,7 @@ const { lang } = Astro.props;
         <address class="space-y-item not-italic">
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
-              <Icon name="mdi:map-marker" size={20} class="text-accent" />
+              <Icon name="mdi:map-marker" size={20} />
             </div>
             <div>
               <p class="font-semibold text-foreground mb-1">{t('contact.addressLabel', lang)}</p>
@@ -39,7 +39,7 @@ const { lang } = Astro.props;
 
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
-              <Icon name="mdi:phone" size={20} class="text-accent" />
+              <Icon name="mdi:phone" size={20} />
             </div>
             <div>
               <p class="font-semibold text-foreground mb-1">{t('contact.phoneLabel', lang)}</p>
@@ -49,7 +49,7 @@ const { lang } = Astro.props;
 
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
-              <Icon name="mdi:email" size={20} class="text-accent" />
+              <Icon name="mdi:email" size={20} />
             </div>
             <div>
               <p class="font-semibold text-foreground mb-1">{t('contact.emailLabel', lang)}</p>
@@ -59,7 +59,7 @@ const { lang } = Astro.props;
 
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
-              <Icon name="mdi:clock-outline" size={20} class="text-accent" />
+              <Icon name="mdi:clock-outline" size={20} />
             </div>
             <div>
               <p class="font-semibold text-foreground mb-1">{t('contact.hoursLabel', lang)}</p>
@@ -71,10 +71,22 @@ const { lang } = Astro.props;
 
       <!-- Form -->
       <div class="card-elevated p-8 lg:p-10 animate-fade-up" style="animation-delay: 0.2s;">
-        <form class="space-y-6" aria-label={t('contact.formLabel', lang)}>
+        <div id="contact-success" class="hidden mb-6 rounded-lg border border-green-500/30 bg-green-500/10 p-4 text-green-700 dark:text-green-400" role="status">
+          <p class="text-sm font-medium">{t('contact.form.success', lang)}</p>
+        </div>
+        <div id="contact-error" class="hidden mb-6 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-700 dark:text-red-400" role="alert">
+          <p class="text-sm font-medium">{t('contact.form.error', lang)}</p>
+        </div>
+        <form id="contact-form" class="space-y-6" aria-label={t('contact.formLabel', lang)}>
+          <input type="hidden" name="locale" value={lang} />
+          <input type="text" name="_honey" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <div>
             <input
               type="text"
+              name="name"
+              required
+              minlength={2}
+              maxlength={200}
               placeholder={t('contact.form.name', lang)}
               class="input-elegant flex h-12 w-full rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none"
               aria-label={t('contact.form.name', lang)}
@@ -83,6 +95,9 @@ const { lang } = Astro.props;
           <div>
             <input
               type="email"
+              name="email"
+              required
+              maxlength={300}
               placeholder={t('contact.form.email', lang)}
               class="input-elegant flex h-12 w-full rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none"
               aria-label={t('contact.form.email', lang)}
@@ -90,6 +105,10 @@ const { lang } = Astro.props;
           </div>
           <div>
             <textarea
+              name="message"
+              required
+              minlength={10}
+              maxlength={5000}
               placeholder={t('contact.form.message', lang)}
               class="input-elegant flex min-h-[150px] w-full rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none resize-none"
               aria-label={t('contact.form.message', lang)}
@@ -106,3 +125,27 @@ const { lang } = Astro.props;
     </div>
   </div>
 </section>
+
+<script>
+  import { actions } from 'astro:actions';
+
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const successEl = document.getElementById('contact-success')!;
+  const errorEl = document.getElementById('contact-error')!;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    successEl.classList.add('hidden');
+    errorEl.classList.add('hidden');
+
+    const formData = new FormData(form);
+    const { error } = await actions.sendContact(formData);
+
+    if (error) {
+      errorEl.classList.remove('hidden');
+    } else {
+      successEl.classList.remove('hidden');
+      form.reset();
+    }
+  });
+</script>

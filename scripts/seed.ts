@@ -19,6 +19,27 @@ const LOCALES = ['fr', 'en', 'ar', 'zh'] as const;
 async function seed() {
   console.log('🌱 Seeding database...\n');
 
+  // Clean existing seed data (preserving user/auth tables)
+  console.log('🧹 Cleaning existing data...');
+  await db.delete(schema.menuItemTranslations);
+  await db.delete(schema.menuItems);
+  await db.delete(schema.menuCategoryTranslations);
+  await db.delete(schema.menuCategories);
+  await db.delete(schema.restaurantMenuTranslations);
+  await db.delete(schema.restaurantMenus);
+  await db.delete(schema.roomExtraTranslations);
+  await db.delete(schema.roomExtras);
+  await db.delete(schema.roomTranslations);
+  await db.delete(schema.rooms);
+  await db.delete(schema.openingTranslations);
+  await db.delete(schema.openings);
+  await db.delete(schema.partners);
+  await db.delete(schema.serviceTranslations);
+  await db.delete(schema.services);
+  await db.delete(schema.siteSettings);
+  await db.delete(schema.themeSettings);
+  await db.delete(schema.cmsContent);
+
   // =====================================================
   // ROOMS
   // =====================================================

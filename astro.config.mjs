@@ -1,9 +1,11 @@
 import { defineConfig, fontProviders } from 'astro/config';
 import node from '@astrojs/node';
 import icon from 'astro-icon';
+import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
+	site: 'https://lesrochersblancs.fr',
 	adapter: node({ mode: 'standalone' }),
   integrations: [
     icon({
@@ -11,6 +13,18 @@ export default defineConfig({
         mdi: ['*'],
         openmoji: ['*'],
         'circle-flags': ['*'],
+      },
+    }),
+    sitemap({
+      filter: (page) => !page.includes('/admin'),
+      i18n: {
+        defaultLocale: 'fr',
+        locales: {
+          fr: 'fr-FR',
+          en: 'en-US',
+          ar: 'ar-SA',
+          zh: 'zh-CN',
+        },
       },
     }),
   ],
@@ -34,10 +48,7 @@ export default defineConfig({
   i18n: {
     defaultLocale: 'fr',
     locales: ['fr', 'en', 'ar', 'zh'],
-    routing: {
-      prefixDefaultLocale: true,
-      redirectToDefaultLocale: false,
-    },
+    routing: 'manual',
   },
   vite: {
     plugins: [tailwindcss()],

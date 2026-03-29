@@ -59,6 +59,7 @@
       "five": { "name": "Five-person room", "price": "155" }
     },
     "extras": {
+      "title": "Extras",
       "breakfast": "Breakfast: buffet €14",
       "halfBoard": "Half board: €88 minimum 3 days — price per day per person",
       "halfBoardChild": "Child 2 to 5 years: €44, 5 to 10 years: €56",
@@ -145,8 +146,15 @@
       "name": "Your name",
       "email": "Your email",
       "message": "Your message",
-      "send": "Send"
+      "send": "Send",
+      "success": "Your message has been sent successfully. We will get back to you shortly.",
+      "error": "An error occurred. Please try again."
     }
+  },
+  "messages": {
+    "title": "Messages",
+    "subtitle": "Review and process contact messages",
+    "noItems": "No messages"
   },
   "footer": {
     "brandName": "Les Rochers Blancs",
@@ -244,7 +252,7 @@
     "welcome": "Welcome to the Les Rochers Blancs administration panel",
     "stats": {
       "clients": { "title": "Clients", "description": "Total registered clients" },
-      "reservations": { "title": "Reservations", "pendingDescription": "pending" },
+      "reservations": { "title": "Reservations", "description": "pending", "pendingDescription": "pending" },
       "revenue": { "title": "Revenue", "description": "Total paid invoices" },
       "unpaidInvoices": { "title": "Unpaid Invoices", "description": "To follow up" },
       "pendingQuotes": { "title": "Pending Quotes", "totalDescription": "quotes total" },
@@ -764,5 +772,147 @@
     "sectionLabel": "Partners",
     "title": "Our Partners",
     "description": "Enhance your relaxation and escape moments during your stay at Semnoz with the professionals of our region."
+  },
+  "legal": {
+    "eyebrow": "Legal information",
+    "heading": "Legal Notice & Privacy Policy",
+    "sections": [
+      {
+        "id": "legal-notice",
+        "title": "Legal notice",
+        "intro": "In accordance with the provisions of French Law No. 2004-575 of 21 June 2004 on Confidence in the Digital Economy (LCEN), the following information is provided to site users.",
+        "items": [
+          {
+            "question": "Site publisher",
+            "answer": "Les Rochers Blancs — Hotel & Restaurant\nAddress: Semnoz, 74000 Annecy, Haute-Savoie, France\nPhone: see Contact section\nEmail: see Contact section\nLegal form: [To be completed]\nSIRET: [To be completed]\nRCS: [To be completed]\nVAT number: [To be completed]\nPublication director: [To be completed]"
+          },
+          {
+            "question": "Website host",
+            "answer": "[Host name]\nAddress: [To be completed]\nPhone: [To be completed]\nWebsite: [To be completed]"
+          },
+          {
+            "question": "Intellectual property",
+            "answer": "All content on this site (texts, images, videos, logos, icons, sounds, software, layout, etc.) is protected by copyright and intellectual property law.\n\nAny total or partial reproduction, representation, modification, publication, or adaptation of these elements, by any means whatsoever, is strictly prohibited without the prior written authorisation of Les Rochers Blancs.\n\nAny unauthorised use shall be considered as infringement and prosecuted in accordance with applicable law."
+          },
+          {
+            "question": "Photo credits",
+            "answer": "Photographs and visuals on this site are the property of Les Rochers Blancs or are used with the permission of their authors. Any unauthorised use is prohibited.\n\nCredits: [To be completed]"
+          },
+          {
+            "question": "Hyperlinks",
+            "answer": "This site may contain hyperlinks to other websites. Les Rochers Blancs has no control over the content of these third-party sites and accepts no responsibility for their content or any damages resulting from their use."
+          },
+          {
+            "question": "Limitation of liability",
+            "answer": "The information contained on this site is as accurate as possible and is regularly updated. However, Les Rochers Blancs cannot guarantee the accuracy, completeness, or timeliness of the information provided.\n\nThe user therefore acknowledges using this information at their own risk. Les Rochers Blancs shall not be held liable for any direct or indirect damage resulting from accessing or using this site."
+          }
+        ]
+      },
+      {
+        "id": "privacy",
+        "title": "Privacy policy",
+        "intro": "In accordance with the General Data Protection Regulation (GDPR — EU Regulation 2016/679) and the French Data Protection Act of 6 January 1978 (as amended), this policy describes how we collect and process your personal data.",
+        "items": [
+          {
+            "question": "Data controller",
+            "answer": "The data controller is:\n\nLes Rochers Blancs\nAddress: Semnoz, 74000 Annecy, Haute-Savoie, France\nEmail: see Contact section"
+          },
+          {
+            "question": "Data collected",
+            "answer": "We collect the following data:\n\n• Identification data: surname, first name, email address, phone number\n• Booking data: stay dates, room type, number of guests, special requests\n• Browsing data: IP address, browser type, pages viewed, visit duration\n• Contact data: messages sent via the contact form"
+          },
+          {
+            "question": "Purposes of processing",
+            "answer": "Your data is collected for the following purposes:\n\n• Managing accommodation and restaurant bookings\n• Processing your enquiries and messages\n• Sending communications related to your stay\n• Improving our services and user experience\n• Compliance with legal and regulatory obligations\n• Invoicing and accounting management"
+          },
+          {
+            "question": "Legal basis for processing",
+            "answer": "The processing of your data is based on:\n\n• Performance of a contract (booking, stay)\n• Your consent (contact form, cookies)\n• Our legitimate interest (service improvement, security)\n• Compliance with legal obligations (invoicing, accounting)"
+          },
+          {
+            "question": "Data retention period",
+            "answer": "Your data is retained for the following periods:\n\n• Customer and booking data: 3 years after last contact\n• Invoicing data: 10 years (legal accounting obligation)\n• Browsing data (cookies): 13 months maximum\n• Contact messages: 3 years\n\nBeyond these periods, your data is deleted or anonymised."
+          },
+          {
+            "question": "Data recipients",
+            "answer": "Your data may be shared with the following recipients:\n\n• Our authorised staff (reception, restaurant, management)\n• Our technical service providers (web hosting, maintenance)\n• Competent authorities where required by law\n\nYour data is never sold to third parties. No transfers outside the European Union are carried out."
+          },
+          {
+            "question": "Your rights",
+            "answer": "Under the GDPR, you have the following rights:\n\n• Right of access: obtain confirmation that data concerning you is being processed\n• Right of rectification: correct inaccurate or incomplete data\n• Right to erasure: request deletion of your data\n• Right to restriction: restrict the processing of your data\n• Right to portability: receive your data in a structured format\n• Right to object: object to the processing of your data\n\nTo exercise your rights, contact us by email (see Contact section). You may also lodge a complaint with the CNIL (www.cnil.fr)."
+          },
+          {
+            "question": "Data security",
+            "answer": "We implement all appropriate technical and organisational measures to ensure the security and confidentiality of your personal data, including:\n\n• Encryption of data in transit (HTTPS/TLS)\n• Restricted access to personal data\n• Regular and secure backups\n• Regular security updates"
+          }
+        ]
+      },
+      {
+        "id": "terms",
+        "title": "General terms & conditions",
+        "intro": "These general terms and conditions govern the use of this website and the accommodation and restaurant services offered by Les Rochers Blancs.",
+        "items": [
+          {
+            "question": "Purpose",
+            "answer": "These general terms and conditions define the terms under which the Les Rochers Blancs website is made available, as well as the conditions for booking and staying at the establishment."
+          },
+          {
+            "question": "Bookings",
+            "answer": "Bookings can be made by phone, email, or via the website. Any booking is considered firm and final upon receipt of a deposit of 30% of the total stay amount.\n\nA confirmation email is sent to the customer with the booking details (dates, room type, rate, cancellation conditions)."
+          },
+          {
+            "question": "Rates",
+            "answer": "Rates are quoted in euros and include all taxes (TTC). They may be modified at any time. The applicable rate is the one in effect at the time of booking.\n\nThe tourist tax, set by the local authority, is added to the room price and is collected on behalf of the municipality."
+          },
+          {
+            "question": "Check-in and check-out",
+            "answer": "Rooms are available from 3:00 PM on the day of arrival. Check-out must be completed by 11:00 AM on the day of departure.\n\nEarly check-in or late check-out requests are subject to availability and may incur an additional charge."
+          },
+          {
+            "question": "Cancellation and modification",
+            "answer": "All cancellations must be notified in writing (email or letter).\n\n• Cancellation more than 7 days before arrival: full refund of the deposit\n• Cancellation between 7 and 3 days before arrival: 50% of the deposit retained\n• Cancellation less than 3 days before arrival or no-show: full deposit retained\n\nWe recommend taking out cancellation insurance."
+          },
+          {
+            "question": "Liability",
+            "answer": "The establishment provides a safe for valuables. In accordance with applicable legislation, the hotelier's liability covers items deposited in the safe.\n\nThe establishment declines all responsibility for theft of items not deposited in the safe, as well as for vehicles parked in the car park."
+          },
+          {
+            "question": "House rules",
+            "answer": "Guests agree to comply with the establishment's house rules, in particular:\n\n• Quiet hours between 10:00 PM and 7:00 AM\n• No smoking throughout the establishment\n• Pets are accepted under certain conditions (please enquire)\n• Any damage to equipment or furniture will be charged"
+          },
+          {
+            "question": "Applicable law and disputes",
+            "answer": "These general terms and conditions are governed by French law. In the event of a dispute, an amicable solution will be sought first.\n\nIn accordance with the provisions of the French Consumer Code, the customer may use the consumer mediation service free of charge. The competent mediator is: [To be completed].\n\nFailing amicable resolution, the French courts shall have sole jurisdiction."
+          }
+        ]
+      },
+      {
+        "id": "cookies",
+        "title": "Cookie policy",
+        "intro": "This site uses cookies and similar technologies to ensure its proper functioning and improve your browsing experience, in accordance with European Directive 2009/136/EC and CNIL recommendations.",
+        "items": [
+          {
+            "question": "What is a cookie?",
+            "answer": "A cookie is a small text file stored on your device (computer, tablet, smartphone) when you visit a website. It allows the site to remember information about your browsing (language preferences, session identifiers, etc.)."
+          },
+          {
+            "question": "Cookies used",
+            "answer": "We use the following categories of cookies:\n\n• Strictly necessary cookies: essential for the site to function (session, authentication, language preferences). They cannot be disabled.\n\n• Performance cookies: allow us to measure site traffic and analyse browsing to improve our services.\n\n• Preference cookies: remember your choices (language, light/dark theme) to personalise your experience."
+          },
+          {
+            "question": "Retention period",
+            "answer": "Cookies are stored for a maximum of 13 months in accordance with CNIL recommendations. Session cookies are deleted when the browser is closed."
+          },
+          {
+            "question": "Managing cookies",
+            "answer": "You can manage your cookie preferences at any time:\n\n• Via your browser settings (Chrome, Firefox, Safari, Edge, etc.)\n• By deleting cookies already stored\n\nDisabling certain cookies may affect the site's operation and limit access to certain features.\n\nFor more information on managing cookies, visit the CNIL website: www.cnil.fr."
+          },
+          {
+            "question": "Third-party cookies",
+            "answer": "This site may embed content or services from third parties (Google Maps, videos, social networks). These third parties may set cookies governed by their own privacy policies.\n\nWe have no control over these third-party cookies. Please refer to the privacy policies of the relevant services for more information."
+          }
+        ]
+      }
+    ]
   }
 }

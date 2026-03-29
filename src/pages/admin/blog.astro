@@ -1,0 +1,325 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import { t, LOCALES } from '@/lib/i18n';
+export const prerender = false;
+const lang = 'fr';
+const locales = LOCALES;
+---
+
+<AdminLayout title={t('blog.title', lang)} activeNav="blog" lang={lang}>
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">{t('blog.title', lang)}</h1>
+        <p class="text-muted-foreground">{t('blog.subtitle', lang)}</p>
+      </div>
+      <button id="btn-add" type="button" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">+ {t('blog.new', lang)}</button>
+    </div>
+
+    <div class="flex gap-2" id="pub-filters">
+      <button data-pub="" class="rounded-full px-3 py-1 text-xs font-medium border border-input bg-primary text-primary-foreground">Tous</button>
+      <button data-pub="true" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">Publiés</button>
+      <button data-pub="false" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">Brouillons</button>
+    </div>
+
+    <div class="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="border-b border-border bg-muted/50">
+          <tr>
+            <th class="px-4 py-3 text-left font-medium">Titre (FR)</th>
+            <th class="px-4 py-3 text-left font-medium">Slug</th>
+            <th class="px-4 py-3 text-left font-medium">Statut</th>
+            <th class="px-4 py-3 text-left font-medium">Vues</th>
+            <th class="px-4 py-3 text-left font-medium">Date</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.actions', lang)}</th>
+          </tr>
+        </thead>
+        <tbody id="data-tbody"></tbody>
+      </table>
+      <p id="data-empty" class="hidden p-8 text-center text-muted-foreground">{t('blog.noItems', lang)}</p>
+    </div>
+    <div id="pagination" class="flex items-center justify-between text-sm text-muted-foreground"></div>
+  </div>
+
+  <!-- Blog Post Dialog -->
+  <div id="edit-dialog" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50" data-close></div>
+    <div class="fixed inset-y-0 right-0 w-full max-w-2xl overflow-y-auto bg-card border-l border-border shadow-xl p-6 space-y-4">
+      <h2 id="dialog-title" class="text-lg font-semibold">{t('blog.newTitle', lang)}</h2>
+      <form id="edit-form" class="space-y-4">
+        <input type="hidden" name="id" />
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1"><label class="text-sm font-medium">Slug</label><input name="slug" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1">
+            <label class="text-sm font-medium">Image URL</label>
+            <div class="flex gap-2">
+              <input name="imageUrl" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+              <button type="button" id="pick-cover-image" class="shrink-0 rounded-md border border-input px-3 text-xs hover:bg-muted">Choisir</button>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" name="isPublished" id="is-published" class="rounded border-input" />
+          <label for="is-published" class="text-sm font-medium">Publié</label>
+        </div>
+
+        <!-- Locale Tabs -->
+        <div class="border-b border-border">
+          <div class="flex gap-1" id="locale-tabs">
+            {locales.map((l, i) => (
+              <button type="button" data-tab={l} class={`px-3 py-2 text-sm font-medium border-b-2 ${i === 0 ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>{l.toUpperCase()}</button>
+            ))}
+          </div>
+        </div>
+        <div id="locale-panels">
+          {locales.map((l, i) => (
+            <div data-panel={l} class={i === 0 ? '' : 'hidden'}>
+              <div class="space-y-3">
+                <div class="space-y-1"><label class="text-sm font-medium">Titre ({l})</label><input name={`title_${l}`} class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+                <div class="space-y-1"><label class="text-sm font-medium">Extrait ({l})</label><textarea name={`excerpt_${l}`} rows="2" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"></textarea></div>
+                <div class="space-y-1">
+                  <div class="flex items-center justify-between">
+                    <label class="text-sm font-medium">Contenu ({l})</label>
+                    <div class="flex items-center gap-2 text-xs">
+                      <button type="button" class="rounded border border-input px-2 py-1" data-md-action="h2" data-locale={l}>H2</button>
+                      <button type="button" class="rounded border border-input px-2 py-1" data-md-action="bold" data-locale={l}>Gras</button>
+                      <button type="button" class="rounded border border-input px-2 py-1" data-md-action="italic" data-locale={l}>Italique</button>
+                      <button type="button" class="rounded border border-input px-2 py-1" data-md-action="link" data-locale={l}>Lien</button>
+                      <button type="button" class="rounded border border-input px-2 py-1" data-md-action="image" data-locale={l}>Image</button>
+                      <button type="button" class="rounded border border-input px-2 py-1" data-md-action="preview" data-locale={l}>Preview</button>
+                    </div>
+                  </div>
+                  <textarea name={`content_${l}`} rows="10" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono"></textarea>
+                  <div data-md-preview={l} class="hidden rounded-md border border-dashed border-border bg-background px-3 py-2 prose prose-sm max-w-none"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                  <div class="space-y-1"><label class="text-sm font-medium">Meta titre ({l})</label><input name={`metaTitle_${l}`} class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+                  <div class="space-y-1"><label class="text-sm font-medium">Meta description ({l})</label><input name={`metaDescription_${l}`} class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="submit" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('common.save', lang)}</button>
+          <button type="button" data-close class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">{t('common.cancel', lang)}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Media picker dialog -->
+  <div id="media-dialog" class="fixed inset-0 z-[60] hidden">
+    <div class="fixed inset-0 bg-black/50" data-close-media></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+      <div class="bg-card rounded-xl border border-border shadow-xl p-6 space-y-4 w-full max-w-4xl max-h-[85vh] overflow-hidden">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold">Sélectionner une image</h3>
+          <button type="button" data-close-media class="text-sm text-muted-foreground hover:text-foreground">Fermer</button>
+        </div>
+        <div id="media-picker-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 overflow-y-auto max-h-[65vh]"></div>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ locales }}>
+    const API=(a,b)=>fetch(`/_actions/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());
+    function openD(){document.getElementById('edit-dialog')?.classList.remove('hidden')}function closeD(){document.getElementById('edit-dialog')?.classList.add('hidden')}
+    document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeD));
+
+    // Locale tabs
+    document.querySelectorAll('#locale-tabs button').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        document.querySelectorAll('#locale-tabs button').forEach(b=>{b.classList.remove('border-primary','text-primary');b.classList.add('border-transparent','text-muted-foreground')});
+        btn.classList.add('border-primary','text-primary');btn.classList.remove('border-transparent','text-muted-foreground');
+        document.querySelectorAll('#locale-panels > [data-panel]').forEach(p=>p.classList.add('hidden'));
+        document.querySelector(`#locale-panels > [data-panel="${btn.dataset.tab}"]`)?.classList.remove('hidden');
+      });
+    });
+
+    let currentPage=1,publishedOnly=null;
+    let result={items:[],total:0,totalPages:0};
+    let mediaItems=[];
+    let mediaTarget='';
+
+    function markdownToHtml(markdown=''){
+      let html=escapeHtml(markdown);
+      html=html.replace(/^###\s+(.+)$/gm,'<h3>$1</h3>');
+      html=html.replace(/^##\s+(.+)$/gm,'<h2>$1</h2>');
+      html=html.replace(/^#\s+(.+)$/gm,'<h1>$1</h1>');
+      html=html.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+      html=html.replace(/\*(.+?)\*/g,'<em>$1</em>');
+      html=html.replace(/!\[(.*?)\]\((.*?)\)/g,'<img alt="$1" src="$2" class="max-w-full h-auto rounded-md my-2" />');
+      html=html.replace(/\[(.*?)\]\((.*?)\)/g,'<a href="$2" class="text-primary underline" target="_blank" rel="noopener noreferrer">$1</a>');
+      html=html.replace(/\n{2,}/g,'</p><p>');
+      html=html.replace(/\n/g,'<br />');
+      if(html.trim()) html='<p>'+html+'</p>';
+      return html;
+    }
+
+    function insertAtCursor(textarea,text){
+      const start=textarea.selectionStart ?? textarea.value.length;
+      const end=textarea.selectionEnd ?? textarea.value.length;
+      textarea.value=textarea.value.slice(0,start)+text+textarea.value.slice(end);
+      textarea.focus();
+      const pos=start+text.length;
+      textarea.setSelectionRange(pos,pos);
+      textarea.dispatchEvent(new Event('input',{bubbles:true}));
+    }
+
+    async function loadMediaItems(){
+      if(mediaItems.length>0) return;
+      const r=await API('listMedia',{page:1,limit:200});
+      const payload=r.data??r;
+      mediaItems=payload.items??[];
+    }
+
+    function openMediaDialog(target){
+      mediaTarget=target;
+      document.getElementById('media-dialog')?.classList.remove('hidden');
+      loadMediaItems().then(renderMediaPicker);
+    }
+
+    function closeMediaDialog(){
+      document.getElementById('media-dialog')?.classList.add('hidden');
+    }
+
+    function renderMediaPicker(){
+      const grid=document.getElementById('media-picker-grid');
+      if(!mediaItems.length){
+        grid.innerHTML='<p class="text-sm text-muted-foreground col-span-full">Aucune image en médiathèque.</p>';
+        return;
+      }
+      grid.innerHTML=mediaItems.map((m)=>{
+        const isImage=(m.fileType||'').startsWith('image/');
+        return `<button type="button" class="border border-border rounded-lg overflow-hidden text-left hover:border-primary" data-media-url="${escapeHtml(m.fileUrl)}" data-media-name="${escapeHtml((m.originalFilename||'').replaceAll('"','&quot;'))}">
+          <div class="aspect-square bg-muted flex items-center justify-center overflow-hidden">
+            ${isImage?`<img src="${escapeHtml(m.fileUrl)}" alt="${escapeHtml(m.altText||m.originalFilename||'')}" class="w-full h-full object-cover" loading="lazy"/>`:'<span class="text-2xl">📄</span>'}
+          </div>
+          <div class="p-2 text-xs truncate">${escapeHtml(m.originalFilename||m.fileUrl)}</div>
+        </button>`;
+      }).join('');
+
+      grid.querySelectorAll('[data-media-url]').forEach((el)=>{
+        el.addEventListener('click',()=>{
+          const url=el.getAttribute('data-media-url')||'';
+          const name=el.getAttribute('data-media-name')||'image';
+          const form=document.getElementById('edit-form');
+          if(mediaTarget==='cover'){
+            form.imageUrl.value=url;
+          } else {
+            const textarea=form.querySelector(`[name="content_${mediaTarget}"]`);
+            if(textarea) insertAtCursor(textarea,`![${name}](${url})`);
+          }
+          closeMediaDialog();
+        });
+      });
+    }
+
+    document.querySelectorAll('#pub-filters button').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        document.querySelectorAll('#pub-filters button').forEach(b=>{b.classList.remove('bg-primary','text-primary-foreground');b.classList.add('hover:bg-muted')});
+        btn.classList.add('bg-primary','text-primary-foreground');btn.classList.remove('hover:bg-muted');
+        publishedOnly=btn.dataset.pub===''?null:btn.dataset.pub==='true';currentPage=1;load();
+      });
+    });
+
+    async function load(){
+      const p={page:currentPage,limit:20};
+      if(publishedOnly!==null)p.publishedOnly=publishedOnly;
+      const r=await API('listBlogPosts',p);result=r.data??r;render();
+    }
+    function render(){
+      const tbody=document.getElementById('data-tbody'),empty=document.getElementById('data-empty');
+      const items=result.items||[];
+      if(!items.length){tbody.innerHTML='';empty.classList.remove('hidden');document.getElementById('pagination').innerHTML='';return;}
+      empty.classList.add('hidden');
+      tbody.innerHTML=items.map(r=>{
+        const frT=(r.translations||[]).find(t=>t.locale==='fr');
+        const d=r.createdAt?new Date(r.createdAt).toLocaleDateString('fr-FR'):'';
+        return `<tr class="border-b border-border hover:bg-muted/50">
+        <td class="px-4 py-3 font-medium">${escapeHtml(frT?.title||'(sans titre)')}</td>
+        <td class="px-4 py-3 text-xs text-muted-foreground">${escapeHtml(r.slug)}</td>
+        <td class="px-4 py-3"><span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${r.isPublished?'bg-green-100 text-green-800':'bg-gray-100 text-gray-800'}">${r.isPublished?'Publié':'Brouillon'}</span></td>
+        <td class="px-4 py-3 text-sm">${r.viewsCount||0}</td>
+        <td class="px-4 py-3 text-xs">${escapeHtml(d)}</td>
+        <td class="px-4 py-3 space-x-2">
+          <button onclick="edit('${escapeHtml(r.id)}')" class="text-xs text-primary hover:underline">Modifier</button>
+          <button onclick="del('${escapeHtml(r.id)}')" class="text-xs text-destructive hover:underline">Supprimer</button>
+        </td></tr>`;
+      }).join('');
+      document.getElementById('pagination').innerHTML=`<span>${result.total||0} article(s)</span><div class="flex gap-2">${currentPage>1?`<button onclick="goPage(${currentPage-1})" class="text-xs text-primary hover:underline">← Précédent</button>`:''}${(result.totalPages||0)>currentPage?`<button onclick="goPage(${currentPage+1})" class="text-xs text-primary hover:underline">Suivant →</button>`:''}</div>`;
+    }
+    window.goPage=p=>{currentPage=p;load()};
+
+    document.getElementById('btn-add')?.addEventListener('click',()=>{
+      const f=document.getElementById('edit-form');f.reset();f.querySelector('[name=id]').value='';
+      document.getElementById('dialog-title').textContent='Nouvel article';openD();
+    });
+    document.getElementById('pick-cover-image')?.addEventListener('click',()=>openMediaDialog('cover'));
+    document.querySelectorAll('[data-close-media]').forEach(el=>el.addEventListener('click',closeMediaDialog));
+
+    document.querySelectorAll('[data-md-action]').forEach((btn)=>{
+      btn.addEventListener('click',()=>{
+        const action=btn.getAttribute('data-md-action');
+        const locale=btn.getAttribute('data-locale');
+        const form=document.getElementById('edit-form');
+        const textarea=form.querySelector(`[name="content_${locale}"]`);
+        const preview=form.querySelector(`[data-md-preview="${locale}"]`);
+        if(!textarea) return;
+        if(action==='h2') insertAtCursor(textarea,'## Titre\n');
+        if(action==='bold') insertAtCursor(textarea,'**texte**');
+        if(action==='italic') insertAtCursor(textarea,'*texte*');
+        if(action==='link') insertAtCursor(textarea,'[texte](https://)');
+        if(action==='image') openMediaDialog(locale||'fr');
+        if(action==='preview'){
+          const isHidden=preview.classList.contains('hidden');
+          if(isHidden){
+            preview.innerHTML=markdownToHtml(textarea.value);
+            preview.classList.remove('hidden');
+            btn.textContent='Edit';
+          } else {
+            preview.classList.add('hidden');
+            btn.textContent='Preview';
+          }
+        }
+      });
+    });
+
+    document.querySelectorAll('textarea[name^="content_"]').forEach((ta)=>{
+      ta.addEventListener('input',()=>{
+        const locale=(ta.getAttribute('name')||'').replace('content_','');
+        const preview=document.querySelector(`[data-md-preview="${locale}"]`);
+        if(preview && !preview.classList.contains('hidden')) preview.innerHTML=markdownToHtml(ta.value);
+      });
+    });
+
+    window.edit=function(id){
+      const r=(result.items||[]).find(x=>x.id===id);if(!r)return;
+      const f=document.getElementById('edit-form');
+      f.querySelector('[name=id]').value=r.id;f.slug.value=r.slug;
+      f.imageUrl.value=r.imageUrl||'';f.querySelector('[name=isPublished]').checked=r.isPublished;
+      locales.forEach(l=>{
+        const tr=(r.translations||[]).find(t=>t.locale===l);
+        const title=f.querySelector(`[name=title_${l}]`);if(title)title.value=tr?.title||'';
+        const excerpt=f.querySelector(`[name=excerpt_${l}]`);if(excerpt)excerpt.value=tr?.excerpt||'';
+        const content=f.querySelector(`[name=content_${l}]`);if(content)content.value=tr?.content||'';
+        const mt=f.querySelector(`[name=metaTitle_${l}]`);if(mt)mt.value=tr?.metaTitle||'';
+        const md=f.querySelector(`[name=metaDescription_${l}]`);if(md)md.value=tr?.metaDescription||'';
+      });
+      document.getElementById('dialog-title').textContent='Modifier l\'article';openD();
+    };
+
+    document.getElementById('edit-form')?.addEventListener('submit',async e=>{
+      e.preventDefault();const f=e.target;
+      const id=f.querySelector('[name=id]').value||undefined;
+      const translations=locales.map(l=>({locale:l,title:f.querySelector(`[name=title_${l}]`)?.value||'',excerpt:f.querySelector(`[name=excerpt_${l}]`)?.value||'',content:f.querySelector(`[name=content_${l}]`)?.value||'',metaTitle:f.querySelector(`[name=metaTitle_${l}]`)?.value||'',metaDescription:f.querySelector(`[name=metaDescription_${l}]`)?.value||''})).filter(t=>t.title);
+      await API('saveBlogPost',{id,slug:f.slug.value,imageUrl:f.imageUrl.value||undefined,isPublished:f.querySelector('[name=isPublished]').checked,translations});
+      closeD();load();
+    });
+
+    window.del=async id=>{if(!confirm('Supprimer cet article ?'))return;await API('deleteBlogPost',{id});load()};
+    load();
+  </script>
+</AdminLayout>

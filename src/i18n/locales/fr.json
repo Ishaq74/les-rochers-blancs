@@ -59,6 +59,7 @@
       "five": { "name": "Chambre 5 personnes", "price": "155" }
     },
     "extras": {
+      "title": "Suppléments",
       "breakfast": "Petit déjeuner : buffet 14 €",
       "halfBoard": "Demi-pension : 88 € minimum 3 jours — prix par jour et par personne",
       "halfBoardChild": "Enfant 2 à 5 ans : 44 €, de 5 à 10 ans : 56 €",
@@ -145,8 +146,15 @@
       "name": "Votre nom",
       "email": "Votre email",
       "message": "Votre message",
-      "send": "Envoyer"
+      "send": "Envoyer",
+      "success": "Votre message a bien été envoyé. Nous vous répondrons dans les plus brefs délais.",
+      "error": "Une erreur est survenue. Veuillez réessayer."
     }
+  },
+  "messages": {
+    "title": "Messages",
+    "subtitle": "Consultez et traitez les messages de contact",
+    "noItems": "Aucun message"
   },
   "footer": {
     "brandName": "Les Rochers Blancs",
@@ -244,7 +252,7 @@
     "welcome": "Bienvenue dans le panneau d'administration des Rochers Blancs",
     "stats": {
       "clients": { "title": "Clients", "description": "Total clients enregistrés" },
-      "reservations": { "title": "Réservations", "pendingDescription": "en attente" },
+      "reservations": { "title": "Réservations", "description": "en attente", "pendingDescription": "en attente" },
       "revenue": { "title": "Chiffre d'affaires", "description": "Total factures payées" },
       "unpaidInvoices": { "title": "Factures impayées", "description": "À relancer" },
       "pendingQuotes": { "title": "Devis en attente", "totalDescription": "devis au total" },
@@ -764,5 +772,147 @@
     "sectionLabel": "Partenaires",
     "title": "Nos Partenaires",
     "description": "Augmentez vos moments de détente et d'évasion durant votre séjour au Semnoz avec les professionnels de notre région."
+  },
+  "legal": {
+    "eyebrow": "Informations légales",
+    "heading": "Mentions légales & Confidentialité",
+    "sections": [
+      {
+        "id": "mentions-legales",
+        "title": "Mentions légales",
+        "intro": "Conformément aux dispositions des articles 6-III et 19 de la Loi n° 2004-575 du 21 juin 2004 pour la Confiance dans l'Économie Numérique (LCEN), les informations suivantes sont portées à la connaissance des utilisateurs du site.",
+        "items": [
+          {
+            "question": "Éditeur du site",
+            "answer": "Les Rochers Blancs — Hôtel & Restaurant\nAdresse : Semnoz, 74000 Annecy, Haute-Savoie, France\nTéléphone : voir section Contact\nEmail : voir section Contact\nForme juridique : [À compléter]\nSIRET : [À compléter]\nRCS : [À compléter]\nNuméro de TVA intracommunautaire : [À compléter]\nDirecteur de la publication : [À compléter]"
+          },
+          {
+            "question": "Hébergeur du site",
+            "answer": "[Nom de l'hébergeur]\nAdresse : [À compléter]\nTéléphone : [À compléter]\nSite web : [À compléter]"
+          },
+          {
+            "question": "Propriété intellectuelle",
+            "answer": "L'ensemble du contenu de ce site (textes, images, vidéos, logos, icônes, sons, logiciels, mise en page, etc.) est protégé par le droit d'auteur et le droit de la propriété intellectuelle, conformément au Code de la propriété intellectuelle.\n\nToute reproduction, représentation, modification, publication, adaptation, totale ou partielle, de ces éléments, par quelque moyen que ce soit, est strictement interdite sans l'autorisation écrite préalable de Les Rochers Blancs.\n\nToute exploitation non autorisée sera considérée comme constitutive d'une contrefaçon et poursuivie conformément aux dispositions des articles L.335-2 et suivants du Code de la propriété intellectuelle."
+          },
+          {
+            "question": "Crédits photographiques",
+            "answer": "Les photographies et visuels présents sur ce site sont la propriété de Les Rochers Blancs ou sont utilisés avec l'autorisation de leurs auteurs. Toute utilisation non autorisée est interdite.\n\nCrédits : [À compléter]"
+          },
+          {
+            "question": "Liens hypertextes",
+            "answer": "Le site peut contenir des liens hypertextes vers d'autres sites internet. Les Rochers Blancs n'exerce aucun contrôle sur le contenu de ces sites tiers et décline toute responsabilité quant à leur contenu ou aux éventuels dommages résultant de leur utilisation."
+          },
+          {
+            "question": "Limitation de responsabilité",
+            "answer": "Les informations contenues sur ce site sont aussi précises que possible et régulièrement mises à jour. Toutefois, Les Rochers Blancs ne peut garantir l'exactitude, la complétude ou l'actualité des informations diffusées.\n\nEn conséquence, l'utilisateur reconnaît utiliser ces informations sous sa responsabilité exclusive. Les Rochers Blancs ne saurait être tenu responsable de tout dommage direct ou indirect résultant de l'accès ou de l'utilisation de ce site."
+          }
+        ]
+      },
+      {
+        "id": "confidentialite",
+        "title": "Politique de confidentialité",
+        "intro": "Conformément au Règlement Général sur la Protection des Données (RGPD — Règlement UE 2016/679) et à la loi Informatique et Libertés du 6 janvier 1978 modifiée, cette politique décrit comment nous collectons et traitons vos données personnelles.",
+        "items": [
+          {
+            "question": "Responsable du traitement",
+            "answer": "Le responsable du traitement des données personnelles est :\n\nLes Rochers Blancs\nAdresse : Semnoz, 74000 Annecy, Haute-Savoie, France\nEmail : voir section Contact"
+          },
+          {
+            "question": "Données collectées",
+            "answer": "Nous collectons les données suivantes :\n\n• Données d'identification : nom, prénom, adresse email, numéro de téléphone\n• Données de réservation : dates de séjour, type de chambre, nombre de personnes, demandes spécifiques\n• Données de navigation : adresse IP, type de navigateur, pages consultées, durée de visite\n• Données de contact : messages envoyés via le formulaire de contact"
+          },
+          {
+            "question": "Finalités du traitement",
+            "answer": "Vos données sont collectées pour les finalités suivantes :\n\n• Gestion des réservations d'hébergement et de restauration\n• Traitement de vos demandes de renseignements et messages\n• Envoi de communications relatives à votre séjour\n• Amélioration de nos services et de l'expérience utilisateur\n• Respect de nos obligations légales et réglementaires\n• Établissement de factures et gestion comptable"
+          },
+          {
+            "question": "Base légale du traitement",
+            "answer": "Le traitement de vos données repose sur :\n\n• L'exécution d'un contrat (réservation, séjour)\n• Votre consentement (formulaire de contact, cookies)\n• Notre intérêt légitime (amélioration des services, sécurité)\n• Le respect d'obligations légales (facturation, comptabilité)"
+          },
+          {
+            "question": "Durée de conservation",
+            "answer": "Vos données sont conservées pendant les durées suivantes :\n\n• Données clients et réservations : 3 ans après le dernier contact\n• Données de facturation : 10 ans (obligation légale comptable)\n• Données de navigation (cookies) : 13 mois maximum\n• Messages de contact : 3 ans\n\nAu-delà de ces délais, vos données sont supprimées ou anonymisées."
+          },
+          {
+            "question": "Destinataires des données",
+            "answer": "Vos données peuvent être transmises aux destinataires suivants :\n\n• Notre personnel habilité (réception, restauration, direction)\n• Nos prestataires techniques (hébergement web, maintenance)\n• Les autorités compétentes en cas d'obligation légale\n\nVos données ne sont jamais vendues à des tiers. Aucun transfert hors de l'Union Européenne n'est effectué."
+          },
+          {
+            "question": "Vos droits",
+            "answer": "Conformément au RGPD, vous disposez des droits suivants :\n\n• Droit d'accès : obtenir la confirmation que des données vous concernant sont traitées\n• Droit de rectification : corriger des données inexactes ou incomplètes\n• Droit à l'effacement : demander la suppression de vos données\n• Droit à la limitation : restreindre le traitement de vos données\n• Droit à la portabilité : recevoir vos données dans un format structuré\n• Droit d'opposition : vous opposer au traitement de vos données\n\nPour exercer vos droits, contactez-nous par email (voir section Contact). Vous pouvez également introduire une réclamation auprès de la CNIL (www.cnil.fr)."
+          },
+          {
+            "question": "Sécurité des données",
+            "answer": "Nous mettons en œuvre toutes les mesures techniques et organisationnelles appropriées pour assurer la sécurité et la confidentialité de vos données personnelles, notamment :\n\n• Chiffrement des données en transit (HTTPS/TLS)\n• Accès restreint aux données personnelles\n• Sauvegardes régulières et sécurisées\n• Mises à jour de sécurité régulières"
+          }
+        ]
+      },
+      {
+        "id": "cgv",
+        "title": "Conditions générales",
+        "intro": "Les présentes conditions générales régissent l'utilisation du site internet et les prestations d'hébergement et de restauration proposées par Les Rochers Blancs.",
+        "items": [
+          {
+            "question": "Objet",
+            "answer": "Les présentes conditions générales ont pour objet de définir les modalités de mise à disposition du site internet Les Rochers Blancs, ainsi que les conditions de réservation et de séjour au sein de l'établissement."
+          },
+          {
+            "question": "Réservations",
+            "answer": "Les réservations peuvent être effectuées par téléphone, par email ou via le site internet. Toute réservation est considérée comme ferme et définitive à réception d'un acompte de 30 % du montant total du séjour.\n\nUn email de confirmation est envoyé au client reprenant les détails de la réservation (dates, type de chambre, tarif, conditions d'annulation)."
+          },
+          {
+            "question": "Tarifs",
+            "answer": "Les tarifs sont indiqués en euros toutes taxes comprises (TTC). Ils sont susceptibles d'être modifiés à tout moment. Le tarif applicable est celui en vigueur au moment de la réservation.\n\nLa taxe de séjour, fixée par la collectivité locale, s'ajoute au prix de la chambre et est perçue pour le compte de la commune."
+          },
+          {
+            "question": "Arrivée et départ",
+            "answer": "Les chambres sont disponibles à partir de 15h00 le jour d'arrivée. Le départ doit être effectué avant 11h00 le jour du départ.\n\nToute demande d'arrivée anticipée ou de départ tardif sera soumise à disponibilité et pourra entraîner un supplément."
+          },
+          {
+            "question": "Annulation et modification",
+            "answer": "Toute annulation doit être notifiée par écrit (email ou courrier).\n\n• Annulation plus de 7 jours avant l'arrivée : remboursement intégral de l'acompte\n• Annulation entre 7 et 3 jours avant l'arrivée : 50 % de l'acompte retenu\n• Annulation moins de 3 jours avant l'arrivée ou non-présentation : totalité de l'acompte retenu\n\nNous recommandons la souscription d'une assurance annulation."
+          },
+          {
+            "question": "Responsabilité",
+            "answer": "L'établissement met à disposition un coffre-fort pour les objets de valeur. Conformément à la législation en vigueur, la responsabilité de l'hôtelier est engagée pour les objets déposés dans le coffre-fort.\n\nL'établissement décline toute responsabilité en cas de vol d'objets non déposés dans le coffre-fort, ainsi que pour les véhicules stationnés sur le parking."
+          },
+          {
+            "question": "Règlement intérieur",
+            "answer": "Les clients s'engagent à respecter le règlement intérieur de l'établissement, notamment :\n\n• Respect du calme entre 22h00 et 7h00\n• Interdiction de fumer dans l'ensemble de l'établissement\n• Les animaux de compagnie sont acceptés sous conditions (nous consulter)\n• Tout dommage causé aux équipements ou au mobilier sera facturé"
+          },
+          {
+            "question": "Droit applicable et litiges",
+            "answer": "Les présentes conditions générales sont soumises au droit français. En cas de litige, une solution amiable sera recherchée en priorité.\n\nConformément aux dispositions du Code de la consommation, le client peut recourir gratuitement au service de médiation de la consommation. Le médiateur compétent est : [À compléter].\n\nÀ défaut de résolution amiable, les tribunaux français seront seuls compétents."
+          }
+        ]
+      },
+      {
+        "id": "cookies",
+        "title": "Politique des cookies",
+        "intro": "Ce site utilise des cookies et technologies similaires pour assurer son bon fonctionnement et améliorer votre expérience de navigation, conformément à la directive européenne 2009/136/CE et aux recommandations de la CNIL.",
+        "items": [
+          {
+            "question": "Qu'est-ce qu'un cookie ?",
+            "answer": "Un cookie est un petit fichier texte déposé sur votre terminal (ordinateur, tablette, smartphone) lors de la visite d'un site web. Il permet au site de mémoriser des informations relatives à votre navigation (préférences de langue, identifiants de session, etc.)."
+          },
+          {
+            "question": "Cookies utilisés",
+            "answer": "Nous utilisons les catégories de cookies suivantes :\n\n• Cookies strictement nécessaires : indispensables au fonctionnement du site (session, authentification, préférences de langue). Ils ne peuvent pas être désactivés.\n\n• Cookies de performance : nous permettent de mesurer l'audience du site et d'analyser la navigation pour améliorer nos services.\n\n• Cookies de préférence : mémorisent vos choix (langue, thème clair/sombre) pour personnaliser votre expérience."
+          },
+          {
+            "question": "Durée de conservation",
+            "answer": "Les cookies sont conservés pour une durée maximale de 13 mois conformément aux recommandations de la CNIL. Les cookies de session sont supprimés à la fermeture du navigateur."
+          },
+          {
+            "question": "Gestion des cookies",
+            "answer": "Vous pouvez à tout moment gérer vos préférences en matière de cookies :\n\n• Via les paramètres de votre navigateur (Chrome, Firefox, Safari, Edge, etc.)\n• En supprimant les cookies déjà déposés\n\nLa désactivation de certains cookies peut affecter le fonctionnement du site et limiter l'accès à certaines fonctionnalités.\n\nPour en savoir plus sur la gestion des cookies, consultez le site de la CNIL : www.cnil.fr."
+          },
+          {
+            "question": "Cookies tiers",
+            "answer": "Ce site peut intégrer des contenus ou services de tiers (cartes Google Maps, vidéos, réseaux sociaux). Ces tiers peuvent déposer des cookies soumis à leurs propres politiques de confidentialité.\n\nNous n'avons aucun contrôle sur ces cookies tiers. Consultez les politiques de confidentialité des services concernés pour plus d'informations."
+          }
+        ]
+      }
+    ]
   }
 }

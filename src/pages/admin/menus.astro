@@ -1,0 +1,290 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import { t, LOCALES } from '@/lib/i18n';
+export const prerender = false;
+const lang = 'fr';
+---
+
+<AdminLayout title={t('menuManager.title', lang)} activeNav="menu" lang={lang}>
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">{t('menuManager.title', lang)}</h1>
+        <p class="text-muted-foreground">{t('menuManager.subtitle', lang)}</p>
+      </div>
+      <button id="btn-add-menu" type="button" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">+ {t('menuManager.newMenu', lang)}</button>
+    </div>
+
+    <div id="menus-container" class="space-y-4"></div>
+    <p id="menus-empty" class="hidden rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">{t('menuManager.noMenus', lang)}</p>
+  </div>
+
+  <!-- Menu Dialog -->
+  <div id="menu-dialog" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50" data-close-menu></div>
+    <div class="fixed inset-y-0 right-0 w-full max-w-lg overflow-y-auto bg-card border-l border-border shadow-xl p-6 space-y-4">
+      <h2 id="menu-dialog-title" class="text-lg font-semibold">{t('menuManager.newMenuTitle', lang)}</h2>
+      <form id="menu-form" class="space-y-4">
+        <input type="hidden" name="id" />
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1"><label class="text-sm font-medium">{t('menuManager.form.slug', lang)} *</label><input name="slug" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('menuManager.form.globalPrice', lang)}</label><input name="price" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('menuManager.form.year', lang)}</label><input name="year" type="number" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('menuManager.form.sortOrder', lang)}</label><input name="sortOrder" type="number" value="0" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('menuManager.form.startDate', lang)}</label><input name="startDate" type="date" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('menuManager.form.endDate', lang)}</label><input name="endDate" type="date" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" name="isActive" id="menu-active" checked class="rounded border-input" />
+          <label for="menu-active" class="text-sm">{t('menuManager.form.isActive', lang)}</label>
+        </div>
+        <div>
+          <p class="text-sm font-medium mb-2">{t('menuManager.form.translationsLabel', lang)}</p>
+          <div class="flex gap-1 border-b border-border" id="menu-locale-tabs">
+            {LOCALES.map((loc, i) => (
+              <button type="button" data-locale={loc} class:list={['px-3 py-1.5 text-sm font-medium border-b-2 transition-colors', i === 0 ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground']}>{loc.toUpperCase()}</button>
+            ))}
+          </div>
+          {LOCALES.map((loc, i) => (
+            <div data-locale-panel={loc} class:list={['space-y-3 pt-3', i !== 0 && 'hidden']}>
+              <div class="space-y-1"><label class="text-sm font-medium">{t('menuManager.form.menuName', lang)} ({loc.toUpperCase()}) *</label><input name={`trans_${loc}_name`} required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+              <div class="space-y-1"><label class="text-sm font-medium">{t('menuManager.form.menuDescription', lang)} ({loc.toUpperCase()})</label><textarea name={`trans_${loc}_description`} rows="2" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"></textarea></div>
+            </div>
+          ))}
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button type="submit" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('common.save', lang)}</button>
+          <button type="button" data-close-menu class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">{t('common.cancel', lang)}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Category Dialog -->
+  <div id="cat-dialog" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50" data-close-cat></div>
+    <div class="fixed inset-y-0 right-0 w-full max-w-lg overflow-y-auto bg-card border-l border-border shadow-xl p-6 space-y-4">
+      <h2 id="cat-dialog-title" class="text-lg font-semibold">Catégorie</h2>
+      <form id="cat-form" class="space-y-4">
+        <input type="hidden" name="id" /><input type="hidden" name="menuId" />
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1"><label class="text-sm font-medium">Slug *</label><input name="slug" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">Ordre</label><input name="sortOrder" type="number" value="0" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" name="isActive" id="cat-active" checked class="rounded border-input" />
+          <label for="cat-active" class="text-sm">{t('menuManager.form.categoryActive', lang)}</label>
+        </div>
+        <div>
+          <p class="text-sm font-medium mb-2">{t('menuManager.form.translationsLabel', lang)}</p>
+          <div class="flex gap-1 border-b border-border" id="cat-locale-tabs">
+            {LOCALES.map((loc, i) => (
+              <button type="button" data-locale={loc} class:list={['px-3 py-1.5 text-sm font-medium border-b-2 transition-colors', i === 0 ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground']}>{loc.toUpperCase()}</button>
+            ))}
+          </div>
+          {LOCALES.map((loc, i) => (
+            <div data-locale-panel={loc} class:list={['space-y-3 pt-3', i !== 0 && 'hidden']}>
+              <div class="space-y-1"><label class="text-sm font-medium">{t('menuManager.form.categoryName', lang)} ({loc.toUpperCase()}) *</label><input name={`trans_${loc}_name`} required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+              <div class="space-y-1"><label class="text-sm font-medium">{t('menuManager.form.categoryDescription', lang)} ({loc.toUpperCase()})</label><textarea name={`trans_${loc}_description`} rows="2" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"></textarea></div>
+            </div>
+          ))}
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button type="submit" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('common.save', lang)}</button>
+          <button type="button" data-close-cat class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">{t('common.cancel', lang)}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Item Dialog -->
+  <div id="item-dialog" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50" data-close-item></div>
+    <div class="fixed inset-y-0 right-0 w-full max-w-lg overflow-y-auto bg-card border-l border-border shadow-xl p-6 space-y-4">
+      <h2 id="item-dialog-title" class="text-lg font-semibold">Plat</h2>
+      <form id="item-form" class="space-y-4">
+        <input type="hidden" name="id" /><input type="hidden" name="categoryId" />
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1"><label class="text-sm font-medium">Slug *</label><input name="slug" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('menuManager.form.itemPrice', lang)}</label><input name="price" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">Ordre</label><input name="sortOrder" type="number" value="0" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        </div>
+        <div class="flex flex-wrap gap-4">
+          <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="isSignature" class="rounded border-input" />{t('menuManager.form.isSignature', lang)}</label>
+          <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="isVegetarian" class="rounded border-input" />{t('menuManager.form.isVegetarian', lang)}</label>
+          <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="isVegan" class="rounded border-input" />{t('menuManager.form.isVegan', lang)}</label>
+          <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="isGlutenFree" class="rounded border-input" />{t('menuManager.form.isGlutenFree', lang)}</label>
+          <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="isActive" checked class="rounded border-input" />{t('menuManager.form.itemActive', lang)}</label>
+        </div>
+        <div>
+          <p class="text-sm font-medium mb-2">{t('menuManager.form.translationsLabel', lang)}</p>
+          <div class="flex gap-1 border-b border-border" id="item-locale-tabs">
+            {LOCALES.map((loc, i) => (
+              <button type="button" data-locale={loc} class:list={['px-3 py-1.5 text-sm font-medium border-b-2 transition-colors', i === 0 ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground']}>{loc.toUpperCase()}</button>
+            ))}
+          </div>
+          {LOCALES.map((loc, i) => (
+            <div data-locale-panel={loc} class:list={['space-y-3 pt-3', i !== 0 && 'hidden']}>
+              <div class="space-y-1"><label class="text-sm font-medium">{t('menuManager.form.itemName', lang)} ({loc.toUpperCase()}) *</label><input name={`trans_${loc}_name`} required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+              <div class="space-y-1"><label class="text-sm font-medium">{t('menuManager.form.itemDescription', lang)} ({loc.toUpperCase()})</label><textarea name={`trans_${loc}_description`} rows="2" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"></textarea></div>
+            </div>
+          ))}
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button type="submit" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('common.save', lang)}</button>
+          <button type="button" data-close-item class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">{t('common.cancel', lang)}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ locales: LOCALES }}>
+    const API = (action, body) => fetch(`/_actions/${action}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(r => r.json());
+
+    function setupTabs(id) {
+      const c = document.getElementById(id);
+      if (!c) return;
+      c.querySelectorAll('button[data-locale]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const loc = btn.dataset.locale;
+          const p = c.closest('.space-y-4') || c.parentElement;
+          c.querySelectorAll('button[data-locale]').forEach(b => { b.classList.toggle('border-primary', b.dataset.locale === loc); b.classList.toggle('text-primary', b.dataset.locale === loc); b.classList.toggle('border-transparent', b.dataset.locale !== loc); b.classList.toggle('text-muted-foreground', b.dataset.locale !== loc); });
+          p.querySelectorAll('[data-locale-panel]').forEach(el => el.classList.toggle('hidden', el.dataset.localePanel !== loc));
+        });
+      });
+    }
+    ['menu-locale-tabs','cat-locale-tabs','item-locale-tabs'].forEach(setupTabs);
+
+    function openD(id) { document.getElementById(id)?.classList.remove('hidden'); }
+    function closeD(id) { document.getElementById(id)?.classList.add('hidden'); }
+    document.querySelectorAll('[data-close-menu]').forEach(el => el.addEventListener('click', () => closeD('menu-dialog')));
+    document.querySelectorAll('[data-close-cat]').forEach(el => el.addEventListener('click', () => closeD('cat-dialog')));
+    document.querySelectorAll('[data-close-item]').forEach(el => el.addEventListener('click', () => closeD('item-dialog')));
+
+    let menus = [], categories = [], items = [];
+
+    async function loadAll() {
+      const [mRes, cRes, iRes] = await Promise.all([API('listMenus', {}), API('listMenuCategories', {}), API('listMenuItems', {})]);
+      const mData = mRes?.data ?? mRes ?? [];
+      const cData = cRes?.data ?? cRes ?? [];
+      const iData = iRes?.data ?? iRes ?? [];
+      menus = Array.isArray(mData) ? mData.filter(Boolean) : [];
+      categories = Array.isArray(cData) ? cData.filter(Boolean) : [];
+      items = Array.isArray(iData) ? iData.filter(Boolean) : [];
+      renderAll();
+    }
+
+    function frName(translations) { return escapeHtml(translations?.find(t => t.locale === 'fr')?.name || '—'); }
+
+    function renderAll() {
+      const container = document.getElementById('menus-container');
+      const empty = document.getElementById('menus-empty');
+      if (!menus.length) { container.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      container.innerHTML = menus.map(m => {
+        if (!m) return '';
+        const mCats = categories.filter(c => c && c.menuId === m.id);
+        return `<div class="rounded-xl border border-border bg-card shadow-sm">
+          <div class="flex items-center justify-between border-b border-border px-4 py-3">
+            <div><span class="font-semibold">${frName(m.translations)}</span> <span class="text-xs text-muted-foreground ml-2">${escapeHtml(m.slug)} · ${m.price ? escapeHtml(m.price) + ' €' : 'à la carte'} ${m.year ? '· ' + escapeHtml(String(m.year)) : ''}</span></div>
+            <div class="flex gap-2">
+              <button onclick="addCat('${escapeHtml(m.id)}')" class="text-xs text-primary hover:underline">+ Catégorie</button>
+              <button onclick="editMenu('${escapeHtml(m.id)}')" class="text-xs text-primary hover:underline">Modifier</button>
+              <button onclick="delMenu('${escapeHtml(m.id)}')" class="text-xs text-destructive hover:underline">Supprimer</button>
+            </div>
+          </div>
+          ${mCats.length ? mCats.map(c => {
+            if (!c) return '';
+            const cItems = items.filter(it => it && it.categoryId === c.id);
+            return `<div class="border-b border-border last:border-0 px-4 py-2">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium">${frName(c.translations)}</span>
+                <div class="flex gap-2">
+                  <button onclick="addItem('${escapeHtml(c.id)}')" class="text-xs text-primary hover:underline">+ Plat</button>
+                  <button onclick="editCat('${escapeHtml(c.id)}')" class="text-xs text-primary hover:underline">Modifier</button>
+                  <button onclick="delCat('${escapeHtml(c.id)}')" class="text-xs text-destructive hover:underline">Suppr.</button>
+                </div>
+              </div>
+              ${cItems.length ? `<div class="ml-4 mt-1 space-y-1">${cItems.map(it => `<div class="flex items-center justify-between text-sm">
+                <span>${frName(it.translations)} ${it.isSignature ? '⭐' : ''} ${it.isVegetarian ? '🌿' : ''}</span>
+                <div class="flex items-center gap-2"><span class="text-muted-foreground">${escapeHtml(it.price)} €</span>
+                  <button onclick="editItem('${escapeHtml(it.id)}')" class="text-xs text-primary hover:underline">Modifier</button>
+                  <button onclick="delItem('${escapeHtml(it.id)}')" class="text-xs text-destructive hover:underline">Suppr.</button>
+                </div>
+              </div>`).join('')}</div>` : ''}
+            </div>`;
+          }).join('') : '<p class="px-4 py-3 text-sm text-muted-foreground">Aucune catégorie</p>'}
+        </div>`;
+      }).join('');
+    }
+
+    // MENU CRUD
+    document.getElementById('btn-add-menu')?.addEventListener('click', () => {
+      document.getElementById('menu-form').reset();
+      document.getElementById('menu-form').querySelector('[name=id]').value = '';
+      document.getElementById('menu-dialog-title').textContent = 'Nouveau menu';
+      openD('menu-dialog');
+    });
+    window.editMenu = function(id) {
+      const m = menus.find(x => x.id === id); if (!m) return;
+      const f = document.getElementById('menu-form');
+      f.querySelector('[name=id]').value = m.id; f.slug.value = m.slug; f.price.value = m.price || '';
+      f.year.value = m.year || ''; f.sortOrder.value = m.sortOrder || 0;
+      f.startDate.value = m.startDate || ''; f.endDate.value = m.endDate || '';
+      f.querySelector('[name=isActive]').checked = m.isActive;
+      locales.forEach(loc => { const tr = m.translations?.find(t => t.locale === loc) || {}; f.querySelector(`[name=trans_${loc}_name]`).value = tr.name || ''; f.querySelector(`[name=trans_${loc}_description]`).value = tr.description || ''; });
+      document.getElementById('menu-dialog-title').textContent = 'Modifier le menu'; openD('menu-dialog');
+    };
+    document.getElementById('menu-form')?.addEventListener('submit', async e => {
+      e.preventDefault(); const f = e.target; const id = f.querySelector('[name=id]').value || undefined;
+      const translations = locales.map(loc => ({ locale: loc, name: f.querySelector(`[name=trans_${loc}_name]`).value, description: f.querySelector(`[name=trans_${loc}_description]`).value || '' }));
+      await API('saveMenu', { id, slug: f.slug.value, price: f.price.value || null, year: f.year.value ? parseInt(f.year.value) : null, startDate: f.startDate.value || null, endDate: f.endDate.value || null, isActive: f.querySelector('[name=isActive]').checked, sortOrder: parseInt(f.sortOrder.value) || 0, translations });
+      closeD('menu-dialog'); loadAll();
+    });
+    window.delMenu = async id => { if (!confirm('Supprimer ce menu ?')) return; await API('deleteMenu', { id }); loadAll(); };
+
+    // CATEGORY CRUD
+    window.addCat = function(menuId) {
+      const f = document.getElementById('cat-form'); f.reset(); f.querySelector('[name=id]').value = ''; f.querySelector('[name=menuId]').value = menuId;
+      document.getElementById('cat-dialog-title').textContent = 'Nouvelle catégorie'; openD('cat-dialog');
+    };
+    window.editCat = function(id) {
+      const c = categories.find(x => x.id === id); if (!c) return;
+      const f = document.getElementById('cat-form'); f.querySelector('[name=id]').value = c.id; f.querySelector('[name=menuId]').value = c.menuId || '';
+      f.slug.value = c.slug; f.sortOrder.value = c.sortOrder || 0; f.querySelector('[name=isActive]').checked = c.isActive;
+      locales.forEach(loc => { const tr = c.translations?.find(t => t.locale === loc) || {}; f.querySelector(`[name=trans_${loc}_name]`).value = tr.name || ''; f.querySelector(`[name=trans_${loc}_description]`).value = tr.description || ''; });
+      document.getElementById('cat-dialog-title').textContent = 'Modifier la catégorie'; openD('cat-dialog');
+    };
+    document.getElementById('cat-form')?.addEventListener('submit', async e => {
+      e.preventDefault(); const f = e.target; const id = f.querySelector('[name=id]').value || undefined;
+      const translations = locales.map(loc => ({ locale: loc, name: f.querySelector(`[name=trans_${loc}_name]`).value, description: f.querySelector(`[name=trans_${loc}_description]`).value || '' }));
+      await API('saveMenuCategory', { id, menuId: f.querySelector('[name=menuId]').value || null, slug: f.slug.value, isActive: f.querySelector('[name=isActive]').checked, sortOrder: parseInt(f.sortOrder.value) || 0, translations });
+      closeD('cat-dialog'); loadAll();
+    });
+    window.delCat = async id => { if (!confirm('Supprimer cette catégorie ?')) return; await API('deleteMenuCategory', { id }); loadAll(); };
+
+    // ITEM CRUD
+    window.addItem = function(categoryId) {
+      const f = document.getElementById('item-form'); f.reset(); f.querySelector('[name=id]').value = ''; f.querySelector('[name=categoryId]').value = categoryId;
+      document.getElementById('item-dialog-title').textContent = 'Nouveau plat'; openD('item-dialog');
+    };
+    window.editItem = function(id) {
+      const it = items.find(x => x.id === id); if (!it) return;
+      const f = document.getElementById('item-form'); f.querySelector('[name=id]').value = it.id; f.querySelector('[name=categoryId]').value = it.categoryId;
+      f.slug.value = it.slug; f.price.value = it.price; f.sortOrder.value = it.sortOrder || 0;
+      f.querySelector('[name=isSignature]').checked = it.isSignature; f.querySelector('[name=isVegetarian]').checked = it.isVegetarian;
+      f.querySelector('[name=isVegan]').checked = it.isVegan; f.querySelector('[name=isGlutenFree]').checked = it.isGlutenFree; f.querySelector('[name=isActive]').checked = it.isActive;
+      locales.forEach(loc => { const tr = it.translations?.find(t => t.locale === loc) || {}; f.querySelector(`[name=trans_${loc}_name]`).value = tr.name || ''; f.querySelector(`[name=trans_${loc}_description]`).value = tr.description || ''; });
+      document.getElementById('item-dialog-title').textContent = 'Modifier le plat'; openD('item-dialog');
+    };
+    document.getElementById('item-form')?.addEventListener('submit', async e => {
+      e.preventDefault(); const f = e.target; const id = f.querySelector('[name=id]').value || undefined;
+      const translations = locales.map(loc => ({ locale: loc, name: f.querySelector(`[name=trans_${loc}_name]`).value, description: f.querySelector(`[name=trans_${loc}_description]`).value || '' }));
+      await API('saveMenuItem', { id, categoryId: f.querySelector('[name=categoryId]').value, slug: f.slug.value, price: f.price.value, isSignature: f.querySelector('[name=isSignature]').checked, isVegetarian: f.querySelector('[name=isVegetarian]').checked, isVegan: f.querySelector('[name=isVegan]').checked, isGlutenFree: f.querySelector('[name=isGlutenFree]').checked, isActive: f.querySelector('[name=isActive]').checked, sortOrder: parseInt(f.sortOrder.value) || 0, translations });
+      closeD('item-dialog'); loadAll();
+    });
+    window.delItem = async id => { if (!confirm('Supprimer ce plat ?')) return; await API('deleteMenuItem', { id }); loadAll(); };
+
+    loadAll();
+  </script>
+</AdminLayout>

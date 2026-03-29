@@ -1,0 +1,94 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import { t } from '@/lib/i18n';
+export const prerender = false;
+const lang = 'fr';
+---
+
+<AdminLayout title={t('settings.title', lang)} activeNav="settings" lang={lang}>
+  <div class="space-y-6">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight">{t('settings.title', lang)}</h1>
+      <p class="text-muted-foreground">{t('settings.subtitle', lang)}</p>
+    </div>
+
+    <div id="loading" class="p-8 text-center text-muted-foreground">Chargement…</div>
+
+    <div id="settings-form" class="hidden space-y-6">
+      <div id="categories-container" class="space-y-8"></div>
+
+      <div class="border-t border-border pt-6 space-y-4">
+        <h3 class="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Ajouter un paramètre</h3>
+        <div class="grid grid-cols-4 gap-4">
+          <input id="new-key" placeholder="Clé (ex: site_name)" class="flex h-9 rounded-md border border-input bg-background px-3 text-sm" />
+          <input id="new-value" placeholder="Valeur" class="flex h-9 rounded-md border border-input bg-background px-3 text-sm" />
+          <select id="new-type" class="flex h-9 rounded-md border border-input bg-background px-3 text-sm">
+            <option value="text">Texte</option><option value="email">Email</option><option value="url">URL</option><option value="textarea">Texte long</option><option value="boolean">Booléen</option><option value="number">Nombre</option>
+          </select>
+          <input id="new-category" placeholder="Catégorie" value="general" class="flex h-9 rounded-md border border-input bg-background px-3 text-sm" />
+        </div>
+        <button id="btn-add" type="button" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">+ Ajouter</button>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    const API=(a,b)=>fetch(`/_actions/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());
+
+    let settings=[];
+
+    async function load(){
+      const r=await API('listSiteSettings',{});settings=r.data??r;render();
+    }
+
+    function render(){
+      document.getElementById('loading')?.classList.add('hidden');
+      document.getElementById('settings-form')?.classList.remove('hidden');
+
+      const categories={};
+      (settings||[]).forEach(s=>{
+        const cat=s.category||'general';
+        if(!categories[cat])categories[cat]=[];
+        categories[cat].push(s);
+      });
+
+      const container=document.getElementById('categories-container');
+      const cats=Object.keys(categories).sort();
+      if(!cats.length){container.innerHTML='<p class="text-muted-foreground">Aucun paramètre. Ajoutez-en ci-dessous.</p>';return;}
+
+      container.innerHTML=cats.map(cat=>`
+        <div class="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+          <div class="border-b border-border bg-muted/50 px-4 py-3"><h3 class="text-sm font-semibold uppercase tracking-wider">${escapeHtml(cat)}</h3></div>
+          <div class="p-4 space-y-3">
+            ${categories[cat].map(s=>{
+              if(s.settingType==='textarea'){
+                return `<div class="space-y-1"><label class="text-sm font-medium">${escapeHtml(s.settingKey)}</label><textarea rows="3" onchange="saveSetting('${escapeHtml(s.settingKey)}',this.value,'${escapeHtml(s.settingType)}','${escapeHtml(s.category)}')" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm">${escapeHtml(s.settingValue||'')}</textarea></div>`;
+              }
+              if(s.settingType==='boolean'){
+                return `<div class="flex items-center gap-3"><label class="text-sm font-medium w-48 shrink-0">${escapeHtml(s.settingKey)}</label><input type="checkbox" ${s.settingValue==='true'?'checked':''} onchange="saveSetting('${escapeHtml(s.settingKey)}',this.checked?'true':'false','${escapeHtml(s.settingType)}','${escapeHtml(s.category)}')" class="rounded border-input" /></div>`;
+              }
+              return `<div class="flex items-center gap-4"><label class="text-sm font-medium w-48 shrink-0">${escapeHtml(s.settingKey)}</label><input type="${s.settingType==='email'?'email':s.settingType==='url'?'url':s.settingType==='number'?'number':'text'}" value="${escapeHtml(s.settingValue||'')}" onchange="saveSetting('${escapeHtml(s.settingKey)}',this.value,'${escapeHtml(s.settingType)}','${escapeHtml(s.category)}')" class="flex h-9 w-full max-w-md rounded-md border border-input bg-background px-3 text-sm" /></div>`;
+            }).join('')}
+          </div>
+        </div>`).join('');
+    }
+
+    window.saveSetting=async function(key,value,type,category){
+      await API('saveSiteSetting',{settingKey:key,settingValue:value,settingType:type,category});
+      await load();
+    };
+
+    document.getElementById('btn-add')?.addEventListener('click',async()=>{
+      const key=document.getElementById('new-key')?.value?.trim();
+      const value=document.getElementById('new-value')?.value?.trim();
+      const type=document.getElementById('new-type')?.value||'text';
+      const category=document.getElementById('new-category')?.value?.trim()||'general';
+      if(!key)return;
+      await API('saveSiteSetting',{settingKey:key,settingValue:value||'',settingType:type,category});
+      document.getElementById('new-key').value='';document.getElementById('new-value').value='';
+      await load();
+    });
+
+    load();
+  </script>
+</AdminLayout>

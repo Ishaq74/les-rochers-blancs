@@ -4,7 +4,8 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db } from '@/db';
 import * as schema from '@/db/schema';
 
-const baseURL = import.meta.env.BETTER_AUTH_URL ?? process.env.BETTER_AUTH_URL ?? 'http://localhost:4321';
+const baseURL = import.meta.env.BETTER_AUTH_URL ?? process.env.BETTER_AUTH_URL;
+if (!baseURL) throw new Error('BETTER_AUTH_URL environment variable is required');
 
 export const auth = betterAuth({
   baseURL,

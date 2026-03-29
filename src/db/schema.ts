@@ -559,3 +559,19 @@ export const partners = pgTable('partners', {
 }, (table) => [
   index('idx_partners_slug').on(table.slug),
 ]);
+
+// =====================================================
+// CONTACT MESSAGES
+// =====================================================
+
+export const contactMessages = pgTable('contact_messages', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  name: text('name').notNull(),
+  email: text('email').notNull(),
+  message: text('message').notNull(),
+  locale: text('locale').notNull().default('fr'),
+  isRead: boolean('is_read').notNull().default(false),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  index('idx_contact_messages_read').on(table.isRead),
+]);

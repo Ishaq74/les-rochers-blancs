@@ -1,0 +1,133 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import { t } from '@/lib/i18n';
+export const prerender = false;
+const lang = 'fr';
+---
+
+<AdminLayout title={t('clients.title', lang)} activeNav="clients" lang={lang}>
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">{t('clients.title', lang)}</h1>
+        <p class="text-muted-foreground">{t('clients.subtitle', lang)}</p>
+      </div>
+      <button id="btn-add" type="button" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">+ {t('clients.new', lang)}</button>
+    </div>
+
+    <div class="flex gap-4">
+      <input id="search-input" type="search" placeholder={t('clients.search', lang)} class="flex h-9 w-full max-w-xs rounded-md border border-input bg-background px-3 text-sm" />
+    </div>
+
+    <div class="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="border-b border-border bg-muted/50">
+          <tr>
+            <th class="px-4 py-3 text-left font-medium">{t('clients.table.client', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('clients.table.contact', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('clients.table.company', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('clients.table.tags', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.actions', lang)}</th>
+          </tr>
+        </thead>
+        <tbody id="data-tbody"></tbody>
+      </table>
+      <p id="data-empty" class="hidden p-8 text-center text-muted-foreground">{t('clients.noItems', lang)}</p>
+    </div>
+    <div id="pagination" class="flex items-center justify-between text-sm text-muted-foreground"></div>
+  </div>
+
+  <div id="edit-dialog" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50" data-close></div>
+    <div class="fixed inset-y-0 right-0 w-full max-w-md overflow-y-auto bg-card border-l border-border shadow-xl p-6 space-y-4">
+      <h2 id="dialog-title" class="text-lg font-semibold">{t('clients.newTitle', lang)}</h2>
+      <form id="edit-form" class="space-y-4">
+        <input type="hidden" name="id" />
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1"><label class="text-sm font-medium">{t('clients.form.firstName', lang)}</label><input name="firstName" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('clients.form.lastName', lang)}</label><input name="lastName" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        </div>
+        <div class="space-y-1"><label class="text-sm font-medium">{t('clients.form.email', lang)}</label><input name="email" type="email" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1"><label class="text-sm font-medium">{t('clients.form.phone', lang)}</label><input name="phone" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('clients.form.company', lang)}</label><input name="company" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        </div>
+        <div class="space-y-1"><label class="text-sm font-medium">{t('clients.form.address', lang)}</label><input name="address" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        <div class="grid grid-cols-3 gap-4">
+          <div class="space-y-1"><label class="text-sm font-medium">{t('clients.form.city', lang)}</label><input name="city" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('clients.form.postalCode', lang)}</label><input name="postalCode" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">{t('clients.form.country', lang)}</label><input name="country" value="France" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        </div>
+        <div class="space-y-1"><label class="text-sm font-medium">{t('clients.form.tags', lang)}</label><input name="tags" placeholder={t('clients.form.tagsPlaceholder', lang)} class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        <div class="space-y-1"><label class="text-sm font-medium">{t('clients.form.notes', lang)}</label><textarea name="notes" rows="2" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"></textarea></div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" name="isActive" id="is-active" checked class="rounded border-input" />
+          <label for="is-active" class="text-sm">{t('common.active', lang)}</label>
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button type="submit" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('common.save', lang)}</button>
+          <button type="button" data-close class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">{t('common.cancel', lang)}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script is:inline>
+    const API = (a,b) => fetch(`/_actions/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());
+    function openD(){document.getElementById('edit-dialog')?.classList.remove('hidden')} function closeD(){document.getElementById('edit-dialog')?.classList.add('hidden')}
+    document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeD));
+
+    let currentPage = 1, searchTerm = '';
+    let result = { items:[], total:0, totalPages:0 };
+
+    let searchTimeout;
+    document.getElementById('search-input')?.addEventListener('input', e => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => { searchTerm = e.target.value; currentPage = 1; load(); }, 300);
+    });
+
+    async function load() {
+      const params = { page: currentPage, limit: 20 };
+      if (searchTerm) params.search = searchTerm;
+      const r = await API('listClients', params);
+      result = r.data ?? r; render();
+    }
+
+    function render() {
+      const tbody = document.getElementById('data-tbody'), empty = document.getElementById('data-empty');
+      const items = result.items || [];
+      if (!items.length) { tbody.innerHTML=''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      tbody.innerHTML = items.map(r => `<tr class="border-b border-border hover:bg-muted/50">
+        <td class="px-4 py-3"><div class="font-medium">${escapeHtml(r.firstName)} ${escapeHtml(r.lastName)}</div></td>
+        <td class="px-4 py-3"><div class="text-sm">${escapeHtml(r.email)}</div>${r.phone ? `<div class="text-xs text-muted-foreground">${escapeHtml(r.phone)}</div>` : ''}</td>
+        <td class="px-4 py-3">${r.company ? escapeHtml(r.company) : '—'}</td>
+        <td class="px-4 py-3">${(r.tags||[]).map(t=>`<span class="inline-flex rounded-full bg-primary/10 text-primary px-2 py-0.5 text-xs mr-1">${escapeHtml(t)}</span>`).join('')||'—'}</td>
+        <td class="px-4 py-3 space-x-2">
+          <button onclick="edit('${r.id}')" class="text-xs text-primary hover:underline">Modifier</button>
+          <button onclick="del('${r.id}')" class="text-xs text-destructive hover:underline">Supprimer</button>
+        </td></tr>`).join('');
+      document.getElementById('pagination').innerHTML = `<span>${result.total||0} ${result.total===1?'client':'clients'}</span><div class="flex gap-2">${currentPage>1?`<button onclick="goPage(${currentPage-1})" class="text-xs text-primary hover:underline">← Précédent</button>`:''}${(result.totalPages||0)>currentPage?`<button onclick="goPage(${currentPage+1})" class="text-xs text-primary hover:underline">Suivant →</button>`:''}</div>`;
+    }
+    window.goPage = p => { currentPage=p; load(); };
+
+    document.getElementById('btn-add')?.addEventListener('click', () => { document.getElementById('edit-form').reset(); document.getElementById('edit-form').querySelector('[name=id]').value=''; document.getElementById('dialog-title').textContent='Nouveau client'; openD(); });
+    window.edit = function(id) {
+      const r = (result.items||[]).find(x=>x.id===id); if(!r) return; const f = document.getElementById('edit-form');
+      f.querySelector('[name=id]').value=r.id; f.firstName.value=r.firstName; f.lastName.value=r.lastName; f.email.value=r.email;
+      f.phone.value=r.phone||''; f.company.value=r.company||''; f.address.value=r.address||'';
+      f.city.value=r.city||''; f.postalCode.value=r.postalCode||''; f.country.value=r.country||'France';
+      f.tags.value=(r.tags||[]).join(', '); f.notes.value=r.notes||'';
+      f.querySelector('[name=isActive]').checked=r.isActive!==false;
+      document.getElementById('dialog-title').textContent='Modifier le client'; openD();
+    };
+    document.getElementById('edit-form')?.addEventListener('submit', async e => {
+      e.preventDefault(); const f=e.target; const id=f.querySelector('[name=id]').value||undefined;
+      const tags = f.tags.value ? f.tags.value.split(',').map(t=>t.trim()).filter(Boolean) : [];
+      await API('saveClient', { id, firstName:f.firstName.value, lastName:f.lastName.value, email:f.email.value, phone:f.phone.value||undefined, company:f.company.value||undefined, address:f.address.value||undefined, city:f.city.value||undefined, postalCode:f.postalCode.value||undefined, country:f.country.value||'France', tags, notes:f.notes.value||undefined, isActive:f.querySelector('[name=isActive]').checked });
+      closeD(); load();
+    });
+    window.del = async id => { if(!confirm('Supprimer ce client ?')) return; await API('deleteClient',{id}); load(); };
+    load();
+  </script>
+</AdminLayout>

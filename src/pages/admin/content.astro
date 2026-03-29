@@ -1,0 +1,312 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import { t, LOCALES } from '@/lib/i18n';
+export const prerender = false;
+const lang = 'fr';
+const locales = LOCALES;
+---
+
+<AdminLayout title={t('contentManager.title', lang)} activeNav="content" lang={lang}>
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">{t('contentManager.title', lang)}</h1>
+        <p class="text-muted-foreground">{t('contentManager.subtitle', lang)}</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <!-- Section list -->
+      <div class="space-y-2">
+        <h3 class="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Sections</h3>
+        <div id="section-list" class="space-y-1">
+          <p class="text-sm text-muted-foreground">Chargement…</p>
+        </div>
+        <div class="pt-4 space-y-2">
+          <input id="new-section" placeholder="Nouvelle section" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+          <button id="btn-add-section" type="button" class="w-full inline-flex items-center justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90">+ Section</button>
+        </div>
+      </div>
+
+      <!-- Content editor -->
+      <div class="md:col-span-3 space-y-4">
+        <div id="no-section" class="rounded-xl border border-border bg-card shadow-sm p-8 text-center text-muted-foreground">
+          Sélectionnez une section pour modifier le contenu.
+        </div>
+        <div id="editor-area" class="hidden space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 id="current-section-title" class="text-lg font-semibold"></h3>
+            <div class="flex items-center gap-4">
+              <button id="btn-open-media" type="button" class="text-sm text-primary hover:underline">Médiathèque</button>
+              <button id="btn-add-field" type="button" class="text-sm text-primary hover:underline">+ Ajouter un champ</button>
+            </div>
+          </div>
+
+          <!-- Locale Tabs -->
+          <div class="border-b border-border">
+            <div class="flex gap-1" id="locale-tabs">
+              {locales.map((l, i) => (
+                <button type="button" data-tab={l} class={`px-3 py-2 text-sm font-medium border-b-2 ${i === 0 ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>{l.toUpperCase()}</button>
+              ))}
+            </div>
+          </div>
+
+          <div id="fields-container" class="space-y-3"></div>
+
+          <button id="btn-save-all" type="button" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('common.save', lang)}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New field dialog -->
+  <div id="field-dialog" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50" data-close-field></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+      <div class="bg-card rounded-xl border border-border shadow-xl p-6 space-y-4 w-full max-w-sm">
+        <h3 class="text-lg font-semibold">Nouveau champ</h3>
+        <div class="space-y-1"><label class="text-sm font-medium">Clé du champ</label><input id="new-field-key" placeholder="ex: title, description" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        <div class="flex gap-2">
+          <button id="btn-create-field" type="button" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">Créer</button>
+          <button type="button" data-close-field class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Media picker dialog -->
+  <div id="media-dialog" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50" data-close-media></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+      <div class="bg-card rounded-xl border border-border shadow-xl p-6 space-y-4 w-full max-w-4xl max-h-[85vh] overflow-hidden">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold">Insérer une image</h3>
+          <button type="button" data-close-media class="text-sm text-muted-foreground hover:text-foreground">Fermer</button>
+        </div>
+        <div id="media-picker-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 overflow-y-auto max-h-[65vh]"></div>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ locales }}>
+    const API=(a,b)=>fetch(`/_actions/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());
+
+    let allContent=[];
+    let currentSection='';
+    let currentLocale=locales[0];
+    let mediaItems=[];
+    let activeTextarea=null;
+
+    function markdownToHtml(markdown=''){
+      let html=escapeHtml(markdown);
+      html=html.replace(/^###\s+(.+)$/gm,'<h3>$1</h3>');
+      html=html.replace(/^##\s+(.+)$/gm,'<h2>$1</h2>');
+      html=html.replace(/^#\s+(.+)$/gm,'<h1>$1</h1>');
+      html=html.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+      html=html.replace(/\*(.+?)\*/g,'<em>$1</em>');
+      html=html.replace(/!\[(.*?)\]\((.*?)\)/g,'<img alt="$1" src="$2" class="max-w-full h-auto rounded-md my-2" />');
+      html=html.replace(/\[(.*?)\]\((.*?)\)/g,'<a href="$2" class="text-primary underline" target="_blank" rel="noopener noreferrer">$1</a>');
+      html=html.replace(/^-\s+(.+)$/gm,'<li>$1</li>');
+      html=html.replace(/(<li>.*<\/li>)/gs,'<ul>$1</ul>');
+      html=html.replace(/\n{2,}/g,'</p><p>');
+      html=html.replace(/\n/g,'<br />');
+      if (html.trim()) html='<p>'+html+'</p>';
+      return html;
+    }
+
+    function insertAtCursor(textarea,text){
+      const start=textarea.selectionStart ?? textarea.value.length;
+      const end=textarea.selectionEnd ?? textarea.value.length;
+      textarea.value=textarea.value.slice(0,start)+text+textarea.value.slice(end);
+      textarea.focus();
+      const pos=start+text.length;
+      textarea.setSelectionRange(pos,pos);
+      textarea.dispatchEvent(new Event('input',{bubbles:true}));
+    }
+
+    async function loadMediaItems(){
+      if(mediaItems.length>0) return;
+      const r=await API('listMedia',{page:1,limit:200});
+      const payload=r.data??r;
+      mediaItems=payload.items??[];
+    }
+
+    function renderMediaPicker(){
+      const grid=document.getElementById('media-picker-grid');
+      if(!mediaItems.length){
+        grid.innerHTML='<p class="text-sm text-muted-foreground col-span-full">Aucune image disponible. Uploadez-en dans la médiathèque.</p>';
+        return;
+      }
+      grid.innerHTML=mediaItems.map((m)=>{
+        const isImage=(m.fileType||'').startsWith('image/');
+        return `<button type="button" class="border border-border rounded-lg overflow-hidden text-left hover:border-primary" data-media-url="${m.fileUrl}" data-media-name="${(m.originalFilename||'').replaceAll('"','&quot;')}">
+          <div class="aspect-square bg-muted flex items-center justify-center overflow-hidden">
+            ${isImage?`<img src="${m.fileUrl}" alt="${m.altText||m.originalFilename||''}" class="w-full h-full object-cover" loading="lazy"/>`:'<span class="text-2xl">📄</span>'}
+          </div>
+          <div class="p-2 text-xs truncate">${m.originalFilename||m.fileUrl}</div>
+        </button>`;
+      }).join('');
+
+      grid.querySelectorAll('[data-media-url]').forEach((el)=>{
+        el.addEventListener('click',()=>{
+          if(!activeTextarea) return;
+          const url=el.getAttribute('data-media-url')||'';
+          const name=el.getAttribute('data-media-name')||'image';
+          insertAtCursor(activeTextarea,`![${name}](${url})`);
+          closeMediaDialog();
+        });
+      });
+    }
+
+    function openMediaDialog(textarea){
+      activeTextarea=textarea||activeTextarea;
+      document.getElementById('media-dialog')?.classList.remove('hidden');
+      loadMediaItems().then(renderMediaPicker);
+    }
+
+    function closeMediaDialog(){
+      document.getElementById('media-dialog')?.classList.add('hidden');
+    }
+
+    // Locale tabs
+    document.querySelectorAll('#locale-tabs button').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        document.querySelectorAll('#locale-tabs button').forEach(b=>{b.classList.remove('border-primary','text-primary');b.classList.add('border-transparent','text-muted-foreground')});
+        btn.classList.add('border-primary','text-primary');btn.classList.remove('border-transparent','text-muted-foreground');
+        currentLocale=btn.dataset.tab;
+        renderFields();
+      });
+    });
+
+    async function loadAll(){
+      const r=await API('listCmsContent',{});allContent=r.data??r;renderSections();
+    }
+
+    function getSections(){
+      const s=new Set();(allContent||[]).forEach(c=>s.add(c.sectionKey));return [...s].sort();
+    }
+
+    function renderSections(){
+      const sections=getSections();
+      const list=document.getElementById('section-list');
+      if(!sections.length){list.innerHTML='<p class="text-sm text-muted-foreground">Aucune section</p>';return;}
+      list.innerHTML=sections.map(s=>`<button onclick="selectSection('${s}')" class="w-full text-left px-3 py-2 rounded-md text-sm hover:bg-muted ${s===currentSection?'bg-primary/10 text-primary font-medium':''}">${s}</button>`).join('');
+    }
+
+    const selectSection=function(s){
+      currentSection=s;renderSections();
+      document.getElementById('no-section')?.classList.add('hidden');
+      document.getElementById('editor-area')?.classList.remove('hidden');
+      document.getElementById('current-section-title').textContent=s;
+      renderFields();
+    };
+    window['selectSection']=selectSection;
+
+    function getFieldsForSection(){
+      const items=(allContent||[]).filter(c=>c.sectionKey===currentSection);
+      const fieldKeys=new Set();items.forEach(c=>fieldKeys.add(c.fieldKey));
+      return [...fieldKeys].sort();
+    }
+
+    function renderFields(){
+      const fields=getFieldsForSection();
+      const container=document.getElementById('fields-container');
+      if(!fields.length){container.innerHTML='<p class="text-sm text-muted-foreground">Aucun champ. Ajoutez-en un.</p>';return;}
+      container.innerHTML=fields.map(fk=>{
+        const item=(allContent||[]).find(c=>c.sectionKey===currentSection&&c.fieldKey===fk&&c.locale===currentLocale);
+        const val=item?.content||'';
+        return `<div class="space-y-2 rounded-lg border border-border bg-card p-3">
+          <div class="flex items-center justify-between">
+            <label class="text-sm font-medium">${fk}</label>
+            <button onclick="delField('${fk}')" class="text-xs text-destructive hover:underline">Supprimer</button>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <button type="button" class="rounded border border-input px-2 py-1" data-md-action="h2" data-field="${fk}">H2</button>
+            <button type="button" class="rounded border border-input px-2 py-1" data-md-action="bold" data-field="${fk}">Gras</button>
+            <button type="button" class="rounded border border-input px-2 py-1" data-md-action="italic" data-field="${fk}">Italique</button>
+            <button type="button" class="rounded border border-input px-2 py-1" data-md-action="link" data-field="${fk}">Lien</button>
+            <button type="button" class="rounded border border-input px-2 py-1" data-md-action="image" data-field="${fk}">Image</button>
+            <button type="button" class="rounded border border-input px-2 py-1 ml-auto" data-md-action="preview" data-field="${fk}">Preview</button>
+          </div>
+          <textarea data-field="${fk}" rows="6" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono">${val}</textarea>
+          <div data-preview="${fk}" class="hidden rounded-md border border-dashed border-border bg-background px-3 py-2 prose prose-sm max-w-none"></div>
+        </div>`;
+      }).join('');
+
+      container.querySelectorAll('[data-md-action]').forEach((btn)=>{
+        btn.addEventListener('click',()=>{
+          const field=btn.getAttribute('data-field');
+          const action=btn.getAttribute('data-md-action');
+          const textarea=container.querySelector(`textarea[data-field="${field}"]`);
+          const preview=container.querySelector(`[data-preview="${field}"]`);
+          if(!textarea) return;
+
+          if(action==='h2') insertAtCursor(textarea,'## Titre\n');
+          if(action==='bold') insertAtCursor(textarea,'**texte**');
+          if(action==='italic') insertAtCursor(textarea,'*texte*');
+          if(action==='link') insertAtCursor(textarea,'[texte](https://)');
+          if(action==='image') openMediaDialog(textarea);
+          if(action==='preview'){
+            const isHidden=preview.classList.contains('hidden');
+            if(isHidden){
+              preview.innerHTML=markdownToHtml(textarea.value);
+              preview.classList.remove('hidden');
+              btn.textContent='Edit';
+            } else {
+              preview.classList.add('hidden');
+              btn.textContent='Preview';
+            }
+          }
+        });
+      });
+
+      container.querySelectorAll('textarea[data-field]').forEach((ta)=>{
+        ta.addEventListener('focus',()=>{activeTextarea=ta;});
+        ta.addEventListener('input',()=>{
+          const field=ta.getAttribute('data-field');
+          const preview=container.querySelector(`[data-preview="${field}"]`);
+          if(preview && !preview.classList.contains('hidden')) preview.innerHTML=markdownToHtml(ta.value);
+        });
+      });
+    }
+
+    document.getElementById('btn-add-section')?.addEventListener('click',async ()=>{
+      const input=document.getElementById('new-section');
+      const key=input?.value?.trim();if(!key)return;
+      await API('upsertCmsContent',{sectionKey:key,locale:locales[0],fieldKey:'title',content:''});
+      input.value='';await loadAll();selectSection(key);
+    });
+
+    document.querySelectorAll('[data-close-field]').forEach(el=>el.addEventListener('click',()=>document.getElementById('field-dialog')?.classList.add('hidden')));
+    document.querySelectorAll('[data-close-media]').forEach(el=>el.addEventListener('click',closeMediaDialog));
+    document.getElementById('btn-open-media')?.addEventListener('click',()=>openMediaDialog(null));
+    document.getElementById('btn-add-field')?.addEventListener('click',()=>{
+      document.getElementById('new-field-key').value='';
+      document.getElementById('field-dialog')?.classList.remove('hidden');
+    });
+    document.getElementById('btn-create-field')?.addEventListener('click',async ()=>{
+      const fk=document.getElementById('new-field-key')?.value?.trim();if(!fk||!currentSection)return;
+      await API('upsertCmsContent',{sectionKey:currentSection,locale:currentLocale,fieldKey:fk,content:''});
+      document.getElementById('field-dialog')?.classList.add('hidden');
+      await loadAll();renderFields();
+    });
+
+    window.delField=async function(fk){
+      if(!confirm(`Supprimer le champ "${fk}" pour toutes les langues ?`))return;
+      const items=(allContent||[]).filter(c=>c.sectionKey===currentSection&&c.fieldKey===fk);
+      for(const item of items){await API('deleteCmsContent',{id:item.id});}
+      await loadAll();renderFields();
+    };
+
+    document.getElementById('btn-save-all')?.addEventListener('click',async ()=>{
+      const fields=document.querySelectorAll('#fields-container textarea[data-field]');
+      for(const ta of fields){
+        const fk=ta.dataset.field;
+        await API('upsertCmsContent',{sectionKey:currentSection,locale:currentLocale,fieldKey:fk,content:ta.value});
+      }
+      await loadAll();renderFields();
+    });
+
+    loadAll();
+  </script>
+</AdminLayout>

@@ -1,0 +1,208 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import { t } from '@/lib/i18n';
+export const prerender = false;
+const lang = 'fr';
+---
+
+<AdminLayout title={t('invoices.title', lang)} activeNav="invoices" lang={lang}>
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">{t('invoices.title', lang)}</h1>
+        <p class="text-muted-foreground">{t('invoices.subtitle', lang)}</p>
+      </div>
+      <button id="btn-add" type="button" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">+ {t('invoices.new', lang)}</button>
+    </div>
+
+    <div class="flex gap-2 flex-wrap" id="status-filters">
+      <button data-status="" class="rounded-full px-3 py-1 text-xs font-medium border border-input bg-primary text-primary-foreground">Tous</button>
+      <button data-status="draft" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">Brouillon</button>
+      <button data-status="sent" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">Envoyée</button>
+      <button data-status="paid" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">Payée</button>
+      <button data-status="overdue" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">En retard</button>
+      <button data-status="cancelled" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">Annulée</button>
+    </div>
+
+    <div class="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="border-b border-border bg-muted/50">
+          <tr>
+            <th class="px-4 py-3 text-left font-medium">N° Facture</th>
+            <th class="px-4 py-3 text-left font-medium">Client</th>
+            <th class="px-4 py-3 text-left font-medium">Statut</th>
+            <th class="px-4 py-3 text-left font-medium">Date</th>
+            <th class="px-4 py-3 text-left font-medium">Échéance</th>
+            <th class="px-4 py-3 text-right font-medium">Total</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.actions', lang)}</th>
+          </tr>
+        </thead>
+        <tbody id="data-tbody"></tbody>
+      </table>
+      <p id="data-empty" class="hidden p-8 text-center text-muted-foreground">{t('invoices.noItems', lang)}</p>
+    </div>
+    <div id="pagination" class="flex items-center justify-between text-sm text-muted-foreground"></div>
+  </div>
+
+  <!-- Invoice Dialog -->
+  <div id="edit-dialog" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50" data-close></div>
+    <div class="fixed inset-y-0 right-0 w-full max-w-lg overflow-y-auto bg-card border-l border-border shadow-xl p-6 space-y-4">
+      <h2 id="dialog-title" class="text-lg font-semibold">{t('invoices.newTitle', lang)}</h2>
+      <form id="edit-form" class="space-y-4">
+        <input type="hidden" name="id" />
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1"><label class="text-sm font-medium">N° Facture</label><input name="invoiceNumber" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">Statut</label>
+            <select name="status" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm">
+              <option value="draft">Brouillon</option><option value="sent">Envoyée</option><option value="paid">Payée</option><option value="overdue">En retard</option><option value="cancelled">Annulée</option>
+            </select>
+          </div>
+        </div>
+        <div class="space-y-1"><label class="text-sm font-medium">ID Client</label><input name="clientId" placeholder="UUID client (optionnel)" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1"><label class="text-sm font-medium">Date émission</label><input name="issueDate" type="date" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">Date échéance</label><input name="dueDate" type="date" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1"><label class="text-sm font-medium">Taux TVA (%)</label><input name="taxRate" type="number" step="0.01" value="20" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">ID Réservation</label><input name="reservationId" placeholder="UUID (optionnel)" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        </div>
+
+        <!-- Line Items -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between"><label class="text-sm font-medium">Lignes</label><button type="button" id="add-line" class="text-xs text-primary hover:underline">+ Ajouter une ligne</button></div>
+          <div id="lines-container" class="space-y-2"></div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 bg-muted/50 rounded-md p-3 text-sm">
+          <div>Sous-total : <span id="calc-subtotal">0.00</span> €</div>
+          <div>TVA : <span id="calc-tax">0.00</span> €</div>
+          <div class="font-bold">Total : <span id="calc-total">0.00</span> €</div>
+        </div>
+
+        <div class="space-y-1"><label class="text-sm font-medium">Notes</label><textarea name="notes" rows="2" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"></textarea></div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="submit" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('common.save', lang)}</button>
+          <button type="button" data-close class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">{t('common.cancel', lang)}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script is:inline>
+    const API = (a,b) => fetch(`/_actions/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());
+    function openD(){document.getElementById('edit-dialog')?.classList.remove('hidden')} function closeD(){document.getElementById('edit-dialog')?.classList.add('hidden')}
+    document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeD));
+
+    let currentPage=1, currentStatus='';
+    let result={items:[],total:0,totalPages:0};
+
+    const statusLabels = {draft:'Brouillon',sent:'Envoyée',paid:'Payée',overdue:'En retard',cancelled:'Annulée'};
+    const statusColors = {draft:'bg-gray-100 text-gray-800',sent:'bg-blue-100 text-blue-800',paid:'bg-green-100 text-green-800',overdue:'bg-red-100 text-red-800',cancelled:'bg-gray-100 text-gray-500'};
+
+    document.querySelectorAll('#status-filters button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#status-filters button').forEach(b => { b.classList.remove('bg-primary','text-primary-foreground'); b.classList.add('hover:bg-muted'); });
+        btn.classList.add('bg-primary','text-primary-foreground'); btn.classList.remove('hover:bg-muted');
+        currentStatus = btn.dataset.status; currentPage=1; load();
+      });
+    });
+
+    async function load(){
+      const p={page:currentPage,limit:20};
+      if(currentStatus)p.status=currentStatus;
+      const r=await API('listInvoices',p);result=r.data??r;render();
+    }
+    function render(){
+      const tbody=document.getElementById('data-tbody'),empty=document.getElementById('data-empty');
+      const items=result.items||[];
+      if(!items.length){tbody.innerHTML='';empty.classList.remove('hidden');document.getElementById('pagination').innerHTML='';return;}
+      empty.classList.add('hidden');
+      tbody.innerHTML=items.map(r=>`<tr class="border-b border-border hover:bg-muted/50">
+        <td class="px-4 py-3 font-medium">${escapeHtml(r.invoiceNumber)}</td>
+        <td class="px-4 py-3 text-xs">${escapeHtml(r.clientId||'—')}</td>
+        <td class="px-4 py-3"><span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[r.status]||''}">${escapeHtml(statusLabels[r.status]||r.status)}</span></td>
+        <td class="px-4 py-3">${escapeHtml(r.issueDate||'')}</td>
+        <td class="px-4 py-3">${escapeHtml(r.dueDate||'')}</td>
+        <td class="px-4 py-3 text-right font-medium">${escapeHtml(r.total||'0')} €</td>
+        <td class="px-4 py-3 space-x-2">
+          <button onclick="edit('${escapeHtml(r.id)}')" class="text-xs text-primary hover:underline">Modifier</button>
+          <button onclick="del('${escapeHtml(r.id)}')" class="text-xs text-destructive hover:underline">Supprimer</button>
+        </td></tr>`).join('');
+      document.getElementById('pagination').innerHTML=`<span>${result.total||0} facture(s)</span><div class="flex gap-2">${currentPage>1?`<button onclick="goPage(${currentPage-1})" class="text-xs text-primary hover:underline">← Précédent</button>`:''}${(result.totalPages||0)>currentPage?`<button onclick="goPage(${currentPage+1})" class="text-xs text-primary hover:underline">Suivant →</button>`:''}</div>`;
+    }
+    window.goPage=p=>{currentPage=p;load()};
+
+    // Line items
+    let lineIdx=0;
+    function addLine(desc='',qty='1',price='',total=''){
+      const i=lineIdx++;
+      const div=document.createElement('div'); div.className='grid grid-cols-[1fr_60px_80px_80px_30px] gap-2 items-center'; div.dataset.line=i;
+      div.innerHTML=`<input name="line_desc_${i}" placeholder="Description" value="${escapeHtml(desc)}" required class="flex h-8 w-full rounded-md border border-input bg-background px-2 text-sm"><input name="line_qty_${i}" type="number" step="0.01" min="0" value="${escapeHtml(qty)}" class="flex h-8 w-full rounded-md border border-input bg-background px-2 text-sm" onchange="recalc()"><input name="line_price_${i}" type="number" step="0.01" min="0" value="${escapeHtml(price)}" placeholder="P.U." class="flex h-8 w-full rounded-md border border-input bg-background px-2 text-sm" onchange="recalc()"><span class="text-sm text-right line-total">${escapeHtml(total||'0.00')}</span><button type="button" onclick="this.parentElement.remove();recalc()" class="text-destructive text-xs">✕</button>`;
+      document.getElementById('lines-container').appendChild(div);
+      recalc();
+    }
+    document.getElementById('add-line')?.addEventListener('click',()=>addLine());
+
+    window.recalc=function(){
+      let sub=0;
+      document.querySelectorAll('#lines-container > div').forEach(div=>{
+        const qty=parseFloat(div.querySelector('[name^=line_qty]')?.value||'0');
+        const price=parseFloat(div.querySelector('[name^=line_price]')?.value||'0');
+        const t=qty*price; sub+=t;
+        div.querySelector('.line-total').textContent=t.toFixed(2);
+      });
+      const rate=parseFloat(document.querySelector('[name=taxRate]')?.value||'20');
+      const tax=sub*rate/100;
+      document.getElementById('calc-subtotal').textContent=sub.toFixed(2);
+      document.getElementById('calc-tax').textContent=tax.toFixed(2);
+      document.getElementById('calc-total').textContent=(sub+tax).toFixed(2);
+    };
+
+    function clearLines(){document.getElementById('lines-container').innerHTML='';lineIdx=0;}
+
+    document.getElementById('btn-add')?.addEventListener('click',()=>{
+      const f=document.getElementById('edit-form'); f.reset(); f.querySelector('[name=id]').value='';
+      f.querySelector('[name=issueDate]').value=new Date().toISOString().slice(0,10);
+      f.querySelector('[name=dueDate]').value=new Date(Date.now()+30*86400000).toISOString().slice(0,10);
+      clearLines(); addLine();
+      document.getElementById('dialog-title').textContent='Nouvelle facture'; openD();
+    });
+
+    window.edit=async function(id){
+      const r=(result.items||[]).find(x=>x.id===id);if(!r)return;
+      const f=document.getElementById('edit-form');
+      f.querySelector('[name=id]').value=r.id; f.invoiceNumber.value=r.invoiceNumber;
+      f.status.value=r.status; f.clientId.value=r.clientId||'';
+      f.issueDate.value=r.issueDate; f.dueDate.value=r.dueDate;
+      f.taxRate.value=r.taxRate||'20'; f.reservationId.value=r.reservationId||'';
+      f.notes.value=r.notes||'';
+      clearLines();
+      // We don't have line items in list response — create empty line for edit
+      addLine();
+      document.getElementById('dialog-title').textContent='Modifier la facture'; openD();
+    };
+
+    document.getElementById('edit-form')?.addEventListener('submit',async e=>{
+      e.preventDefault();const f=e.target;
+      const id=f.querySelector('[name=id]').value||undefined;
+      const items=[];
+      document.querySelectorAll('#lines-container > div').forEach((div,i)=>{
+        const desc=div.querySelector('[name^=line_desc]')?.value;
+        const qty=div.querySelector('[name^=line_qty]')?.value||'1';
+        const price=div.querySelector('[name^=line_price]')?.value||'0';
+        const t=(parseFloat(qty)*parseFloat(price)).toFixed(2);
+        if(desc)items.push({description:desc,quantity:qty,unitPrice:price,total:t,sortOrder:i});
+      });
+      const sub=items.reduce((s,i)=>s+parseFloat(i.total),0);
+      const rate=parseFloat(f.taxRate.value||'20');
+      const tax=(sub*rate/100);
+      await API('saveInvoice',{id,invoiceNumber:f.invoiceNumber.value,clientId:f.clientId.value||undefined,reservationId:f.reservationId.value||undefined,status:f.status.value,issueDate:f.issueDate.value,dueDate:f.dueDate.value,subtotal:sub.toFixed(2),taxRate:rate.toString(),taxAmount:tax.toFixed(2),total:(sub+tax).toFixed(2),notes:f.notes.value||undefined,items});
+      closeD();load();
+    });
+    window.del=async id=>{if(!confirm('Supprimer cette facture ?'))return;await API('deleteInvoice',{id});load()};
+    load();
+  </script>
+</AdminLayout>

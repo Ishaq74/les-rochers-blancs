@@ -1,0 +1,26 @@
+{
+  "name": "Les Rochers Blancs",
+  "short_name": "Rochers Blancs",
+  "description": "Hôtel Restaurant Les Rochers Blancs - Bourg-Saint-Maurice",
+  "start_url": "/fr/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "type": "image/x-icon",
+      "sizes": "16x16 32x32 48x48"
+    },
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}

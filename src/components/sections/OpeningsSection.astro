@@ -5,6 +5,9 @@ import { Icon } from 'astro-icon/components';
 import { Image } from 'astro:assets';
 import summerImage from '@/assets/season-summer.jpg';
 import winterImage from '@/assets/season-winter.jpg';
+import { db } from '@/db';
+import { openings as openingsTable, openingTranslations } from '@/db/schema';
+import { eq, asc, desc } from 'drizzle-orm';
 
 interface Props {
   lang: Locale;
@@ -12,30 +15,11 @@ interface Props {
 
 const { lang } = Astro.props;
 
-// ------- Date parsing helpers (server-side) -------
-function parseDateFromText(text: string): Date | null {
-  const match = text.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
-  if (!match) return null;
-  const day = parseInt(match[1], 10);
-  const month = parseInt(match[2], 10) - 1;
-  let year = parseInt(match[3], 10);
-  if (year < 100) year += 2000;
-  return new Date(year, month, day);
-}
-
-function extractDateRange(text: string): { start: Date | null; end: Date | null } {
-  const dates = text.match(/\d{1,2}\/\d{1,2}\/\d{2,4}/g);
-  if (!dates || dates.length === 0) return { start: null, end: null };
-  return {
-    start: parseDateFromText(dates[0]),
-    end: parseDateFromText(dates[dates.length - 1]),
-  };
-}
-
-function isCurrentlyOpen(dateText: string): boolean | null {
-  const { start, end } = extractDateRange(dateText);
-  if (!start || !end) return null;
+// ------- Date helpers -------
+function isDateInRange(startStr: string, endStr: string): boolean {
   const now = new Date();
+  const start = new Date(startStr);
+  const end = new Date(endStr);
   return now >= start && now <= end;
 }
 
@@ -48,40 +32,113 @@ interface SeasonData {
   title: string;
   restaurantLabel: string;
   restaurantDates: string;
-  restaurantOpen: boolean | null;
+  restaurantOpen: boolean;
   hotelLabel: string;
   hotelDates: string;
-  hotelOpen: boolean | null;
+  hotelOpen: boolean;
   closedDays: string;
   isSeasonActive: boolean;
 }
 
-function buildSeason(key: 'summer' | 'winter', variant: 'primary' | 'light', icon: string, image: ImageMetadata): SeasonData {
-  const restaurantDates = t(`openings.${key}.restaurantDates`, lang);
-  const hotelDates = t(`openings.${key}.hotelDates`, lang);
-  const restaurantOpen = isCurrentlyOpen(restaurantDates);
-  const hotelOpen = isCurrentlyOpen(hotelDates);
-  return {
-    key,
-    variant,
-    icon,
-    image,
-    title: t(`openings.${key}.title`, lang),
-    restaurantLabel: t(`openings.${key}.restaurantLabel`, lang),
-    restaurantDates,
-    restaurantOpen,
-    hotelLabel: t(`openings.${key}.hotelLabel`, lang),
-    hotelDates,
-    hotelOpen,
-    closedDays: t(`openings.${key}.closedDays`, lang),
-    isSeasonActive: restaurantOpen === true || hotelOpen === true,
-  };
+let seasons: SeasonData[] = [];
+let useFallback = false;
+
+try {
+  const [dbOpenings, dbTrans] = await Promise.all([
+    db.select().from(openingsTable)
+      .where(eq(openingsTable.isActive, true))
+      .orderBy(desc(openingsTable.year), asc(openingsTable.sortOrder)),
+    db.select().from(openingTranslations)
+      .where(eq(openingTranslations.locale, lang)),
+  ]);
+
+  if (dbOpenings.length > 0) {
+    const transMap = new Map(dbTrans.map(tr => [tr.openingId, tr]));
+    const imageMap = { summer: summerImage, winter: winterImage };
+    const variantMap = { summer: 'primary' as const, winter: 'light' as const };
+    const iconMap = { summer: 'mdi:weather-sunny', winter: 'mdi:snowflake' };
+
+    // Take the most recent entry per season
+    const seen = new Set<string>();
+    for (const opening of dbOpenings) {
+      if (seen.has(opening.season)) continue;
+      seen.add(opening.season);
+
+      const tr = transMap.get(opening.id);
+      const restaurantOpen = isDateInRange(opening.restaurantStartDate, opening.restaurantEndDate);
+      const hotelOpen = isDateInRange(opening.hotelStartDate, opening.hotelEndDate);
+
+      seasons.push({
+        key: opening.season,
+        variant: variantMap[opening.season],
+        icon: iconMap[opening.season],
+        image: imageMap[opening.season],
+        title: tr?.title ?? (opening.season === 'summer' ? 'Été' : 'Hiver'),
+        restaurantLabel: tr?.restaurantLabel ?? 'Restaurant',
+        restaurantDates: tr?.restaurantDates ?? `${opening.restaurantStartDate} — ${opening.restaurantEndDate}`,
+        restaurantOpen,
+        hotelLabel: tr?.hotelLabel ?? 'Hôtel',
+        hotelDates: tr?.hotelDates ?? `${opening.hotelStartDate} — ${opening.hotelEndDate}`,
+        hotelOpen,
+        closedDays: tr?.closedDays ?? '',
+        isSeasonActive: restaurantOpen || hotelOpen,
+      });
+    }
+    // Ensure summer first
+    seasons.sort((a) => (a.key === 'summer' ? -1 : 1));
+  } else {
+    useFallback = true;
+  }
+} catch {
+  useFallback = true;
 }
 
-const seasons: SeasonData[] = [
-  buildSeason('summer', 'primary', 'mdi:weather-sunny', summerImage),
-  buildSeason('winter', 'light', 'mdi:snowflake', winterImage),
-];
+// Fallback to i18n (fragile DD/MM/YYYY parsing kept for backwards compat)
+if (useFallback) {
+  function parseDateFromText(text: string): Date | null {
+    const match = text.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+    if (!match) return null;
+    const day = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10) - 1;
+    let year = parseInt(match[3], 10);
+    if (year < 100) year += 2000;
+    return new Date(year, month, day);
+  }
+
+  function isCurrentlyOpenFallback(dateText: string): boolean {
+    const dates = dateText.match(/\d{1,2}\/\d{1,2}\/\d{2,4}/g);
+    if (!dates || dates.length === 0) return false;
+    const start = parseDateFromText(dates[0]);
+    const end = parseDateFromText(dates[dates.length - 1]);
+    if (!start || !end) return false;
+    const now = new Date();
+    return now >= start && now <= end;
+  }
+
+  function buildFallbackSeason(key: 'summer' | 'winter', variant: 'primary' | 'light', icon: string, image: ImageMetadata): SeasonData {
+    const restaurantDates = t(`openings.${key}.restaurantDates`, lang);
+    const hotelDates = t(`openings.${key}.hotelDates`, lang);
+    const restaurantOpen = isCurrentlyOpenFallback(restaurantDates);
+    const hotelOpen = isCurrentlyOpenFallback(hotelDates);
+    return {
+      key, variant, icon, image,
+      title: t(`openings.${key}.title`, lang),
+      restaurantLabel: t(`openings.${key}.restaurantLabel`, lang),
+      restaurantDates,
+      restaurantOpen,
+      hotelLabel: t(`openings.${key}.hotelLabel`, lang),
+      hotelDates,
+      hotelOpen,
+      closedDays: t(`openings.${key}.closedDays`, lang),
+      isSeasonActive: restaurantOpen || hotelOpen,
+    };
+  }
+
+  seasons = [
+    buildFallbackSeason('summer', 'primary', 'mdi:weather-sunny', summerImage),
+    buildFallbackSeason('winter', 'light', 'mdi:snowflake', winterImage),
+  ];
+}
 
 const openLabel = t('openings.statusOpen', lang);
 const closedLabel = t('openings.statusClosed', lang);
@@ -167,8 +224,7 @@ const openingLabel = t('openings.openingLabel', lang);
                     <Icon name="mdi:silverware-fork-knife" class="size-3.5" aria-hidden="true" />
                     {season.restaurantLabel}
                   </span>
-                  {season.restaurantOpen !== null && (
-                    season.restaurantOpen ? (
+                  {season.restaurantOpen ? (
                       <span class="inline-flex items-center gap-1 text-xs font-medium text-green-400" role="status">
                         <Icon name="mdi:check-circle" class="size-3.5" aria-hidden="true" />
                         {openLabel}
@@ -178,8 +234,7 @@ const openingLabel = t('openings.openingLabel', lang);
                         <Icon name="mdi:close-circle" class="size-3.5" aria-hidden="true" />
                         {closedLabel}
                       </span>
-                    )
-                  )}
+                    )}
                 </div>
                 <p class={`${textMuted} text-sm`}>{season.restaurantDates}</p>
               </div>
@@ -191,8 +246,7 @@ const openingLabel = t('openings.openingLabel', lang);
                     <Icon name="mdi:bed" class="size-3.5" aria-hidden="true" />
                     {season.hotelLabel}
                   </span>
-                  {season.hotelOpen !== null && (
-                    season.hotelOpen ? (
+                  {season.hotelOpen ? (
                       <span class="inline-flex items-center gap-1 text-xs font-medium text-green-400" role="status">
                         <Icon name="mdi:check-circle" class="size-3.5" aria-hidden="true" />
                         {openLabel}
@@ -202,8 +256,7 @@ const openingLabel = t('openings.openingLabel', lang);
                         <Icon name="mdi:close-circle" class="size-3.5" aria-hidden="true" />
                         {closedLabel}
                       </span>
-                    )
-                  )}
+                    )}
                 </div>
                 <p class={`${textMuted} text-sm`}>{season.hotelDates}</p>
               </div>

@@ -1,0 +1,383 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import { t, LOCALES } from '@/lib/i18n';
+export const prerender = false;
+const lang = 'fr';
+---
+
+<AdminLayout title={t('nav.rooms', lang)} activeNav="rooms" lang={lang}>
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">Chambres</h1>
+        <p class="text-muted-foreground">Gérez les chambres et les extras</p>
+      </div>
+      <button id="btn-add-room" type="button" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">+ Ajouter</button>
+    </div>
+
+    <!-- Rooms table -->
+    <div class="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="border-b border-border bg-muted/50">
+          <tr>
+            <th class="px-4 py-3 text-left font-medium">Nom</th>
+            <th class="px-4 py-3 text-left font-medium">Slug</th>
+            <th class="px-4 py-3 text-left font-medium">Type</th>
+            <th class="px-4 py-3 text-left font-medium">Capacité</th>
+            <th class="px-4 py-3 text-left font-medium">Prix/nuit</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.status', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.actions', lang)}</th>
+          </tr>
+        </thead>
+        <tbody id="rooms-tbody"></tbody>
+      </table>
+      <p id="rooms-empty" class="hidden p-8 text-center text-muted-foreground">{t('common.noResults', lang)}</p>
+    </div>
+
+    <!-- Room Extras -->
+    <div class="flex items-center justify-between">
+      <h2 class="text-xl font-semibold">Extras (petit-déjeuner, pension…)</h2>
+      <button id="btn-add-extra" type="button" class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium hover:bg-muted transition-colors">+ Extra</button>
+    </div>
+    <div class="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="border-b border-border bg-muted/50">
+          <tr>
+            <th class="px-4 py-3 text-left font-medium">Label</th>
+            <th class="px-4 py-3 text-left font-medium">Slug</th>
+            <th class="px-4 py-3 text-left font-medium">Prix</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.status', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.actions', lang)}</th>
+          </tr>
+        </thead>
+        <tbody id="extras-tbody"></tbody>
+      </table>
+      <p id="extras-empty" class="hidden p-8 text-center text-muted-foreground">{t('common.noResults', lang)}</p>
+    </div>
+  </div>
+
+  <!-- Room Dialog -->
+  <div id="room-dialog" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50" data-close></div>
+    <div class="fixed inset-y-0 right-0 w-full max-w-lg overflow-y-auto bg-card border-l border-border shadow-xl p-6 space-y-4">
+      <h2 id="room-dialog-title" class="text-lg font-semibold">Chambre</h2>
+      <form id="room-form" class="space-y-4">
+        <input type="hidden" name="id" />
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1">
+            <label class="text-sm font-medium">Slug *</label>
+            <input name="slug" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+          </div>
+          <div class="space-y-1">
+            <label class="text-sm font-medium">Type *</label>
+            <select name="roomType" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm">
+              <option value="single">Single</option>
+              <option value="double">Double</option>
+              <option value="twin">Twin</option>
+              <option value="triple">Triple</option>
+              <option value="quad">Quad</option>
+              <option value="five">Five</option>
+              <option value="suite">Suite</option>
+            </select>
+          </div>
+          <div class="space-y-1">
+            <label class="text-sm font-medium">Capacité *</label>
+            <input name="capacity" type="number" min="1" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+          </div>
+          <div class="space-y-1">
+            <label class="text-sm font-medium">Prix/nuit (€) *</label>
+            <input name="pricePerNight" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+          </div>
+          <div class="space-y-1">
+            <label class="text-sm font-medium">Image URL</label>
+            <input name="imageUrl" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+          </div>
+          <div class="space-y-1">
+            <label class="text-sm font-medium">Ordre</label>
+            <input name="sortOrder" type="number" value="0" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" name="isActive" id="room-active" checked class="rounded border-input" />
+          <label for="room-active" class="text-sm">{t('common.active', lang)}</label>
+        </div>
+        <!-- Translations tabs -->
+        <div>
+          <p class="text-sm font-medium mb-2">Traductions</p>
+          <div class="flex gap-1 border-b border-border" id="room-locale-tabs">
+            {LOCALES.map((loc, i) => (
+              <button type="button" data-locale={loc} class:list={['px-3 py-1.5 text-sm font-medium border-b-2 transition-colors', i === 0 ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground']}>{loc.toUpperCase()}</button>
+            ))}
+          </div>
+          {LOCALES.map((loc, i) => (
+            <div data-locale-panel={loc} class:list={['space-y-3 pt-3', i !== 0 && 'hidden']}>
+              <div class="space-y-1">
+                <label class="text-sm font-medium">Nom ({loc.toUpperCase()}) *</label>
+                <input name={`trans_${loc}_name`} required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+              </div>
+              <div class="space-y-1">
+                <label class="text-sm font-medium">Description ({loc.toUpperCase()})</label>
+                <textarea name={`trans_${loc}_description`} rows="3" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"></textarea>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button type="submit" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('common.save', lang)}</button>
+          <button type="button" data-close class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">{t('common.cancel', lang)}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Extra Dialog -->
+  <div id="extra-dialog" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50" data-close></div>
+    <div class="fixed inset-y-0 right-0 w-full max-w-md overflow-y-auto bg-card border-l border-border shadow-xl p-6 space-y-4">
+      <h2 id="extra-dialog-title" class="text-lg font-semibold">Extra</h2>
+      <form id="extra-form" class="space-y-4">
+        <input type="hidden" name="id" />
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1">
+            <label class="text-sm font-medium">Slug *</label>
+            <input name="slug" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+          </div>
+          <div class="space-y-1">
+            <label class="text-sm font-medium">Prix</label>
+            <input name="price" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+          </div>
+          <div class="space-y-1">
+            <label class="text-sm font-medium">Ordre</label>
+            <input name="sortOrder" type="number" value="0" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" name="isActive" id="extra-active" checked class="rounded border-input" />
+          <label for="extra-active" class="text-sm">{t('common.active', lang)}</label>
+        </div>
+        <div>
+          <p class="text-sm font-medium mb-2">Traductions</p>
+          <div class="flex gap-1 border-b border-border" id="extra-locale-tabs">
+            {LOCALES.map((loc, i) => (
+              <button type="button" data-locale={loc} class:list={['px-3 py-1.5 text-sm font-medium border-b-2 transition-colors', i === 0 ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground']}>{loc.toUpperCase()}</button>
+            ))}
+          </div>
+          {LOCALES.map((loc, i) => (
+            <div data-locale-panel={loc} class:list={['space-y-3 pt-3', i !== 0 && 'hidden']}>
+              <div class="space-y-1">
+                <label class="text-sm font-medium">Label ({loc.toUpperCase()}) *</label>
+                <input name={`trans_${loc}_label`} required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button type="submit" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('common.save', lang)}</button>
+          <button type="button" data-close class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">{t('common.cancel', lang)}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ locales: LOCALES }}>
+    const API = (action, body) => fetch(`/_actions/${action}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(r => r.json());
+
+    // Tab switching helper
+    function setupTabs(containerId) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      container.querySelectorAll('button[data-locale]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const loc = btn.dataset.locale;
+          const parent = container.closest('.space-y-4') || container.parentElement;
+          container.querySelectorAll('button[data-locale]').forEach(b => {
+            b.classList.toggle('border-primary', b.dataset.locale === loc);
+            b.classList.toggle('text-primary', b.dataset.locale === loc);
+            b.classList.toggle('border-transparent', b.dataset.locale !== loc);
+            b.classList.toggle('text-muted-foreground', b.dataset.locale !== loc);
+          });
+          parent.querySelectorAll('[data-locale-panel]').forEach(p => {
+            p.classList.toggle('hidden', p.dataset.localePanel !== loc);
+          });
+        });
+      });
+    }
+    setupTabs('room-locale-tabs');
+    setupTabs('extra-locale-tabs');
+
+    // Dialog helpers
+    function openDialog(id) { document.getElementById(id)?.classList.remove('hidden'); }
+    function closeDialog(id) { document.getElementById(id)?.classList.add('hidden'); }
+    document.querySelectorAll('[data-close]').forEach(el => {
+      el.addEventListener('click', () => { el.closest('.fixed.inset-0')?.classList.add('hidden'); });
+    });
+
+    // === ROOMS ===
+    let rooms = [];
+    async function loadRooms() {
+      const res = await API('listRooms', {});
+      rooms = res.data ?? res ?? [];
+      renderRooms();
+    }
+    function renderRooms() {
+      const tbody = document.getElementById('rooms-tbody');
+      const empty = document.getElementById('rooms-empty');
+      if (!rooms.length) { tbody.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      tbody.innerHTML = rooms.map(r => {
+        const frTrans = r.translations?.find(t => t.locale === 'fr');
+        return `<tr class="border-b border-border hover:bg-muted/50">
+          <td class="px-4 py-3 font-medium">${escapeHtml(frTrans?.name || '—')}</td>
+          <td class="px-4 py-3 text-muted-foreground">${escapeHtml(r.slug)}</td>
+          <td class="px-4 py-3">${escapeHtml(r.roomType)}</td>
+          <td class="px-4 py-3">${escapeHtml(String(r.capacity))}</td>
+          <td class="px-4 py-3">${escapeHtml(r.pricePerNight)} €</td>
+          <td class="px-4 py-3"><span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${r.isActive ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}">${r.isActive ? 'Actif' : 'Inactif'}</span></td>
+          <td class="px-4 py-3 space-x-2">
+            <button onclick="editRoom('${escapeHtml(r.id)}')" class="text-xs text-primary hover:underline">Modifier</button>
+            <button onclick="delRoom('${escapeHtml(r.id)}')" class="text-xs text-destructive hover:underline">Supprimer</button>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    window.editRoom = function(id) {
+      const r = rooms.find(x => x.id === id);
+      if (!r) return;
+      const f = document.getElementById('room-form');
+      f.id_field?.value; f.querySelector('[name=id]').value = r.id;
+      f.slug.value = r.slug;
+      f.roomType.value = r.roomType;
+      f.capacity.value = r.capacity;
+      f.pricePerNight.value = r.pricePerNight;
+      f.imageUrl.value = r.imageUrl || '';
+      f.sortOrder.value = r.sortOrder || 0;
+      f.querySelector('[name=isActive]').checked = r.isActive;
+      locales.forEach(loc => {
+        const tr = r.translations?.find(t => t.locale === loc) || {};
+        f.querySelector(`[name=trans_${loc}_name]`).value = tr.name || '';
+        const descEl = f.querySelector(`[name=trans_${loc}_description]`);
+        if (descEl) descEl.value = tr.description || '';
+      });
+      document.getElementById('room-dialog-title').textContent = 'Modifier la chambre';
+      openDialog('room-dialog');
+    };
+
+    document.getElementById('btn-add-room')?.addEventListener('click', () => {
+      document.getElementById('room-form').reset();
+      document.getElementById('room-form').querySelector('[name=id]').value = '';
+      document.getElementById('room-dialog-title').textContent = 'Nouvelle chambre';
+      openDialog('room-dialog');
+    });
+
+    document.getElementById('room-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = e.target;
+      const id = f.querySelector('[name=id]').value || undefined;
+      const translations = locales.map(loc => ({
+        locale: loc,
+        name: f.querySelector(`[name=trans_${loc}_name]`).value,
+        description: f.querySelector(`[name=trans_${loc}_description]`)?.value || '',
+      }));
+      await API('saveRoom', {
+        id,
+        slug: f.slug.value,
+        roomType: f.roomType.value,
+        capacity: parseInt(f.capacity.value),
+        pricePerNight: f.pricePerNight.value,
+        imageUrl: f.imageUrl.value || undefined,
+        isActive: f.querySelector('[name=isActive]').checked,
+        sortOrder: parseInt(f.sortOrder.value) || 0,
+        translations,
+      });
+      closeDialog('room-dialog');
+      loadRooms();
+    });
+
+    window.delRoom = async function(id) {
+      if (!confirm('Supprimer cette chambre ?')) return;
+      await API('deleteRoom', { id });
+      loadRooms();
+    };
+
+    // === EXTRAS ===
+    let extras = [];
+    async function loadExtras() {
+      const res = await API('listRoomExtras', {});
+      extras = res.data ?? res ?? [];
+      renderExtras();
+    }
+    function renderExtras() {
+      const tbody = document.getElementById('extras-tbody');
+      const empty = document.getElementById('extras-empty');
+      if (!extras.length) { tbody.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      tbody.innerHTML = extras.map(r => {
+        const frTrans = r.translations?.find(t => t.locale === 'fr');
+        return `<tr class="border-b border-border hover:bg-muted/50">
+          <td class="px-4 py-3 font-medium">${escapeHtml(frTrans?.label || '—')}</td>
+          <td class="px-4 py-3 text-muted-foreground">${escapeHtml(r.slug)}</td>
+          <td class="px-4 py-3">${escapeHtml(r.price || '—')}</td>
+          <td class="px-4 py-3"><span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${r.isActive ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}">${r.isActive ? 'Actif' : 'Inactif'}</span></td>
+          <td class="px-4 py-3 space-x-2">
+            <button onclick="editExtra('${escapeHtml(r.id)}')" class="text-xs text-primary hover:underline">Modifier</button>
+            <button onclick="delExtra('${escapeHtml(r.id)}')" class="text-xs text-destructive hover:underline">Supprimer</button>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    window.editExtra = function(id) {
+      const r = extras.find(x => x.id === id);
+      if (!r) return;
+      const f = document.getElementById('extra-form');
+      f.querySelector('[name=id]').value = r.id;
+      f.slug.value = r.slug;
+      f.price.value = r.price || '';
+      f.sortOrder.value = r.sortOrder || 0;
+      f.querySelector('[name=isActive]').checked = r.isActive;
+      locales.forEach(loc => {
+        const tr = r.translations?.find(t => t.locale === loc) || {};
+        f.querySelector(`[name=trans_${loc}_label]`).value = tr.label || '';
+      });
+      document.getElementById('extra-dialog-title').textContent = 'Modifier l\'extra';
+      openDialog('extra-dialog');
+    };
+
+    document.getElementById('btn-add-extra')?.addEventListener('click', () => {
+      document.getElementById('extra-form').reset();
+      document.getElementById('extra-form').querySelector('[name=id]').value = '';
+      document.getElementById('extra-dialog-title').textContent = 'Nouvel extra';
+      openDialog('extra-dialog');
+    });
+
+    document.getElementById('extra-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = e.target;
+      const id = f.querySelector('[name=id]').value || undefined;
+      const translations = locales.map(loc => ({
+        locale: loc,
+        label: f.querySelector(`[name=trans_${loc}_label]`).value,
+      }));
+      await API('saveRoomExtra', {
+        id,
+        slug: f.slug.value,
+        price: f.price.value || null,
+        isActive: f.querySelector('[name=isActive]').checked,
+        sortOrder: parseInt(f.sortOrder.value) || 0,
+        translations,
+      });
+      closeDialog('extra-dialog');
+      loadExtras();
+    });
+
+    window.delExtra = async function(id) {
+      if (!confirm('Supprimer cet extra ?')) return;
+      await API('deleteRoomExtra', { id });
+      loadExtras();
+    };
+
+    loadRooms();
+    loadExtras();
+  </script>
+</AdminLayout>

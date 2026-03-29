@@ -1,0 +1,289 @@
+---
+import "@/styles/starwind.css";
+import { t, type Locale } from '@/lib/i18n';
+
+export const prerender = false;
+
+interface Props {
+  title?: string;
+  lang?: Locale;
+  activeNav?: string;
+}
+
+const { lang = 'fr', title, activeNav = 'dashboard' } = Astro.props;
+const user = Astro.locals.user;
+const pageTitle = title ? `${title} — Admin` : 'Admin — Les Rochers Blancs';
+
+const navItems = [
+  { key: 'dashboard', href: '/admin', icon: 'layout-dashboard' },
+  { key: 'rooms', href: '/admin/rooms', icon: 'bed' },
+  { key: 'menu', href: '/admin/menus', icon: 'utensils' },
+  { key: 'openings', href: '/admin/openings', icon: 'calendar' },
+  { key: 'partners', href: '/admin/partners', icon: 'handshake' },
+  { key: 'reservations', href: '/admin/reservations', icon: 'calendar-check' },
+  { key: 'clients', href: '/admin/clients', icon: 'users' },
+  { key: 'invoices', href: '/admin/invoices', icon: 'file-text' },
+  { key: 'quotes', href: '/admin/quotes', icon: 'file-check' },
+  { key: 'messages', href: '/admin/messages', icon: 'mail' },
+  { key: 'blog', href: '/admin/blog', icon: 'pen-line' },
+  { key: 'content', href: '/admin/content', icon: 'globe' },
+  { key: 'media', href: '/admin/media', icon: 'image' },
+  { key: 'theme', href: '/admin/theme', icon: 'palette' },
+  { key: 'settings', href: '/admin/settings', icon: 'settings' },
+];
+
+function navLabel(key: string): string {
+  // Map nav keys to i18n paths
+  const map: Record<string, string> = {
+    dashboard: 'adminLayout.nav.dashboard',
+    rooms: 'nav.rooms',
+    menu: 'adminLayout.nav.menu',
+    openings: 'openings.sectionLabel',
+    partners: 'partners.sectionLabel',
+    reservations: 'reservations.title',
+    clients: 'clients.title',
+    invoices: 'invoices.title',
+    quotes: 'quotes.title',
+    messages: 'contact.sectionLabel',
+    blog: 'blog.title',
+    content: 'adminLayout.nav.content',
+    media: 'media.title',
+    theme: 'theme.title',
+    settings: 'settings.title',
+  };
+  return t(map[key] ?? key, lang);
+}
+
+const svgIcons: Record<string, string> = {
+  'layout-dashboard': '<path d="M4 4h6v8H4z"/><path d="M14 4h6v5h-6z"/><path d="M14 13h6v7h-6z"/><path d="M4 16h6v5H4z"/>',
+  'bed': '<path d="M2 4v7h20V4"/><path d="M2 11v6h20v-6"/><path d="M2 18h20"/><path d="M6 11V8h12v3"/>',
+  'utensils': '<path d="M3 2v7c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
+  'calendar': '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>',
+  'handshake': '<path d="M11 17a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-1a3 3 0 0 1 3-3h1"/><path d="M18 17a1 1 0 0 0 1 1h0a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-1"/><path d="M2 9h4l3-3 5 5-3 3h10"/>',
+  'calendar-check': '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/>',
+  'users': '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  'file-text': '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+  'file-check': '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m9 15 2 2 4-4"/>',
+  'mail': '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  'pen-line': '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>',
+  'globe': '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+  'image': '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>',
+  'palette': '<circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12.5" r="0.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>',
+  'settings': '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+};
+---
+
+<!doctype html>
+<html lang={lang} class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{pageTitle}</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <script is:inline>
+      (function () {
+        function decodeActionPayload(payload) {
+          if (!Array.isArray(payload)) return payload;
+          const cache = new Map();
+          function revive(value) {
+            if (typeof value === 'number') {
+              if (cache.has(value)) return cache.get(value);
+              const source = payload[value];
+
+              if (Array.isArray(source)) {
+                if (source.length === 2 && source[0] === 'Date') {
+                  const d = new Date(source[1]);
+                  cache.set(value, d);
+                  return d;
+                }
+                const arr = [];
+                cache.set(value, arr);
+                source.forEach((item) => arr.push(revive(item)));
+                return arr;
+              }
+
+              if (source && typeof source === 'object') {
+                const obj = {};
+                cache.set(value, obj);
+                for (const [k, v] of Object.entries(source)) obj[k] = revive(v);
+                return obj;
+              }
+
+              cache.set(value, source);
+              return source;
+            }
+
+            if (Array.isArray(value)) {
+              if (value.length === 2 && value[0] === 'Date') return new Date(value[1]);
+              return value.map(revive);
+            }
+
+            if (value && typeof value === 'object') {
+              const out = {};
+              for (const [k, v] of Object.entries(value)) out[k] = revive(v);
+              return out;
+            }
+
+            return value;
+          }
+
+          return revive(payload[0]);
+        }
+
+        const originalFetch = window.fetch.bind(window);
+        window.fetch = async (input, init) => {
+          const response = await originalFetch(input, init);
+          try {
+            const rawUrl = typeof input === 'string' ? input : input instanceof Request ? input.url : String(input);
+            const pathname = new URL(rawUrl, window.location.origin).pathname;
+            if (!pathname.startsWith('/_actions/')) return response;
+
+            const clone = response.clone();
+            return new Proxy(response, {
+              get(target, prop) {
+                if (prop === 'json') {
+                  return async () => decodeActionPayload(await clone.json());
+                }
+                const value = Reflect.get(target, prop, target);
+                return typeof value === 'function' ? value.bind(target) : value;
+              },
+            });
+          } catch {
+            return response;
+          }
+        };
+      })();
+    </script>
+    <script is:inline>
+      window.escapeHtml=function(value){return String(value??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');};
+    </script>
+  </head>
+  <body class="bg-background text-foreground antialiased">
+    <div class="flex h-screen overflow-hidden">
+      <!-- Sidebar -->
+      <aside
+        id="admin-sidebar"
+        class="hidden lg:flex lg:w-64 flex-col border-r border-border bg-card transition-transform"
+      >
+        <div class="flex h-14 items-center border-b border-border px-4">
+          <a href="/admin" class="flex items-center gap-2 font-display text-lg font-semibold">
+            <svg class="size-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L2 12 h3 v8 a2 2 0 0 0 2 2 h10 a2 2 0 0 0 2-2 v-8 h3 Z"/></svg>
+            <span>Les Rochers Blancs</span>
+          </a>
+        </div>
+        <nav class="flex-1 overflow-y-auto py-3 px-2" aria-label="Admin navigation">
+          {navItems.map(item => (
+            <a
+              href={item.href}
+              class:list={[
+                'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                activeNav === item.key
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+              ]}
+              aria-current={activeNav === item.key ? 'page' : undefined}
+            >
+              <svg class="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <Fragment set:html={svgIcons[item.icon] ?? ''} />
+              </svg>
+              {navLabel(item.key)}
+            </a>
+          ))}
+        </nav>
+        <div class="border-t border-border p-3">
+          <div class="flex items-center justify-between">
+            <span class="truncate text-sm text-muted-foreground">{user?.name ?? user?.email}</span>
+            <button
+              id="signout-btn"
+              class="rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+            >
+              {t('adminLayout.signOut', lang)}
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Mobile sidebar toggle + main -->
+      <div class="flex flex-1 flex-col overflow-hidden">
+        <!-- Top bar (mobile) -->
+        <header class="flex h-14 items-center gap-4 border-b border-border px-4 lg:hidden">
+          <button
+            id="sidebar-toggle"
+            type="button"
+            class="rounded-md p-2 hover:bg-muted"
+            aria-label="Toggle sidebar"
+          >
+            <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+          </button>
+          <span class="font-display font-semibold">Admin</span>
+        </header>
+
+        <!-- Mobile sidebar overlay -->
+        <div id="sidebar-overlay" class="fixed inset-0 z-40 hidden bg-black/50 lg:hidden"></div>
+        <aside
+          id="mobile-sidebar"
+          class="fixed inset-y-0 left-0 z-50 w-64 -translate-x-full border-r border-border bg-card transition-transform lg:hidden"
+        >
+          <div class="flex h-14 items-center border-b border-border px-4">
+            <a href="/admin" class="font-display text-lg font-semibold">Les Rochers Blancs</a>
+          </div>
+          <nav class="flex-1 overflow-y-auto py-3 px-2" aria-label="Admin navigation">
+            {navItems.map(item => (
+              <a
+                href={item.href}
+                class:list={[
+                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                  activeNav === item.key
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                ]}
+              >
+                <svg class="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <Fragment set:html={svgIcons[item.icon] ?? ''} />
+                </svg>
+                {navLabel(item.key)}
+              </a>
+            ))}
+          </nav>
+        </aside>
+
+        <!-- Main content -->
+        <main class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+          <slot />
+        </main>
+      </div>
+    </div>
+
+    <script is:inline>
+      // Theme
+      (function () {
+        const saved = localStorage.getItem('colorTheme') || localStorage.getItem('theme');
+        if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+
+      // Mobile sidebar
+      const toggle = document.getElementById('sidebar-toggle');
+      const overlay = document.getElementById('sidebar-overlay');
+      const mobileSidebar = document.getElementById('mobile-sidebar');
+      function openSidebar() {
+        mobileSidebar?.classList.remove('-translate-x-full');
+        overlay?.classList.remove('hidden');
+      }
+      function closeSidebar() {
+        mobileSidebar?.classList.add('-translate-x-full');
+        overlay?.classList.add('hidden');
+      }
+      toggle?.addEventListener('click', openSidebar);
+      overlay?.addEventListener('click', closeSidebar);
+
+      // Sign out
+      document.getElementById('signout-btn')?.addEventListener('click', async () => {
+        await fetch('/api/auth/sign-out', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+        window.location.href = '/admin/login';
+      });
+    </script>
+  </body>
+</html>

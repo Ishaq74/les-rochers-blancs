@@ -60,7 +60,7 @@ const languages = [
         <!-- Language Switcher -->
         <Dropdown>
           <DropdownTrigger class="navbar-action-btn text-snow hover:bg-snow/10 rounded-md size-11 inline-flex items-center justify-center">
-            <Icon name="mdi:translate" class="size-5" />
+            <Icon name="mdi:translate" />
           </DropdownTrigger>
           <DropdownContent align="end" class="min-w-40">
             {languages.map((l) => (
@@ -69,7 +69,7 @@ const languages = [
                 href={`/${l.code}/`}
                 class:list={['gap-2 text-sm', { 'bg-accent/10': lang === l.code }]}
               >
-                <Icon name={l.flag} class="size-5 rounded-full" />
+                <Icon name={l.flag} />
                 <span>{l.name}</span>
               </DropdownItem>
             ))}
@@ -82,7 +82,7 @@ const languages = [
         <!-- Mobile Menu Toggle -->
         <Sheet>
           <SheetTrigger class="lg:hidden navbar-action-btn text-snow hover:bg-snow/10 rounded-md size-11 inline-flex items-center justify-center">
-            <Icon name="mdi:menu" class="size-6" />
+            <Icon name="mdi:menu" />
           </SheetTrigger>
           <SheetContent side="right">
             <SheetHeader>

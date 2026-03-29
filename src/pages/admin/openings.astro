@@ -1,0 +1,135 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import { t, LOCALES } from '@/lib/i18n';
+export const prerender = false;
+const lang = 'fr';
+---
+
+<AdminLayout title="Périodes d'ouverture" activeNav="openings" lang={lang}>
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">Périodes d'ouverture</h1>
+        <p class="text-muted-foreground">Gérez les saisons d'ouverture du restaurant et de l'hôtel</p>
+      </div>
+      <button id="btn-add" type="button" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">+ Ajouter</button>
+    </div>
+    <div class="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="border-b border-border bg-muted/50">
+          <tr>
+            <th class="px-4 py-3 text-left font-medium">Saison</th>
+            <th class="px-4 py-3 text-left font-medium">Année</th>
+            <th class="px-4 py-3 text-left font-medium">Restaurant</th>
+            <th class="px-4 py-3 text-left font-medium">Hôtel</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.status', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.actions', lang)}</th>
+          </tr>
+        </thead>
+        <tbody id="data-tbody"></tbody>
+      </table>
+      <p id="data-empty" class="hidden p-8 text-center text-muted-foreground">{t('common.noResults', lang)}</p>
+    </div>
+  </div>
+
+  <div id="edit-dialog" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50" data-close></div>
+    <div class="fixed inset-y-0 right-0 w-full max-w-lg overflow-y-auto bg-card border-l border-border shadow-xl p-6 space-y-4">
+      <h2 id="dialog-title" class="text-lg font-semibold">Période</h2>
+      <form id="edit-form" class="space-y-4">
+        <input type="hidden" name="id" />
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1"><label class="text-sm font-medium">Saison *</label>
+            <select name="season" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm">
+              <option value="summer">Été</option><option value="winter">Hiver</option>
+            </select>
+          </div>
+          <div class="space-y-1"><label class="text-sm font-medium">Année *</label><input name="year" type="number" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">Restaurant début</label><input name="restaurantStartDate" type="date" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">Restaurant fin</label><input name="restaurantEndDate" type="date" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">Hôtel début</label><input name="hotelStartDate" type="date" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">Hôtel fin</label><input name="hotelEndDate" type="date" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+          <div class="space-y-1"><label class="text-sm font-medium">Ordre</label><input name="sortOrder" type="number" value="0" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" name="isActive" id="is-active" checked class="rounded border-input" />
+          <label for="is-active" class="text-sm">{t('common.active', lang)}</label>
+        </div>
+        <div>
+          <p class="text-sm font-medium mb-2">Traductions</p>
+          <div class="flex gap-1 border-b border-border" id="locale-tabs">
+            {LOCALES.map((loc, i) => (
+              <button type="button" data-locale={loc} class:list={['px-3 py-1.5 text-sm font-medium border-b-2 transition-colors', i === 0 ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground']}>{loc.toUpperCase()}</button>
+            ))}
+          </div>
+          {LOCALES.map((loc, i) => (
+            <div data-locale-panel={loc} class:list={['space-y-3 pt-3', i !== 0 && 'hidden']}>
+              <div class="space-y-1"><label class="text-sm font-medium">Titre ({loc.toUpperCase()}) *</label><input name={`trans_${loc}_title`} required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+              <div class="space-y-1"><label class="text-sm font-medium">Label restaurant</label><input name={`trans_${loc}_restaurantLabel`} class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+              <div class="space-y-1"><label class="text-sm font-medium">Dates restaurant</label><input name={`trans_${loc}_restaurantDates`} class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+              <div class="space-y-1"><label class="text-sm font-medium">Label hôtel</label><input name={`trans_${loc}_hotelLabel`} class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+              <div class="space-y-1"><label class="text-sm font-medium">Dates hôtel</label><input name={`trans_${loc}_hotelDates`} class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+              <div class="space-y-1"><label class="text-sm font-medium">Jours fermés</label><input name={`trans_${loc}_closedDays`} class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+            </div>
+          ))}
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button type="submit" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('common.save', lang)}</button>
+          <button type="button" data-close class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">{t('common.cancel', lang)}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ locales: LOCALES }}>
+    const API = (a, b) => fetch(`/_actions/${a}`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(b) }).then(r => r.json());
+    function setupTabs(id) { const c = document.getElementById(id); if (!c) return; c.querySelectorAll('button[data-locale]').forEach(btn => { btn.addEventListener('click', () => { const loc = btn.dataset.locale; const p = c.closest('.space-y-4') || c.parentElement; c.querySelectorAll('button[data-locale]').forEach(b => { b.classList.toggle('border-primary', b.dataset.locale===loc); b.classList.toggle('text-primary', b.dataset.locale===loc); b.classList.toggle('border-transparent', b.dataset.locale!==loc); b.classList.toggle('text-muted-foreground', b.dataset.locale!==loc); }); p.querySelectorAll('[data-locale-panel]').forEach(el => el.classList.toggle('hidden', el.dataset.localePanel!==loc)); }); }); }
+    setupTabs('locale-tabs');
+    function openD() { document.getElementById('edit-dialog')?.classList.remove('hidden'); }
+    function closeD() { document.getElementById('edit-dialog')?.classList.add('hidden'); }
+    document.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', closeD));
+
+    let data = [];
+    async function load() { const r = await API('listOpenings', {}); data = r.data ?? r ?? []; render(); }
+    function render() {
+      const tbody = document.getElementById('data-tbody'), empty = document.getElementById('data-empty');
+      if (!data.length) { tbody.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      tbody.innerHTML = data.map(r => {
+        const fr = r.translations?.find(t => t.locale === 'fr') || {};
+        return `<tr class="border-b border-border hover:bg-muted/50">
+          <td class="px-4 py-3 font-medium">${escapeHtml(fr.title || r.season)}</td>
+          <td class="px-4 py-3">${escapeHtml(String(r.year))}</td>
+          <td class="px-4 py-3 text-sm">${escapeHtml(r.restaurantStartDate)} → ${escapeHtml(r.restaurantEndDate)}</td>
+          <td class="px-4 py-3 text-sm">${escapeHtml(r.hotelStartDate)} → ${escapeHtml(r.hotelEndDate)}</td>
+          <td class="px-4 py-3"><span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${r.isActive ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}">${r.isActive ? 'Actif' : 'Inactif'}</span></td>
+          <td class="px-4 py-3 space-x-2">
+            <button onclick="edit('${escapeHtml(r.id)}')" class="text-xs text-primary hover:underline">Modifier</button>
+            <button onclick="del('${escapeHtml(r.id)}')" class="text-xs text-destructive hover:underline">Supprimer</button>
+          </td></tr>`;
+      }).join('');
+    }
+
+    document.getElementById('btn-add')?.addEventListener('click', () => { document.getElementById('edit-form').reset(); document.getElementById('edit-form').querySelector('[name=id]').value=''; document.getElementById('dialog-title').textContent='Nouvelle période'; openD(); });
+    window.edit = function(id) {
+      const r = data.find(x=>x.id===id); if(!r) return; const f = document.getElementById('edit-form');
+      f.querySelector('[name=id]').value = r.id; f.season.value = r.season; f.year.value = r.year;
+      f.restaurantStartDate.value = r.restaurantStartDate; f.restaurantEndDate.value = r.restaurantEndDate;
+      f.hotelStartDate.value = r.hotelStartDate; f.hotelEndDate.value = r.hotelEndDate;
+      f.sortOrder.value = r.sortOrder || 0; f.querySelector('[name=isActive]').checked = r.isActive;
+      locales.forEach(loc => { const tr = r.translations?.find(t=>t.locale===loc) || {};
+        ['title','restaurantLabel','restaurantDates','hotelLabel','hotelDates','closedDays'].forEach(k => { const el = f.querySelector(`[name=trans_${loc}_${k}]`); if(el) el.value = tr[k] || ''; });
+      });
+      document.getElementById('dialog-title').textContent = 'Modifier la période'; openD();
+    };
+
+    document.getElementById('edit-form')?.addEventListener('submit', async e => {
+      e.preventDefault(); const f = e.target; const id = f.querySelector('[name=id]').value || undefined;
+      const translations = locales.map(loc => ({ locale: loc, title: f.querySelector(`[name=trans_${loc}_title]`).value, restaurantLabel: f.querySelector(`[name=trans_${loc}_restaurantLabel]`).value || '', restaurantDates: f.querySelector(`[name=trans_${loc}_restaurantDates]`).value || '', hotelLabel: f.querySelector(`[name=trans_${loc}_hotelLabel]`).value || '', hotelDates: f.querySelector(`[name=trans_${loc}_hotelDates]`).value || '', closedDays: f.querySelector(`[name=trans_${loc}_closedDays]`).value || '' }));
+      await API('saveOpening', { id, season: f.season.value, year: parseInt(f.year.value), restaurantStartDate: f.restaurantStartDate.value, restaurantEndDate: f.restaurantEndDate.value, hotelStartDate: f.hotelStartDate.value, hotelEndDate: f.hotelEndDate.value, isActive: f.querySelector('[name=isActive]').checked, sortOrder: parseInt(f.sortOrder.value)||0, translations });
+      closeD(); load();
+    });
+    window.del = async id => { if(!confirm('Supprimer cette période ?')) return; await API('deleteOpening', { id }); load(); };
+    load();
+  </script>
+</AdminLayout>

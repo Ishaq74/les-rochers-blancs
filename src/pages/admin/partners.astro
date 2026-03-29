@@ -1,0 +1,114 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import { t } from '@/lib/i18n';
+export const prerender = false;
+const lang = 'fr';
+---
+
+<AdminLayout title="Partenaires" activeNav="partners" lang={lang}>
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">Partenaires</h1>
+        <p class="text-muted-foreground">Gérez les partenaires affichés sur le site</p>
+      </div>
+      <button id="btn-add" type="button" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">+ Ajouter</button>
+    </div>
+    <div class="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="border-b border-border bg-muted/50">
+          <tr>
+            <th class="px-4 py-3 text-left font-medium">Logo</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.name', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">Slug</th>
+            <th class="px-4 py-3 text-left font-medium">URL</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.status', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.actions', lang)}</th>
+          </tr>
+        </thead>
+        <tbody id="data-tbody"></tbody>
+      </table>
+      <p id="data-empty" class="hidden p-8 text-center text-muted-foreground">{t('common.noResults', lang)}</p>
+    </div>
+  </div>
+
+  <div id="edit-dialog" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50" data-close></div>
+    <div class="fixed inset-y-0 right-0 w-full max-w-md overflow-y-auto bg-card border-l border-border shadow-xl p-6 space-y-4">
+      <h2 id="dialog-title" class="text-lg font-semibold">Partenaire</h2>
+      <form id="edit-form" class="space-y-4">
+        <input type="hidden" name="id" />
+        <div class="space-y-1"><label class="text-sm font-medium">{t('common.name', lang)} *</label><input name="name" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        <div class="space-y-1"><label class="text-sm font-medium">Slug *</label><input name="slug" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        <div class="space-y-1"><label class="text-sm font-medium">URL du site</label><input name="websiteUrl" type="url" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        <div class="space-y-1"><label class="text-sm font-medium">Logo URL</label><input name="logoUrl" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        <div class="space-y-1"><label class="text-sm font-medium">Ordre</label><input name="sortOrder" type="number" value="0" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" name="isActive" id="is-active" checked class="rounded border-input" />
+          <label for="is-active" class="text-sm">{t('common.active', lang)}</label>
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button type="submit" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('common.save', lang)}</button>
+          <button type="button" data-close class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">{t('common.cancel', lang)}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script is:inline>
+    const API = (a, b) => fetch(`/_actions/${a}`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b) }).then(r=>r.json());
+    function openD() { document.getElementById('edit-dialog')?.classList.remove('hidden'); }
+    function closeD() { document.getElementById('edit-dialog')?.classList.add('hidden'); }
+    document.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', closeD));
+
+    function sanitizeUrl(url='') {
+      try {
+        const parsed = new URL(url);
+        if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+          return parsed.toString();
+        }
+      } catch {
+        return '';
+      }
+      return '';
+    }
+
+    let data = [];
+    async function load() { const r = await API('listPartners', {}); data = r.data ?? r ?? []; render(); }
+    function render() {
+      const tbody = document.getElementById('data-tbody'), empty = document.getElementById('data-empty');
+      if (!data.length) { tbody.innerHTML=''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      tbody.innerHTML = data.map(r => {
+        const safeLogoUrl = sanitizeUrl(r.logoUrl || '');
+        const safeWebsiteUrl = sanitizeUrl(r.websiteUrl || '');
+
+        return `<tr class="border-b border-border hover:bg-muted/50">
+        <td class="px-4 py-3">${safeLogoUrl ? `<img src="${escapeHtml(safeLogoUrl)}" alt="${escapeHtml(r.name)}" class="h-8 w-auto" />` : '—'}</td>
+        <td class="px-4 py-3 font-medium">${escapeHtml(r.name)}</td>
+        <td class="px-4 py-3 text-muted-foreground">${escapeHtml(r.slug)}</td>
+        <td class="px-4 py-3 text-xs">${safeWebsiteUrl ? `<a href="${escapeHtml(safeWebsiteUrl)}" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">${escapeHtml(safeWebsiteUrl)}</a>` : '—'}</td>
+        <td class="px-4 py-3"><span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${r.isActive ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}">${r.isActive ? 'Actif' : 'Inactif'}</span></td>
+        <td class="px-4 py-3 space-x-2">
+          <button onclick="edit('${r.id}')" class="text-xs text-primary hover:underline">Modifier</button>
+          <button onclick="del('${r.id}')" class="text-xs text-destructive hover:underline">Supprimer</button>
+        </td></tr>`;
+      }).join('');
+    }
+    document.getElementById('btn-add')?.addEventListener('click', () => { document.getElementById('edit-form').reset(); document.getElementById('edit-form').querySelector('[name=id]').value=''; document.getElementById('dialog-title').textContent='Nouveau partenaire'; openD(); });
+    window.edit = function(id) {
+      const r = data.find(x=>x.id===id); if(!r) return; const f = document.getElementById('edit-form');
+      f.querySelector('[name=id]').value=r.id; f.name.value=r.name; f.slug.value=r.slug;
+      f.websiteUrl.value=r.websiteUrl||''; f.logoUrl.value=r.logoUrl||''; f.sortOrder.value=r.sortOrder||0;
+      f.querySelector('[name=isActive]').checked=r.isActive;
+      document.getElementById('dialog-title').textContent='Modifier le partenaire'; openD();
+    };
+    document.getElementById('edit-form')?.addEventListener('submit', async e => {
+      e.preventDefault(); const f=e.target; const id=f.querySelector('[name=id]').value||undefined;
+      await API('savePartner', { id, name:f.name.value, slug:f.slug.value, websiteUrl:f.websiteUrl.value||undefined, logoUrl:f.logoUrl.value||undefined, isActive:f.querySelector('[name=isActive]').checked, sortOrder:parseInt(f.sortOrder.value)||0 });
+      closeD(); load();
+    });
+    window.del = async id => { if(!confirm('Supprimer ce partenaire ?')) return; await API('deletePartner',{id}); load(); };
+    load();
+  </script>
+</AdminLayout>

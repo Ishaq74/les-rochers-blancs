@@ -2,6 +2,11 @@
 import { Icon } from 'astro-icon/components';
 import { t } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
+import { db } from '@/db';
+import { partners as partnersTable } from '@/db/schema';
+import { eq, asc } from 'drizzle-orm';
+
+// Static fallback imports
 import alpesBivouac from '@/assets/partners/alpes_bivouac.webp';
 import amtOrganisation from '@/assets/partners/amt-organisation.webp';
 import annecyAventure from '@/assets/partners/annecy_aventure.webp';
@@ -15,15 +20,50 @@ interface Props {
 
 const { lang } = Astro.props;
 
-const partners = [
-  { src: alpesBivouac.src, alt: 'Alpes Bivouac' },
-  { src: amtOrganisation.src, alt: 'AMT Organisation' },
-  { src: annecyAventure.src, alt: 'Annecy Aventure' },
-  { src: annecyTakamaka.src, alt: 'Annecy Takamaka' },
-  { src: queFaireAnnecy.src, alt: 'Que Faire a Annecy' },
-  { src: semnoz.src, alt: 'Semnoz' },
-] as const;
+const fallbackPartners = [
+  { name: 'Alpes Bivouac', logoUrl: alpesBivouac.src, websiteUrl: null },
+  { name: 'AMT Organisation', logoUrl: amtOrganisation.src, websiteUrl: null },
+  { name: 'Annecy Aventure', logoUrl: annecyAventure.src, websiteUrl: null },
+  { name: 'Annecy Takamaka', logoUrl: annecyTakamaka.src, websiteUrl: null },
+  { name: 'Que Faire a Annecy', logoUrl: queFaireAnnecy.src, websiteUrl: null },
+  { name: 'Semnoz', logoUrl: semnoz.src, websiteUrl: null },
+];
 
+const fallbackLogosBySlug: Record<string, string> = {
+  'alpes-bivouac': alpesBivouac.src,
+  'amt-organisation': amtOrganisation.src,
+  'annecy-aventure': annecyAventure.src,
+  'annecy-takamaka': annecyTakamaka.src,
+  'que-faire-a-annecy': queFaireAnnecy.src,
+  'semnoz': semnoz.src,
+};
+
+function normalizeSlug(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+let partners: { name: string; logoUrl: string | null; websiteUrl: string | null }[] = [];
+try {
+  const rows = await db.select().from(partnersTable)
+    .where(eq(partnersTable.isActive, true))
+    .orderBy(asc(partnersTable.sortOrder));
+  partners = rows.length > 0
+    ? rows.map((row) => {
+        const normalized = normalizeSlug(row.slug || row.name || '');
+        return {
+          ...row,
+          logoUrl: row.logoUrl || fallbackLogosBySlug[normalized] || null,
+        };
+      })
+    : fallbackPartners;
+} catch {
+  partners = fallbackPartners;
+}
 ---
 
 <section id="partners" class="relative overflow-hidden section-padding bg-cream">
@@ -49,16 +89,26 @@ const partners = [
           class="partner-logo card-elevated p-3 aspect-[3/2] animate-fade-up"
           style={`animation-delay: ${i * 0.07}s;`}
         >
-          <div
-            class="w-full h-full rounded-lg flex items-center justify-center p-3"
-          >
-            <img
-              src={partner.src}
-              alt={partner.alt}
-              class="partner-logo-img w-full h-full object-contain transition-all duration-300"
-              loading="lazy"
-            />
-          </div>
+          {partner.websiteUrl ? (
+            <a href={partner.websiteUrl} target="_blank" rel="noopener noreferrer"
+              class="w-full h-full rounded-lg flex items-center justify-center p-3">
+              <img
+                src={partner.logoUrl ?? ''}
+                alt={partner.name}
+                class="partner-logo-img w-full h-full object-contain transition-all duration-300"
+                loading="lazy"
+              />
+            </a>
+          ) : (
+            <div class="w-full h-full rounded-lg flex items-center justify-center p-3">
+              <img
+                src={partner.logoUrl ?? ''}
+                alt={partner.name}
+                class="partner-logo-img w-full h-full object-contain transition-all duration-300"
+                loading="lazy"
+              />
+            </div>
+          )}
         </div>
       ))}
     </div>

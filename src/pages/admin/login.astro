@@ -1,0 +1,107 @@
+---
+import "@/styles/starwind.css";
+export const prerender = false;
+
+// If already authenticated admin, redirect to dashboard
+const sessionResult = await (await import('@/auth')).auth.api.getSession({ headers: Astro.request.headers });
+if ((sessionResult?.user as { role?: string } | undefined)?.role === 'admin') {
+  return Astro.redirect('/admin');
+}
+---
+
+<!doctype html>
+<html lang="fr" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Connexion — Admin — Les Rochers Blancs</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  </head>
+  <body class="bg-background text-foreground antialiased">
+    <div class="flex min-h-screen items-center justify-center px-4">
+      <div class="w-full max-w-sm space-y-6">
+        <div class="text-center">
+          <h1 class="font-display text-2xl font-bold">Les Rochers Blancs</h1>
+          <p class="mt-1 text-sm text-muted-foreground">Administration</p>
+        </div>
+        <form id="login-form" class="space-y-4" novalidate>
+          <div id="login-error" class="hidden rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert"></div>
+          <div class="space-y-1">
+            <label for="email" class="text-sm font-medium">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              autocomplete="email"
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            />
+          </div>
+          <div class="space-y-1">
+            <label for="password" class="text-sm font-medium">Mot de passe</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              autocomplete="current-password"
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            />
+          </div>
+          <button
+            type="submit"
+            id="login-btn"
+            class="inline-flex h-10 w-full items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:pointer-events-none disabled:opacity-50"
+          >
+            Se connecter
+          </button>
+        </form>
+        <p class="text-center text-xs text-muted-foreground">
+          <a href="/" class="underline hover:text-foreground">← Retour au site</a>
+        </p>
+      </div>
+    </div>
+
+    <script is:inline>
+      (function () {
+        const saved = localStorage.getItem('colorTheme') || localStorage.getItem('theme');
+        if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+
+      const form = document.getElementById('login-form');
+      const errorDiv = document.getElementById('login-error');
+      const btn = document.getElementById('login-btn');
+
+      form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorDiv?.classList.add('hidden');
+        btn.disabled = true;
+        btn.textContent = 'Connexion...';
+
+        const email = form.email.value.trim();
+        const password = form.password.value;
+
+        try {
+          const res = await fetch('/api/auth/sign-in/email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+          });
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            throw new Error(data?.message || 'Email ou mot de passe incorrect');
+          }
+          window.location.href = '/admin';
+        } catch (err) {
+          errorDiv.textContent = err.message || 'Erreur de connexion';
+          errorDiv?.classList.remove('hidden');
+          btn.disabled = false;
+          btn.textContent = 'Se connecter';
+        }
+      });
+    </script>
+  </body>
+</html>
