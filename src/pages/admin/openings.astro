@@ -33,6 +33,20 @@ const i18n = {
       </div>
       <button id="btn-add" type="button" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">+ {t('openings.new', lang)}</button>
     </div>
+
+    <div class="flex flex-col sm:flex-row gap-3">
+      <div class="relative flex-1">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="data-search" type="search" placeholder={t('common.searchPlaceholder', lang)} class="flex h-9 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm placeholder:text-muted-foreground" />
+      </div>
+      <select id="data-sort" class="flex h-9 rounded-md border border-input bg-background px-3 text-sm">
+        <option value="year:desc">Année ↓</option>
+        <option value="year:asc">Année ↑</option>
+        <option value="season:asc">Saison A→Z</option>
+      </select>
+      <p id="count-label" class="self-center text-sm text-muted-foreground whitespace-nowrap"></p>
+    </div>
+
     <div class="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
       <table class="w-full text-sm">
         <thead class="border-b border-border bg-muted/50">
@@ -108,13 +122,31 @@ const i18n = {
     function closeD() { document.getElementById('edit-dialog')?.classList.add('hidden'); }
     document.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', closeD));
 
-    let data = [];
-    async function load() { const r = await API('listOpenings', {}); data = r.data ?? r ?? []; render(); }
+    let data = [], filtered = [];
+    function applyFilters() {
+      const q = document.getElementById('data-search')?.value.trim().toLowerCase() || '';
+      let arr = data.slice();
+      if (q) arr = arr.filter(r => {
+        const fr = r.translations?.find(t => t.locale === 'fr') || {};
+        return (fr.title || r.season || '').toLowerCase().includes(q) || String(r.year).includes(q);
+      });
+      const sv = document.getElementById('data-sort')?.value || 'year:desc';
+      const [sk, sd] = sv.split(':');
+      if (sk === 'year') arr.sort((a, b) => sd === 'asc' ? a.year - b.year : b.year - a.year);
+      else arr.sort((a, b) => { const va = a[sk] || ''; const vb = b[sk] || ''; return sd === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va); });
+      filtered = arr;
+      render();
+    }
+    AdminKit.initSearch(document.getElementById('data-search'), () => applyFilters(), 250);
+    AdminKit.initSort(document.getElementById('data-sort'), () => applyFilters());
+    async function load() { const r = await API('listOpenings', {}); data = r.data ?? r ?? []; applyFilters(); }
     function render() {
       const tbody = document.getElementById('data-tbody'), empty = document.getElementById('data-empty');
-      if (!data.length) { tbody.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      const cl = document.getElementById('count-label');
+      if (cl) cl.textContent = `${filtered.length} / ${data.length} entrée(s)`;
+      if (!filtered.length) { tbody.innerHTML = ''; empty.classList.remove('hidden'); return; }
       empty.classList.add('hidden');
-      tbody.innerHTML = data.map(r => {
+      tbody.innerHTML = filtered.map(r => {
         const fr = r.translations?.find(t => t.locale === 'fr') || {};
         return `<tr class="border-b border-border hover:bg-muted/50">
           <td class="px-4 py-3 font-medium">${escapeHtml(fr.title || r.season)}</td>

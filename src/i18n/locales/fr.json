@@ -282,7 +282,9 @@
       "media": "Médiathèque",
       "theme": "Thème",
       "settings": "Paramètres",
-      "dividerHotel": "Hôtel",
+      "hotel": "L'Hôtel",
+      "restaurant": "Le Restaurant",
+      "dividerHotel": "Hôtel & Restaurant",
       "dividerCms": "CMS",
       "dividerBusiness": "Gestion",
       "dividerConfig": "Configuration"
@@ -331,7 +333,17 @@
     "label": "Label",
     "year": "Année",
     "published": "Publié",
-    "draft": "Brouillon"
+    "draft": "Brouillon",
+    "searchPlaceholder": "Rechercher…",
+    "sortBy": "Trier par",
+    "sortNewest": "Plus récent",
+    "sortOldest": "Plus ancien",
+    "sortNameAsc": "Nom A-Z",
+    "sortNameDesc": "Nom Z-A",
+    "sortAmountAsc": "Montant ↑",
+    "sortAmountDesc": "Montant ↓",
+    "nItems": "éléments",
+    "exportCsv": "Exporter CSV"
   },
   "rooms": {
     "title": "Chambres",
@@ -365,6 +377,15 @@
       "pricePerNight": "Prix/nuit",
       "status": "Statut",
       "actions": "Actions"
+    },
+    "types": {
+      "single": "Simple",
+      "double": "Double",
+      "twin": "Twin",
+      "triple": "Triple",
+      "quad": "Quadruple",
+      "five": "Quintuple",
+      "suite": "Suite"
     },
     "toast": {
       "created": "Chambre créée",
@@ -491,6 +512,7 @@
       "overdue": "En retard",
       "cancelled": "Annulée"
     },
+    "countSuffix": "facture(s)",
     "toast": {
       "created": "Facture créée",
       "updated": "Facture mise à jour",
@@ -618,6 +640,9 @@
     "untitled": "(sans titre)",
     "publishedLabel": "Publié",
     "selectImage": "Sélectionner une image",
+    "preview": "Aperçu",
+    "editMode": "Éditer",
+    "noMediaItems": "Aucune image en médiathèque.",
     "markdown": {
       "bold": "Gras",
       "italic": "Italique",
@@ -757,6 +782,8 @@
     "countSuffix": "fichier(s)",
     "uploading": "Upload en cours…",
     "siteAssets": "Assets du site (lecture seule)",
+    "uploadHint": "Max 10 Mo. JPEG, PNG, WebP, GIF, SVG, PDF.",
+    "staticCount": "image(s)",
     "form": {
       "file": "Fichier",
       "alt": "Texte alternatif",
@@ -804,6 +831,12 @@
       "tagline": "Un havre de paix au cœur des Alpes",
       "primaryButton": "Bouton Principal",
       "accentButton": "Bouton Accent"
+    },
+    "types": {
+      "color": "Couleur",
+      "text": "Texte",
+      "number": "Nombre",
+      "font": "Police"
     },
     "toast": {
       "saved": "Thème sauvegardé",

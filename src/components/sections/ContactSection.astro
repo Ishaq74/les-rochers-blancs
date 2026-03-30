@@ -30,14 +30,14 @@ const [phone, email, address, hours] = await Promise.all([
         <h2 id="contact-heading" class="heading-section mb-3">
           {t('contact.title', lang)}
         </h2>
-        <div class="heading-accent-bar !mx-0"><span class="heading-accent-bar-diamond"></span></div>
+        <div class="heading-accent-bar mx-0!"><span class="heading-accent-bar-diamond"></span></div>
         <p class="section-subtitle mb-section">
           {t('contact.subtitle', lang)}
         </p>
 
         <address class="space-y-item not-italic">
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+            <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
               <Icon name="mdi:map-marker" size={20} />
             </div>
             <div>
@@ -47,7 +47,7 @@ const [phone, email, address, hours] = await Promise.all([
           </div>
 
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+            <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
               <Icon name="mdi:phone" size={20} />
             </div>
             <div>
@@ -57,7 +57,7 @@ const [phone, email, address, hours] = await Promise.all([
           </div>
 
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+            <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
               <Icon name="mdi:email" size={20} />
             </div>
             <div>
@@ -67,7 +67,7 @@ const [phone, email, address, hours] = await Promise.all([
           </div>
 
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+            <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
               <Icon name="mdi:clock-outline" size={20} />
             </div>
             <div>
@@ -119,7 +119,7 @@ const [phone, email, address, hours] = await Promise.all([
               minlength={10}
               maxlength={5000}
               placeholder={t('contact.form.message', lang)}
-              class="input-elegant flex min-h-[150px] w-full rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none resize-none"
+              class="input-elegant flex min-h-37.5 w-full rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none resize-none"
               aria-label={t('contact.form.message', lang)}
             ></textarea>
           </div>

@@ -205,8 +205,14 @@ const i18n = {
       f.taxRate.value=r.taxRate||'20'; f.reservationId.value=r.reservationId||'';
       f.notes.value=r.notes||'';
       clearLines();
-      // We don't have line items in list response — create empty line for edit
-      addLine();
+      // Load existing line items
+      const itemsRes = await API('listInvoiceItems', { invoiceId: r.id });
+      const items = itemsRes.data ?? itemsRes ?? [];
+      if (items.length > 0) {
+        items.forEach(item => addLine(item.description, item.quantity, item.unitPrice, parseFloat(item.total||'0').toFixed(2)));
+      } else {
+        addLine();
+      }
       document.getElementById('dialog-title').textContent=i18n.editTitle; openD();
     };
 

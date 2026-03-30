@@ -232,14 +232,22 @@ const taxLabel = t('quotes.form.tax', lang).replace('{{rate}}', '20');
       document.getElementById('dialog-title').textContent=i18n.newTitle;openD();
     });
 
-    window.edit=function(id){
+    window.edit=async function(id){
       const r=(result.items||[]).find(x=>x.id===id);if(!r)return;
       const f=document.getElementById('edit-form');
       f.querySelector('[name=id]').value=r.id;f.quoteNumber.value=r.quoteNumber;
       f.status.value=r.status;f.clientId.value=r.clientId||'';
       f.issueDate.value=r.issueDate;f.validUntil.value=r.validUntil;
       f.taxRate.value=r.taxRate||'20';f.notes.value=r.notes||'';
-      clearLines();addLine();
+      clearLines();
+      // Load existing quote line items
+      const itemsRes = await API('listQuoteItems', { quoteId: r.id });
+      const items = itemsRes.data ?? itemsRes ?? [];
+      if (items.length > 0) {
+        items.forEach(item => addLine(item.description, item.quantity, item.unitPrice, parseFloat(item.total||'0').toFixed(2)));
+      } else {
+        addLine();
+      }
       document.getElementById('dialog-title').textContent=i18n.editTitle;openD();
     };
 

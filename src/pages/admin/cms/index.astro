@@ -123,13 +123,14 @@ const i18n = {
   </div>
 
   <script is:inline define:vars={{ i18n }}>
-    var API = function(action, body) {
-      return fetch('/_actions/' + action, {
+    async function API(action, body) {
+      var res = await fetch('/_actions/' + action, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
-      }).then(function(r) { return r.json(); });
-    };
+      });
+      return res.json();
+    }
 
     var pages = [];
     var viewMode = localStorage.getItem('cms-view') || 'cards';
@@ -282,7 +283,7 @@ const i18n = {
             '<th class="text-right px-4 py-3 font-medium text-muted-foreground">Actions</th>' +
           '</tr></thead>' +
           '<tbody>' +
-            items.map(function(p, i) {
+            items.map(function(p) {
               return '<tr class="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">' +
                 '<td class="px-4 py-3"><a href="/admin/cms/' + escapeHtml(p.slug) + '" class="font-medium hover:text-primary transition-colors">' + escapeHtml(p.title) + '</a></td>' +
                 '<td class="px-4 py-3 text-muted-foreground font-mono text-xs hidden sm:table-cell">/' + escapeHtml(p.slug) + '</td>' +

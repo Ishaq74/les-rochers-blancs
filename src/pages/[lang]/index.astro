@@ -10,14 +10,11 @@ import PartnersSection from '@/components/sections/PartnersSection.astro';
 import AccessSection from '@/components/sections/AccessSection.astro';
 import ContactSection from '@/components/sections/ContactSection.astro';
 import Footer from '@/components/layout/Footer.astro';
-import { LOCALES, type Locale } from '@/lib/i18n';
+import type { Locale } from '@/lib/i18n';
 import { cms, getSetting, getPageSections } from '@/lib/settings';
 
-export const prerender = true;
-
-export function getStaticPaths() {
-  return LOCALES.map((lang) => ({ params: { lang } }));
-}
+// Must stay dynamic so admin DB updates are visible immediately on the public site.
+export const prerender = false;
 
 const { lang } = Astro.params as { lang: Locale };
 

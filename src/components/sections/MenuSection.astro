@@ -16,6 +16,16 @@ interface Props {
 
 const { lang } = Astro.props;
 const rtl = isRtl(lang);
+const MENU_DB_TIMEOUT_MS = 8000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => {
+      setTimeout(() => reject(new Error(`MenuSection DB timeout after ${ms}ms`)), ms);
+    }),
+  ]);
+}
 
 // ------- SSR: Direct DB fetch (replaces useMenu React hook) -------
 let menus: any[] = [];
@@ -23,14 +33,14 @@ let categories: any[] = [];
 let items: any[] = [];
 
 try {
-  const [menusRows, menuTrans, catsRows, catTrans, itemsRows, itemTrans] = await Promise.all([
+  const [menusRows, menuTrans, catsRows, catTrans, itemsRows, itemTrans] = await withTimeout(Promise.all([
     db.select().from(restaurantMenus).where(eq(restaurantMenus.isActive, true)).orderBy(asc(restaurantMenus.sortOrder)),
     db.select().from(restaurantMenuTranslations).where(eq(restaurantMenuTranslations.locale, lang)),
     db.select().from(menuCategories).where(eq(menuCategories.isActive, true)).orderBy(asc(menuCategories.sortOrder)),
     db.select().from(menuCategoryTranslations).where(eq(menuCategoryTranslations.locale, lang)),
     db.select().from(menuItems).where(eq(menuItems.isActive, true)).orderBy(asc(menuItems.sortOrder)),
     db.select().from(menuItemTranslations).where(eq(menuItemTranslations.locale, lang)),
-  ]);
+  ]), MENU_DB_TIMEOUT_MS);
 
   const menuTransMap = new Map(menuTrans.map((tr: any) => [tr.menuId, tr]));
   const catTransMap = new Map(catTrans.map((tr: any) => [tr.categoryId, tr]));
@@ -83,7 +93,9 @@ try {
     };
   });
 } catch (err) {
-  console.error('MenuSection SSR error:', err);
+  if (import.meta.env.DEV) {
+    console.warn('MenuSection SSR fallback to empty data:', err);
+  }
 }
 
 // ------- Helpers -------

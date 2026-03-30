@@ -1,0 +1,782 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import { LOCALES } from '@/lib/i18n';
+import { DEFAULT_RESTAURANT_GALLERY } from '@/lib/default-media';
+export const prerender = false;
+const lang = 'fr';
+const locales = LOCALES;
+
+const cmsFields = [
+  { key: 'title',            label: 'Titre principal',              hint: 'Ex : Le Restaurant',                                              type: 'input',    required: true },
+  { key: 'subtitle',         label: 'Sous-titre',                    hint: 'Ex : Gastronomie alpine au cœur des sommets',                     type: 'input',    required: false },
+  { key: 'description',      label: 'Description principale',       hint: 'Paragraphe de présentation du restaurant',                        type: 'textarea', required: false },
+  { key: 'groupTitle',       label: 'Titre section « Groupes »',    hint: 'Ex : Vous venez en groupe ?',                                     type: 'input',    required: false },
+  { key: 'groupDescription', label: 'Description groupes',          hint: 'Texte expliquant les conditions pour les groupes',                 type: 'textarea', required: false },
+  { key: 'contactUs',        label: 'Label bouton contact groupes', hint: 'Ex : Nous Contacter — libellé du bouton de contact groupe',       type: 'input',    required: false },
+  { key: 'pricingTitle',     label: 'Titre section « Les Tarifs »', hint: 'Ex : Les Tarifs — affiché au-dessus du tableau des prix',         type: 'input',    required: false },
+];
+---
+
+<AdminLayout title="Restaurant — Contenu" activeNav="restaurant" lang={lang}>
+  <div class="space-y-6">
+
+    <!-- Page header -->
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight">Restaurant — Gestion du contenu</h1>
+      <p class="text-muted-foreground">Modifiez les textes, la galerie photos et les tarifs affichés dans la section Restaurant du site.</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex gap-0 border-b border-border">
+      <button type="button" data-tab="content" class="tab-btn px-5 py-2.5 text-sm font-medium border-b-2 border-primary text-primary -mb-px">
+        📝 Contenu textuel
+      </button>
+      <button type="button" data-tab="gallery" class="tab-btn px-5 py-2.5 text-sm font-medium border-b-2 border-transparent text-muted-foreground hover:text-foreground -mb-px transition-colors">
+        🖼️ Galerie du carrousel
+      </button>
+      <button type="button" data-tab="pricing" class="tab-btn px-5 py-2.5 text-sm font-medium border-b-2 border-transparent text-muted-foreground hover:text-foreground -mb-px transition-colors">
+        💰 Tarifs section
+      </button>
+    </div>
+
+    <!-- ============================================================
+         TAB: CONTENT
+         ============================================================ -->
+    <div id="tab-content" class="space-y-6">
+
+      <!-- Locale selector + save -->
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="text-sm font-medium text-muted-foreground shrink-0">Langue éditée :</span>
+        <div class="flex gap-0.5 rounded-md border border-input p-0.5 bg-muted/40">
+          {locales.map((loc, i) => (
+            <button type="button" data-locale={loc}
+              class:list={['locale-btn rounded px-3 py-1.5 text-xs font-semibold transition-colors',
+                i === 0 ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'
+              ]}>{loc.toUpperCase()}</button>
+          ))}
+        </div>
+        <div id="dirty-badge" class="hidden items-center gap-1.5 rounded-full border border-amber-300 bg-amber-50 px-2.5 py-1 text-[11px] font-medium text-amber-800">
+          <span class="inline-flex size-1.5 rounded-full bg-amber-500"></span>
+          Modifications non sauvegardées
+        </div>
+        <button id="btn-save" type="button" class="ml-auto inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-60 transition-colors">
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>
+          Sauvegarder
+        </button>
+      </div>
+
+      <div id="translate-notice" class="hidden rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">
+        <strong>Traduction</strong> — Remplissez ces champs dans la langue sélectionnée. Laissez vide pour utiliser le texte français par défaut.
+      </div>
+
+      <!-- Présentation -->
+      <div class="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+        <div class="border-b border-border bg-muted/40 px-5 py-3">
+          <h3 class="text-sm font-semibold">Présentation</h3>
+          <p class="text-xs text-muted-foreground mt-0.5">Titre, sous-titre et description principale du restaurant</p>
+        </div>
+        <div class="p-5 space-y-5">
+          {cmsFields.filter(f => ['title','subtitle'].includes(f.key)).map(f => (
+            <div class="space-y-1.5">
+              <label class="text-sm font-medium">{f.label}{f.required && <span class="text-destructive ml-1">*</span>}</label>
+              <input data-field={f.key} type="text" placeholder={f.hint}
+                class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+              <p class="text-xs text-muted-foreground">{f.hint}</p>
+            </div>
+          ))}
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium">Description principale</label>
+            <p class="text-xs text-muted-foreground">{cmsFields.find(f => f.key === 'description')?.hint}</p>
+            <textarea data-field="description" rows={4}
+              class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section Groupes -->
+      <div class="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+        <div class="border-b border-border bg-muted/40 px-5 py-3">
+          <h3 class="text-sm font-semibold">Section « Réservation Groupes »</h3>
+          <p class="text-xs text-muted-foreground mt-0.5">Bloc d'information pour les réservations de groupes</p>
+        </div>
+        <div class="p-5 space-y-5">
+          {cmsFields.filter(f => ['groupTitle','contactUs'].includes(f.key)).map(f => (
+            <div class="space-y-1.5">
+              <label class="text-sm font-medium">{f.label}</label>
+              <input data-field={f.key} type="text" placeholder={f.hint}
+                class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+              <p class="text-xs text-muted-foreground">{f.hint}</p>
+            </div>
+          ))}
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium">Description groupes</label>
+            <p class="text-xs text-muted-foreground">{cmsFields.find(f => f.key === 'groupDescription')?.hint}</p>
+            <textarea data-field="groupDescription" rows={3}
+              class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Titres -->
+      <div class="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+        <div class="border-b border-border bg-muted/40 px-5 py-3">
+          <h3 class="text-sm font-semibold">Titres des sous-sections</h3>
+        </div>
+        <div class="p-5">
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium">Titre section « Les Tarifs »</label>
+            <input data-field="pricingTitle" type="text" placeholder="Les Tarifs"
+              class="flex h-9 w-full sm:max-w-xs rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+            <p class="text-xs text-muted-foreground">Affiché au-dessus du tableau des prix — allez dans l'onglet <strong>Tarifs</strong> pour gérer les lignes</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-content -->
+
+    <!-- ============================================================
+         TAB: GALLERY
+         ============================================================ -->
+    <div id="tab-gallery" class="hidden space-y-4">
+
+      <div class="flex items-start justify-between gap-4">
+        <p class="text-sm text-muted-foreground max-w-xl">
+          Photos affichées dans le carrousel de la section Restaurant.
+          L'ordre dans cette liste correspond à l'ordre sur le site.
+        </p>
+        <button id="btn-add-photo" type="button" class="shrink-0 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          Ajouter une photo
+        </button>
+      </div>
+
+      <div id="gallery-list" class="space-y-2"></div>
+      <p id="gallery-empty" class="hidden rounded-xl border-2 border-dashed border-border p-12 text-center text-sm text-muted-foreground">
+        Aucune photo dans la galerie. Cliquez sur « Ajouter une photo » pour commencer.
+      </p>
+
+    </div><!-- /tab-gallery -->
+
+    <!-- ============================================================
+         TAB: PRICING
+         ============================================================ -->
+    <div id="tab-pricing" class="hidden space-y-4">
+
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <p class="text-sm text-muted-foreground max-w-xl">
+            Gérez ici la carte des tarifs affichée dans la section restaurant (bloc "Les Tarifs" sur la home).
+            Ce bloc est indépendant des menus complets.
+          </p>
+          <p class="text-xs text-muted-foreground mt-2">
+            Pour les menus / cartes détaillées (entrées, plats, catégories), utilisez
+            <a href="/admin/menus" class="text-primary hover:underline ml-1">/admin/menus</a>.
+          </p>
+        </div>
+        <button id="btn-add-price" type="button" class="shrink-0 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          Ajouter un tarif
+        </button>
+      </div>
+
+      <!-- Pricing items table -->
+      <div class="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-border bg-muted/40">
+              <th class="px-4 py-3 text-left font-medium text-muted-foreground w-8">#</th>
+              <th class="px-4 py-3 text-left font-medium text-muted-foreground">Nom (FR)</th>
+              <th class="px-4 py-3 text-left font-medium text-muted-foreground">Prix</th>
+              <th class="px-4 py-3 text-left font-medium text-muted-foreground w-24">Statut</th>
+              <th class="px-4 py-3 text-right font-medium text-muted-foreground w-28">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="pricing-table-body">
+            <tr>
+              <td colspan="5" class="px-4 py-8 text-center text-muted-foreground">
+                <div class="flex items-center justify-center gap-2">
+                  <svg class="size-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  Chargement…
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p id="pricing-empty" class="hidden rounded-xl border-2 border-dashed border-border p-12 text-center text-sm text-muted-foreground">
+        Aucun tarif. Cliquez sur « Ajouter un tarif » pour commencer.
+      </p>
+
+    </div><!-- /tab-pricing -->
+
+  </div>
+
+  <!-- ============================================================
+       DRAWER: Add / edit gallery photo
+       ============================================================ -->
+  <div id="photo-drawer" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50" id="photo-backdrop"></div>
+    <div class="fixed inset-y-0 right-0 w-full max-w-lg overflow-y-auto bg-card border-l border-border shadow-xl p-6 space-y-5">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold">Ajouter / modifier une photo</h2>
+        <button type="button" id="btn-close-photo" class="rounded-md p-1 hover:bg-muted">
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <form id="photo-form" class="space-y-5">
+        <input type="hidden" id="photo-id" />
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium">Image <span class="text-destructive">*</span></label>
+          <div class="flex gap-2">
+            <input id="photo-url" type="text" required placeholder="https://... ou /uploads/..."
+              class="flex h-9 flex-1 rounded-md border border-input bg-background px-3 text-sm" />
+            <button type="button" id="btn-pick-media" class="shrink-0 inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 text-sm hover:bg-muted">
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3-3-6 6"/></svg>
+              Médiathèque
+            </button>
+          </div>
+          <div id="photo-preview-wrap" class="hidden mt-2 overflow-hidden rounded-md border border-border aspect-video bg-muted">
+            <img id="photo-preview-img" src="" alt="Aperçu" class="h-full w-full object-cover" />
+          </div>
+        </div>
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium">Légende</label>
+          <input id="photo-caption" type="text" placeholder="Ex : Salle à manger face aux sommets"
+            class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+        </div>
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium">Texte alternatif <span class="text-muted-foreground font-normal">(accessibilité)</span></label>
+          <input id="photo-alt" type="text" placeholder="Description de l'image pour les malvoyants"
+            class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+        </div>
+        <div class="flex gap-2 pt-2 border-t border-border">
+          <button type="submit" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">Enregistrer</button>
+          <button type="button" id="btn-cancel-photo" class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       DRAWER: Add / edit pricing item
+       ============================================================ -->
+  <div id="price-drawer" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50" id="price-backdrop"></div>
+    <div class="fixed inset-y-0 right-0 w-full max-w-xl overflow-y-auto bg-card border-l border-border shadow-xl p-6 space-y-5">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold" id="price-drawer-title">Ajouter un tarif</h2>
+        <button type="button" id="btn-close-price" class="rounded-md p-1 hover:bg-muted">
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <form id="price-form" class="space-y-5">
+        <input type="hidden" id="price-id" />
+
+        <!-- Slug & Price -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium">Identifiant <span class="text-destructive">*</span></label>
+            <input id="price-slug" type="text" required placeholder="plat-du-jour"
+              class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm font-mono" />
+            <p class="text-xs text-muted-foreground">Clé unique, lettres/chiffres/tirets</p>
+          </div>
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium">Prix (€)</label>
+            <input id="price-amount" type="number" min="0" step="0.01" placeholder="18.50"
+              class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+            <p class="text-xs text-muted-foreground">Laissez vide si « sur demande »</p>
+          </div>
+        </div>
+
+        <!-- Status + Sort order -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex items-center gap-3 rounded-md border border-input bg-background px-3 py-2">
+            <input id="price-active" type="checkbox" checked class="size-4 rounded" />
+            <label for="price-active" class="text-sm font-medium cursor-pointer">Visible sur le site</label>
+          </div>
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium">Ordre d'affichage</label>
+            <input id="price-sort" type="number" min="0" value="0"
+              class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+          </div>
+        </div>
+
+        <!-- Translations -->
+        <div class="space-y-3">
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-medium">Noms et descriptions par langue</span>
+            <span class="rounded-full border border-border bg-muted text-muted-foreground px-2 py-0.5 text-[10px] font-medium">Obligatoire en FR</span>
+          </div>
+          <!-- Locale tabs for translations -->
+          <div class="rounded-xl border border-border overflow-hidden">
+            <div class="flex gap-0 border-b border-border bg-muted/40">
+              {locales.map((loc, i) => (
+                <button type="button" data-price-locale={loc}
+                  class:list={['price-locale-btn px-4 py-2 text-xs font-semibold border-b-2 -mb-px transition-colors',
+                    i === 0 ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'
+                  ]}>{loc.toUpperCase()}</button>
+              ))}
+            </div>
+            {locales.map((loc, i) => (
+              <div id={`price-trans-${loc}`} class:list={['p-4 space-y-3', i !== 0 && 'hidden']}>
+                <div class="space-y-1.5">
+                  <label class="text-sm font-medium">
+                    Nom {loc === 'fr' && <span class="text-destructive">*</span>}
+                    {loc !== 'fr' && <span class="text-muted-foreground font-normal">(facultatif)</span>}
+                  </label>
+                  <input id={`price-name-${loc}`} type="text" placeholder={loc === 'fr' ? 'Ex : Menu du jour' : 'Traduction…'}
+                    class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+                </div>
+                <div class="space-y-1.5">
+                  <label class="text-sm font-medium">Description <span class="text-muted-foreground font-normal">(facultatif)</span></label>
+                  <textarea id={`price-desc-${loc}`} rows={2} placeholder="Ex : Entrée + plat + dessert, formule du marché…"
+                    class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none"></textarea>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="flex gap-2 pt-2 border-t border-border">
+          <button type="submit" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">Enregistrer</button>
+          <button type="button" id="btn-cancel-price" class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Media picker -->
+  <div id="media-dialog" class="fixed inset-0 z-60 hidden">
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" data-close-media></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+      <div class="bg-card rounded-xl border border-border shadow-2xl p-6 space-y-4 w-full max-w-4xl max-h-[85vh] overflow-hidden">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold">Choisir une image de la médiathèque</h3>
+          <button type="button" data-close-media class="rounded-md p-1 hover:bg-muted text-muted-foreground">
+            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button>
+        </div>
+        <div id="media-picker-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 overflow-y-auto max-h-[65vh]"></div>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ locales, defaultRestaurantGallery: DEFAULT_RESTAURANT_GALLERY }}>
+    const API = (a, b) => fetch(`/_actions/${a}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b ?? {}) }).then(r => r.json());
+
+    // ──────────────────────────────────────────────
+    // TABS
+    // ──────────────────────────────────────────────
+    function activateTab(tabName) {
+      ['content', 'gallery', 'pricing'].forEach(t => {
+        document.getElementById(`tab-${t}`)?.classList.toggle('hidden', t !== tabName);
+      });
+      document.querySelectorAll('[data-tab]').forEach(btn => {
+        const active = btn.dataset.tab === tabName;
+        btn.classList.toggle('border-primary', active);
+        btn.classList.toggle('text-primary', active);
+        btn.classList.toggle('border-transparent', !active);
+        btn.classList.toggle('text-muted-foreground', !active);
+      });
+      if (tabName === 'gallery' && !galleryLoaded) loadGallery();
+      if (tabName === 'pricing' && !pricingLoaded) loadPricing();
+    }
+    document.querySelectorAll('[data-tab]').forEach(btn => btn.addEventListener('click', () => activateTab(btn.dataset.tab)));
+
+    // ──────────────────────────────────────────────
+    // CONTENT
+    // ──────────────────────────────────────────────
+    const FIELDS = ['title', 'subtitle', 'description', 'groupTitle', 'groupDescription', 'contactUs', 'pricingTitle'];
+    let cmsData = {};
+    let currentLocale = 'fr';
+    let dirty = false;
+
+    async function loadContent() {
+      const r = await API('listCmsContent', { sectionKey: 'restaurant' });
+      const rows = r.data ?? r ?? [];
+      cmsData = {};
+      rows.forEach(row => {
+        if (!cmsData[row.locale]) cmsData[row.locale] = {};
+        cmsData[row.locale][row.fieldKey] = row.content;
+      });
+      fillForm();
+    }
+
+    function fillForm() {
+      const data = cmsData[currentLocale] || {};
+      FIELDS.forEach(f => {
+        const el = document.querySelector(`[data-field="${f}"]`);
+        if (el) el.value = data[f] || '';
+      });
+      setDirty(false);
+    }
+
+    function setDirty(val) {
+      dirty = val;
+      const badge = document.getElementById('dirty-badge');
+      badge?.classList.toggle('hidden', !val);
+      badge?.classList.toggle('flex', val);
+    }
+
+    document.querySelectorAll('[data-locale]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (dirty && !confirm('Des modifications non sauvegardées seront perdues. Continuer ?')) return;
+        currentLocale = btn.dataset.locale;
+        document.querySelectorAll('[data-locale]').forEach(b => {
+          const active = b.dataset.locale === currentLocale;
+          b.classList.toggle('bg-background', active);
+          b.classList.toggle('shadow-sm', active);
+          b.classList.toggle('text-foreground', active);
+          b.classList.toggle('text-muted-foreground', !active);
+        });
+        document.getElementById('translate-notice')?.classList.toggle('hidden', currentLocale === 'fr');
+        fillForm();
+      });
+    });
+
+    FIELDS.forEach(f => {
+      document.querySelector(`[data-field="${f}"]`)?.addEventListener('input', () => setDirty(true));
+    });
+
+    document.getElementById('btn-save')?.addEventListener('click', async () => {
+      const btn = document.getElementById('btn-save');
+      btn.disabled = true;
+      btn.innerHTML = '<svg class="size-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Sauvegarde…';
+      const fields = FIELDS.map(f => ({ fieldKey: f, content: document.querySelector(`[data-field="${f}"]`)?.value || '' }));
+      await API('bulkUpsertCms', { sectionKey: 'restaurant', locale: currentLocale, fields });
+      if (!cmsData[currentLocale]) cmsData[currentLocale] = {};
+      fields.forEach(f => { cmsData[currentLocale][f.fieldKey] = f.content; });
+      setDirty(false);
+      btn.disabled = false;
+      btn.innerHTML = '<svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg> Sauvegarder';
+      showToast('Contenu sauvegardé ✓', 'success');
+    });
+
+    // ──────────────────────────────────────────────
+    // GALLERY
+    // ──────────────────────────────────────────────
+    let gallery = [];
+    let galleryLoaded = false;
+    let defaultGalleryBootstrapped = false;
+
+    async function bootstrapDefaultGalleryIfEmpty() {
+      if (defaultGalleryBootstrapped) return;
+      defaultGalleryBootstrapped = true;
+      await Promise.all(
+        (defaultRestaurantGallery || []).map((imageUrl, sortOrder) =>
+          API('saveGalleryImage', {
+            sectionKey: 'restaurant',
+            imageUrl,
+            altText: '',
+            caption: '',
+            sortOrder,
+            isActive: true,
+          })
+        )
+      );
+    }
+
+    async function loadGallery() {
+      const r = await API('listGallery', { sectionKey: 'restaurant' });
+      gallery = r.data ?? r ?? [];
+      if (!gallery.length && (defaultRestaurantGallery || []).length) {
+        await bootstrapDefaultGalleryIfEmpty();
+        const rr = await API('listGallery', { sectionKey: 'restaurant' });
+        gallery = rr.data ?? rr ?? [];
+      }
+      galleryLoaded = true;
+      renderGallery();
+    }
+
+    function renderGallery() {
+      const list = document.getElementById('gallery-list');
+      const empty = document.getElementById('gallery-empty');
+      if (!gallery.length) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      list.innerHTML = gallery.map((img, idx) => `
+        <div class="flex items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-sm">
+          <div class="relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-md border border-border bg-muted">
+            <img src="${escapeHtml(img.imageUrl)}" alt="${escapeHtml(img.altText || '')}" class="h-full w-full object-cover" loading="lazy"
+              onerror="this.parentElement.innerHTML='<div class=\'flex h-full w-full items-center justify-center text-muted-foreground\'><svg class=\'size-6\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.5\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'9\' cy=\'9\' r=\'2\'/><path d=\'m21 15-3-3-6 6\'/></svg></div>'" />
+          </div>
+          <div class="flex-1 min-w-0">
+            ${img.caption ? `<p class="text-sm font-medium truncate">${escapeHtml(img.caption)}</p>` : ''}
+            <p class="text-xs text-muted-foreground truncate">${escapeHtml(img.imageUrl)}</p>
+            <span class="text-[11px] text-muted-foreground">Photo ${idx + 1} sur ${gallery.length}</span>
+          </div>
+          <div class="flex flex-col items-center gap-0.5 shrink-0">
+            ${idx > 0 ? `<button onclick="movePhoto('${escapeHtml(img.id)}','up')" title="Monter" class="rounded p-1.5 hover:bg-muted text-muted-foreground hover:text-foreground"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg></button>` : '<span class="size-7"></span>'}
+            ${idx < gallery.length - 1 ? `<button onclick="movePhoto('${escapeHtml(img.id)}','down')" title="Descendre" class="rounded p-1.5 hover:bg-muted text-muted-foreground hover:text-foreground"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>` : '<span class="size-7"></span>'}
+          </div>
+          <div class="flex flex-col items-center gap-0.5 shrink-0 border-l border-border pl-2">
+            <button onclick="editPhoto('${escapeHtml(img.id)}')" title="Modifier" class="rounded p-1.5 hover:bg-muted text-muted-foreground hover:text-primary">
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+            </button>
+            <button onclick="deletePhoto('${escapeHtml(img.id)}')" title="Supprimer" class="rounded p-1.5 hover:bg-destructive/10 text-muted-foreground hover:text-destructive">
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window['movePhoto'] = async (id, dir) => {
+      const idx = gallery.findIndex(g => g.id === id);
+      if (dir === 'up' && idx > 0) [gallery[idx - 1], gallery[idx]] = [gallery[idx], gallery[idx - 1]];
+      else if (dir === 'down' && idx < gallery.length - 1) [gallery[idx], gallery[idx + 1]] = [gallery[idx + 1], gallery[idx]];
+      else return;
+      await Promise.all(gallery.map((img, i) =>
+        API('saveGalleryImage', { id: img.id, sectionKey: 'restaurant', imageUrl: img.imageUrl, altText: img.altText || '', caption: img.caption || '', sortOrder: i, isActive: img.isActive !== false })
+      ));
+      await loadGallery();
+    };
+
+    window['editPhoto'] = (id) => {
+      const img = gallery.find(g => g.id === id);
+      if (!img) return;
+      document.getElementById('photo-id').value = img.id;
+      document.getElementById('photo-url').value = img.imageUrl;
+      document.getElementById('photo-caption').value = img.caption || '';
+      document.getElementById('photo-alt').value = img.altText || '';
+      const wrap = document.getElementById('photo-preview-wrap');
+      document.getElementById('photo-preview-img').src = img.imageUrl;
+      wrap.classList.remove('hidden');
+      openPhotoDrawer();
+    };
+
+    window['deletePhoto'] = async (id) => {
+      if (!confirm('Supprimer cette photo de la galerie ?')) return;
+      await API('deleteGalleryImage', { id });
+      loadGallery();
+    };
+
+    function openPhotoDrawer() { document.getElementById('photo-drawer')?.classList.remove('hidden'); }
+    function closePhotoDrawer() { document.getElementById('photo-drawer')?.classList.add('hidden'); }
+
+    document.getElementById('btn-add-photo')?.addEventListener('click', () => {
+      document.getElementById('photo-id').value = '';
+      document.getElementById('photo-url').value = '';
+      document.getElementById('photo-caption').value = '';
+      document.getElementById('photo-alt').value = '';
+      document.getElementById('photo-preview-wrap')?.classList.add('hidden');
+      openPhotoDrawer();
+    });
+    document.getElementById('btn-close-photo')?.addEventListener('click', closePhotoDrawer);
+    document.getElementById('btn-cancel-photo')?.addEventListener('click', closePhotoDrawer);
+    document.getElementById('photo-backdrop')?.addEventListener('click', closePhotoDrawer);
+
+    document.getElementById('photo-url')?.addEventListener('input', e => {
+      const url = e.target.value.trim();
+      const wrap = document.getElementById('photo-preview-wrap');
+      const img = document.getElementById('photo-preview-img');
+      if (url) { img.src = url; wrap.classList.remove('hidden'); }
+      else wrap.classList.add('hidden');
+    });
+
+    document.getElementById('photo-form')?.addEventListener('submit', async e => {
+      e.preventDefault();
+      const id = document.getElementById('photo-id').value || undefined;
+      const imageUrl = document.getElementById('photo-url').value.trim();
+      if (!imageUrl) return;
+      const existingSortOrder = id ? (gallery.find(g => g.id === id)?.sortOrder ?? gallery.length) : gallery.length;
+      await API('saveGalleryImage', { id, sectionKey: 'restaurant', imageUrl, altText: document.getElementById('photo-alt').value.trim(), caption: document.getElementById('photo-caption').value.trim(), sortOrder: existingSortOrder, isActive: true });
+      closePhotoDrawer();
+      loadGallery();
+    });
+
+    // ──────────────────────────────────────────────
+    // PRICING
+    // ──────────────────────────────────────────────
+    let pricingItems = [];
+    let pricingLoaded = false;
+
+    async function loadPricing() {
+      const r = await API('listRestaurantPricingItems', {});
+      pricingItems = r.data ?? r ?? [];
+      pricingLoaded = true;
+      renderPricing();
+    }
+
+    function renderPricing() {
+      const tbody = document.getElementById('pricing-table-body');
+      const empty = document.getElementById('pricing-empty');
+      if (!pricingItems.length) {
+        tbody.innerHTML = '';
+        document.querySelector('#tab-pricing > .rounded-xl')?.classList.add('hidden');
+        empty.classList.remove('hidden');
+        return;
+      }
+      document.querySelector('#tab-pricing > .rounded-xl')?.classList.remove('hidden');
+      empty.classList.add('hidden');
+      tbody.innerHTML = pricingItems.map((item, idx) => {
+        const nameFr = (item.translations || []).find(t => t.locale === 'fr')?.name || '—';
+        const price = item.price != null ? `${parseFloat(item.price).toFixed(2)} €` : '—';
+        return `
+          <tr class="border-b border-border hover:bg-muted/30 transition-colors">
+            <td class="px-4 py-3 text-muted-foreground text-sm">${idx + 1}</td>
+            <td class="px-4 py-3">
+              <p class="font-medium">${escapeHtml(nameFr)}</p>
+              <p class="text-xs text-muted-foreground font-mono">${escapeHtml(item.slug)}</p>
+            </td>
+            <td class="px-4 py-3 text-sm font-medium">${price}</td>
+            <td class="px-4 py-3">
+              ${item.isActive
+                ? '<span class="inline-flex rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5 text-xs font-medium">Visible</span>'
+                : '<span class="inline-flex rounded-full bg-muted text-muted-foreground px-2 py-0.5 text-xs font-medium">Masqué</span>'}
+            </td>
+            <td class="px-4 py-3 text-right">
+              <button onclick="editPrice('${escapeHtml(item.id)}')" class="inline-flex items-center gap-1 rounded px-2 py-1 text-xs font-medium hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
+                <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                Modifier
+              </button>
+              <button onclick="deletePrice('${escapeHtml(item.id)}')" class="inline-flex items-center gap-1 rounded px-2 py-1 text-xs font-medium hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+                <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                Supprimer
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openPriceDrawer() { document.getElementById('price-drawer')?.classList.remove('hidden'); }
+    function closePriceDrawer() { document.getElementById('price-drawer')?.classList.add('hidden'); }
+
+    document.getElementById('btn-add-price')?.addEventListener('click', () => {
+      document.getElementById('price-drawer-title').textContent = 'Ajouter un tarif';
+      document.getElementById('price-id').value = '';
+      document.getElementById('price-slug').value = '';
+      document.getElementById('price-amount').value = '';
+      document.getElementById('price-active').checked = true;
+      document.getElementById('price-sort').value = String(pricingItems.length);
+      locales.forEach(loc => {
+        const el = document.getElementById(`price-name-${loc}`);
+        const desc = document.getElementById(`price-desc-${loc}`);
+        if (el) el.value = '';
+        if (desc) desc.value = '';
+      });
+      // Reset locale tabs to FR
+      activatePriceLocale('fr');
+      openPriceDrawer();
+    });
+
+    document.getElementById('btn-close-price')?.addEventListener('click', closePriceDrawer);
+    document.getElementById('btn-cancel-price')?.addEventListener('click', closePriceDrawer);
+    document.getElementById('price-backdrop')?.addEventListener('click', closePriceDrawer);
+
+    // Price locale tabs
+    function activatePriceLocale(loc) {
+      document.querySelectorAll('[data-price-locale]').forEach(btn => {
+        const active = btn.dataset.priceLocale === loc;
+        btn.classList.toggle('border-primary', active);
+        btn.classList.toggle('text-primary', active);
+        btn.classList.toggle('border-transparent', !active);
+        btn.classList.toggle('text-muted-foreground', !active);
+      });
+      locales.forEach(l => {
+        document.getElementById(`price-trans-${l}`)?.classList.toggle('hidden', l !== loc);
+      });
+    }
+    document.querySelectorAll('[data-price-locale]').forEach(btn => btn.addEventListener('click', () => activatePriceLocale(btn.dataset.priceLocale)));
+
+    window['editPrice'] = (id) => {
+      const item = pricingItems.find(p => p.id === id);
+      if (!item) return;
+      document.getElementById('price-drawer-title').textContent = 'Modifier un tarif';
+      document.getElementById('price-id').value = item.id;
+      document.getElementById('price-slug').value = item.slug;
+      document.getElementById('price-amount').value = item.price != null ? parseFloat(item.price).toFixed(2) : '';
+      document.getElementById('price-active').checked = item.isActive;
+      document.getElementById('price-sort').value = String(item.sortOrder ?? 0);
+      locales.forEach(loc => {
+        const trans = (item.translations || []).find(t => t.locale === loc);
+        const nameEl = document.getElementById(`price-name-${loc}`);
+        const descEl = document.getElementById(`price-desc-${loc}`);
+        if (nameEl) nameEl.value = trans?.name || '';
+        if (descEl) descEl.value = trans?.description || '';
+      });
+      activatePriceLocale('fr');
+      openPriceDrawer();
+    };
+
+    window['deletePrice'] = async (id) => {
+      if (!confirm('Supprimer ce tarif définitivement ?')) return;
+      await API('deleteRestaurantPricingItem', { id });
+      loadPricing();
+    };
+
+    document.getElementById('price-form')?.addEventListener('submit', async e => {
+      e.preventDefault();
+      const nameFr = document.getElementById('price-name-fr').value.trim();
+      if (!nameFr) { showToast('Le nom en français est obligatoire.', 'error'); activatePriceLocale('fr'); return; }
+      const slug = document.getElementById('price-slug').value.trim();
+      if (!slug) { showToast('L\'identifiant est obligatoire.', 'error'); return; }
+
+      const translations = locales
+        .map(loc => {
+          const name = document.getElementById(`price-name-${loc}`)?.value.trim() || '';
+          const description = document.getElementById(`price-desc-${loc}`)?.value.trim() || '';
+          return name ? { locale: loc, name, description } : null;
+        })
+        .filter(Boolean);
+
+      const payload = {
+        id: document.getElementById('price-id').value || undefined,
+        slug,
+        price: document.getElementById('price-amount').value || null,
+        isActive: document.getElementById('price-active').checked,
+        sortOrder: parseInt(document.getElementById('price-sort').value || '0', 10),
+        translations,
+      };
+
+      await API('saveRestaurantPricingItem', payload);
+      closePriceDrawer();
+      loadPricing();
+      showToast('Tarif enregistré ✓', 'success');
+    });
+
+    // ──────────────────────────────────────────────
+    // MEDIA PICKER
+    // ──────────────────────────────────────────────
+    let mediaItems = [];
+    document.getElementById('btn-pick-media')?.addEventListener('click', async () => {
+      if (!mediaItems.length) {
+        const r = await API('listMedia', { page: 1, limit: 200 });
+        const p = r.data ?? r;
+        mediaItems = p.items ?? [];
+      }
+      renderMediaPicker();
+      document.getElementById('media-dialog')?.classList.remove('hidden');
+    });
+
+    function renderMediaPicker() {
+      const grid = document.getElementById('media-picker-grid');
+      const images = mediaItems.filter(m => (m.fileType || '').startsWith('image/'));
+      if (!images.length) {
+        grid.innerHTML = '<p class="col-span-full text-sm text-muted-foreground text-center py-8">Aucune image dans la médiathèque.<br>Allez dans <a href="/admin/media" class="text-primary underline">Médias</a> pour en uploader.</p>';
+        return;
+      }
+      grid.innerHTML = images.map(m => `
+        <button type="button" data-url="${escapeHtml(m.fileUrl)}" data-alt="${escapeHtml(m.altText || m.originalFilename || '')}"
+          class="border border-border rounded-lg overflow-hidden hover:border-primary hover:shadow-md transition-all text-left">
+          <div class="aspect-square bg-muted overflow-hidden">
+            <img src="${escapeHtml(m.fileUrl)}" alt="" class="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div class="p-1.5 text-[11px] truncate text-muted-foreground">${escapeHtml(m.originalFilename || m.fileUrl)}</div>
+        </button>
+      `).join('');
+      grid.querySelectorAll('[data-url]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.getElementById('photo-url').value = btn.dataset.url;
+          document.getElementById('photo-url').dispatchEvent(new Event('input'));
+          if (!document.getElementById('photo-alt').value) document.getElementById('photo-alt').value = btn.dataset.alt || '';
+          document.getElementById('media-dialog')?.classList.add('hidden');
+        });
+      });
+    }
+    document.querySelectorAll('[data-close-media]').forEach(el => el.addEventListener('click', () => document.getElementById('media-dialog')?.classList.add('hidden')));
+
+    // Init
+    loadContent();
+  </script>
+</AdminLayout>

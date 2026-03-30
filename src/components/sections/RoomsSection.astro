@@ -3,14 +3,11 @@ import { t } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/starwind/carousel';
 import { Icon } from 'astro-icon/components';
-import { Image } from 'astro:assets';
-import roomImage from '@/assets/room-suite.jpg';
-import summerImage from '@/assets/season-summer.jpg';
-import winterImage from '@/assets/season-winter.jpg';
 import { db } from '@/db';
-import { rooms as roomsTable, roomTranslations, roomExtras as roomExtrasTable, roomExtraTranslations } from '@/db/schema';
-import { eq, asc } from 'drizzle-orm';
+import { rooms as roomsTable, roomTranslations, roomExtras as roomExtrasTable, roomExtraTranslations, galleryImages } from '@/db/schema';
+import { eq, asc, and } from 'drizzle-orm';
 import { cms } from '@/lib/settings';
+import { DEFAULT_HOTEL_GALLERY } from '@/lib/default-media';
 
 interface Props {
   lang: Locale;
@@ -24,14 +21,18 @@ interface ExtraDisplay { label: string }
 
 let roomsData: RoomDisplay[] = [];
 let extrasData: ExtraDisplay[] = [];
+let carouselImages: Array<{ src: string; alt: string }> = [];
 let useFallback = false;
 
 try {
-  const [dbRooms, dbRoomTrans, dbExtras, dbExtraTrans] = await Promise.all([
+  const [dbRooms, dbRoomTrans, dbExtras, dbExtraTrans, dbGallery] = await Promise.all([
     db.select().from(roomsTable).where(eq(roomsTable.isActive, true)).orderBy(asc(roomsTable.sortOrder)),
     db.select().from(roomTranslations).where(eq(roomTranslations.locale, lang)),
     db.select().from(roomExtrasTable).where(eq(roomExtrasTable.isActive, true)).orderBy(asc(roomExtrasTable.sortOrder)),
     db.select().from(roomExtraTranslations).where(eq(roomExtraTranslations.locale, lang)),
+    db.select().from(galleryImages)
+      .where(and(eq(galleryImages.sectionKey, 'hotel'), eq(galleryImages.isActive, true)))
+      .orderBy(asc(galleryImages.sortOrder)),
   ]);
 
   if (dbRooms.length > 0) {
@@ -47,6 +48,13 @@ try {
     }));
   } else {
     useFallback = true;
+  }
+
+  if (dbGallery.length > 0) {
+    carouselImages = dbGallery.map((img) => ({
+      src: img.imageUrl,
+      alt: img.altText || img.caption || '',
+    }));
   }
 } catch {
   useFallback = true;
@@ -76,11 +84,9 @@ const [hotelTitle, hotelSubtitle, hotelDescription, hotelDescription2, hotelGrou
   cms('hotel', 'extrasTitle', lang, 'hotel.extras.title'),
 ]);
 
-const carouselImages = [
-  { src: roomImage, alt: hotelTitle },
-  { src: summerImage, alt: hotelTitle },
-  { src: winterImage, alt: hotelTitle },
-];
+if (carouselImages.length === 0) {
+  carouselImages = DEFAULT_HOTEL_GALLERY.map((src) => ({ src, alt: hotelTitle }));
+}
 ---
 
 <section id="rooms" class="relative overflow-hidden section-padding bg-background">
@@ -108,12 +114,11 @@ const carouselImages = [
             {carouselImages.map((img) => (
               <CarouselItem>
                 <div class="relative w-full aspect-3/4 overflow-hidden rounded-xl shadow-large">
-                  <Image
+                  <img
                     src={img.src}
-                    alt={img.alt}
+                    alt={img.alt || hotelTitle}
+                    loading="lazy"
                     class="w-full h-full object-cover hover:scale-105 transition-transform duration-700 ease-out"
-                    widths={[400, 640, 800]}
-                    sizes="(max-width: 1024px) 100vw, 50vw"
                   />
                 </div>
               </CarouselItem>

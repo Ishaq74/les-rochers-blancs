@@ -1,0 +1,323 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import { t, LOCALES } from '@/lib/i18n';
+export const prerender = false;
+const lang = 'fr';
+const i18n = {
+  title: t('formations.title', lang),
+  subtitle: t('formations.subtitle', lang),
+  new: t('formations.new', lang),
+  edit: t('common.edit', lang),
+  delete: t('common.delete', lang),
+  active: t('common.active', lang),
+  inactive: t('common.inactive', lang),
+  newTitle: t('formations.newTitle', lang),
+  editTitle: t('formations.editTitle', lang),
+  confirmDelete: t('formations.confirmDelete', lang),
+  noItems: t('formations.noItems', lang),
+  save: t('common.save', lang),
+  cancel: t('common.cancel', lang),
+  translations: t('common.translations', lang),
+  searchPlaceholder: t('common.searchPlaceholder', lang),
+  sortNameAsc: t('common.sortNameAsc', lang),
+  sortNameDesc: t('common.sortNameDesc', lang),
+  results: t('common.results', lang),
+  toastCreated: t('formations.toast.created', lang),
+  toastUpdated: t('formations.toast.updated', lang),
+  toastDeleted: t('formations.toast.deleted', lang),
+  toastErrorSave: t('formations.toast.errorSave', lang),
+  toastErrorDelete: t('formations.toast.errorDelete', lang),
+};
+---
+
+<AdminLayout title={t('formations.title', lang)} activeNav="formations" lang={lang}>
+  <div class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">{t('formations.title', lang)}</h1>
+        <p class="text-muted-foreground">{t('formations.subtitle', lang)}</p>
+      </div>
+      <button id="btn-add" type="button" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
+        + {t('formations.new', lang)}
+      </button>
+    </div>
+
+    <!-- Search + Sort toolbar -->
+    <div class="flex flex-col sm:flex-row gap-3">
+      <div class="relative flex-1">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="search-input" type="search" placeholder={t('common.searchPlaceholder', lang)} class="flex h-9 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm placeholder:text-muted-foreground" />
+      </div>
+      <select id="sort-select" class="flex h-9 rounded-md border border-input bg-background px-3 text-sm">
+        <option value="name:asc">{t('common.sortNameAsc', lang)}</option>
+        <option value="name:desc">{t('common.sortNameDesc', lang)}</option>
+        <option value="sortOrder:asc">{t('common.sortBy', lang)} — Ordre ↑</option>
+        <option value="price:asc">Prix ↑</option>
+        <option value="price:desc">Prix ↓</option>
+      </select>
+    </div>
+
+    <!-- Count -->
+    <p id="count-label" class="text-sm text-muted-foreground"></p>
+
+    <!-- Table -->
+    <div class="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="border-b border-border bg-muted/50">
+          <tr>
+            <th class="px-4 py-3 text-left font-medium">{t('formations.table.name', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.slug', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('formations.table.duration', lang)}</th>
+            <th class="px-4 py-3 text-right font-medium">{t('formations.table.price', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.sortOrder', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.status', lang)}</th>
+            <th class="px-4 py-3 text-left font-medium">{t('common.actions', lang)}</th>
+          </tr>
+        </thead>
+        <tbody id="data-tbody"></tbody>
+      </table>
+      <p id="data-empty" class="hidden p-8 text-center text-muted-foreground">{t('formations.noItems', lang)}</p>
+    </div>
+  </div>
+
+  <!-- Drawer Dialog -->
+  <div id="edit-dialog" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50" data-close></div>
+    <div class="fixed inset-y-0 right-0 w-full max-w-lg overflow-y-auto bg-card border-l border-border shadow-xl p-6 space-y-4">
+      <h2 id="dialog-title" class="text-lg font-semibold">{t('formations.newTitle', lang)}</h2>
+      <form id="edit-form" class="space-y-4">
+        <input type="hidden" name="id" />
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1">
+            <label class="text-sm font-medium">{t('formations.form.slug', lang)} *</label>
+            <input name="slug" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+          </div>
+          <div class="space-y-1">
+            <label class="text-sm font-medium">{t('common.sortOrder', lang)}</label>
+            <input name="sortOrder" type="number" value="0" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+          </div>
+          <div class="space-y-1">
+            <label class="text-sm font-medium">{t('formations.form.duration', lang)}</label>
+            <input name="duration" placeholder={t('formations.form.durationPlaceholder', lang)} class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+          </div>
+          <div class="space-y-1">
+            <label class="text-sm font-medium">{t('formations.form.price', lang)}</label>
+            <input name="price" type="number" step="0.01" min="0" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+          </div>
+          <div class="space-y-1 col-span-2">
+            <label class="text-sm font-medium">{t('formations.form.imageUrl', lang)}</label>
+            <input name="imageUrl" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input type="checkbox" name="isActive" id="form-active" checked class="rounded border-input" />
+          <label for="form-active" class="text-sm">{t('common.active', lang)}</label>
+        </div>
+
+        <!-- Locale tabs -->
+        <div>
+          <p class="text-sm font-medium mb-2">{t('common.translations', lang)}</p>
+          <div class="flex gap-1 border-b border-border" id="form-locale-tabs">
+            {LOCALES.map((loc, i) => (
+              <button type="button" data-locale={loc} class:list={['px-3 py-1.5 text-sm font-medium border-b-2 transition-colors', i === 0 ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground']}>{loc.toUpperCase()}</button>
+            ))}
+          </div>
+          {LOCALES.map((loc, i) => (
+            <div data-locale-panel={loc} class:list={['space-y-3 pt-3', i !== 0 && 'hidden']}>
+              <div class="space-y-1">
+                <label class="text-sm font-medium">{t('common.name', lang)} ({loc.toUpperCase()}) *</label>
+                <input name={`trans_${loc}_name`} required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+              </div>
+              <div class="space-y-1">
+                <label class="text-sm font-medium">{t('common.description', lang)} ({loc.toUpperCase()})</label>
+                <textarea name={`trans_${loc}_description`} rows="3" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"></textarea>
+              </div>
+              <div class="space-y-1">
+                <label class="text-sm font-medium">Objectifs ({loc.toUpperCase()})</label>
+                <textarea name={`trans_${loc}_objectives`} rows="3" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"></textarea>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="submit" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('common.save', lang)}</button>
+          <button type="button" data-close class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">{t('common.cancel', lang)}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ locales: LOCALES, i18n }}>
+    const API = (action, body) => fetch(`/_actions/${action}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(r => r.json());
+
+    function setupLocaleTabs(tabsId) {
+      const tabs = document.getElementById(tabsId);
+      if (!tabs) return;
+      tabs.querySelectorAll('button[data-locale]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const loc = btn.dataset.locale;
+          const form = tabs.closest('form') || tabs.parentElement;
+          tabs.querySelectorAll('button[data-locale]').forEach(b => {
+            b.classList.toggle('border-primary', b.dataset.locale === loc);
+            b.classList.toggle('text-primary', b.dataset.locale === loc);
+            b.classList.toggle('border-transparent', b.dataset.locale !== loc);
+            b.classList.toggle('text-muted-foreground', b.dataset.locale !== loc);
+          });
+          form.querySelectorAll('[data-locale-panel]').forEach(p => {
+            p.classList.toggle('hidden', p.dataset.localePanel !== loc);
+          });
+        });
+      });
+    }
+    setupLocaleTabs('form-locale-tabs');
+
+    function openD() { document.getElementById('edit-dialog')?.classList.remove('hidden'); }
+    function closeD() { document.getElementById('edit-dialog')?.classList.add('hidden'); }
+    document.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', closeD));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeD(); });
+
+    let allData = [];
+    let filtered = [];
+
+    async function load() {
+      const r = await API('listFormations', {});
+      allData = r.data ?? r ?? [];
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const q = document.getElementById('search-input')?.value.trim().toLowerCase() || '';
+      let arr = allData.slice();
+      if (q) {
+        arr = arr.filter(f => {
+          const frName = f.translations?.find(t => t.locale === 'fr')?.name?.toLowerCase() || '';
+          return frName.includes(q) || f.slug?.toLowerCase().includes(q);
+        });
+      }
+      const sortVal = document.getElementById('sort-select')?.value || 'name:asc';
+      const [sortKey, sortDir] = sortVal.split(':');
+      if (sortKey === 'name') {
+        arr.sort((a, b) => {
+          const va = (a.translations?.find(t => t.locale === 'fr')?.name || '').toLowerCase();
+          const vb = (b.translations?.find(t => t.locale === 'fr')?.name || '').toLowerCase();
+          return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+        });
+      } else if (sortKey === 'price') {
+        arr.sort((a, b) => {
+          const va = parseFloat(a.price || '0');
+          const vb = parseFloat(b.price || '0');
+          return sortDir === 'asc' ? va - vb : vb - va;
+        });
+      } else {
+        arr = AdminKit.sortArray(arr, sortKey, sortDir);
+      }
+      filtered = arr;
+      render();
+    }
+
+    function render() {
+      const tbody = document.getElementById('data-tbody');
+      const empty = document.getElementById('data-empty');
+      const countLabel = document.getElementById('count-label');
+      if (!filtered.length) {
+        tbody.innerHTML = '';
+        empty.classList.remove('hidden');
+        if (countLabel) countLabel.textContent = '';
+        return;
+      }
+      empty.classList.add('hidden');
+      if (countLabel) countLabel.textContent = filtered.length + ' ' + i18n.results;
+      tbody.innerHTML = filtered.map(f => {
+        const frName = f.translations?.find(t => t.locale === 'fr')?.name || '—';
+        return `<tr class="border-b border-border hover:bg-muted/50 transition-colors">
+          <td class="px-4 py-3 font-medium">${escapeHtml(frName)}</td>
+          <td class="px-4 py-3 text-muted-foreground text-xs font-mono">${escapeHtml(f.slug)}</td>
+          <td class="px-4 py-3 text-muted-foreground">${escapeHtml(f.duration || '—')}</td>
+          <td class="px-4 py-3 text-right tabular-nums">${f.price ? escapeHtml(String(f.price)) + ' €' : '—'}</td>
+          <td class="px-4 py-3 tabular-nums">${escapeHtml(String(f.sortOrder ?? 0))}</td>
+          <td class="px-4 py-3">${AdminKit.activeBadge(f.isActive, { active: i18n.active, inactive: i18n.inactive })}</td>
+          <td class="px-4 py-3 space-x-2">
+            <button onclick="editItem('${escapeHtml(f.id)}')" class="text-xs text-primary hover:underline">${i18n.edit}</button>
+            <button onclick="delItem('${escapeHtml(f.id)}')" class="text-xs text-destructive hover:underline">${i18n.delete}</button>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    AdminKit.initSearch(document.getElementById('search-input'), () => applyFilters(), 250);
+    AdminKit.initSort(document.getElementById('sort-select'), () => applyFilters());
+
+    document.getElementById('btn-add')?.addEventListener('click', () => {
+      const f = document.getElementById('edit-form');
+      f.reset();
+      f.querySelector('[name=id]').value = '';
+      f.querySelector('[name=sortOrder]').value = '0';
+      f.querySelector('[name=isActive]').checked = true;
+      document.getElementById('dialog-title').textContent = i18n.newTitle;
+      openD();
+    });
+
+    window.editItem = function(id) {
+      const item = allData.find(x => x.id === id);
+      if (!item) return;
+      const f = document.getElementById('edit-form');
+      f.querySelector('[name=id]').value = item.id;
+      f.slug.value = item.slug;
+      f.duration.value = item.duration || '';
+      f.price.value = item.price || '';
+      f.imageUrl.value = item.imageUrl || '';
+      f.sortOrder.value = item.sortOrder ?? 0;
+      f.querySelector('[name=isActive]').checked = item.isActive;
+      locales.forEach(loc => {
+        const tr = item.translations?.find(t => t.locale === loc) || {};
+        f.querySelector(`[name=trans_${loc}_name]`).value = tr.name || '';
+        const descEl = f.querySelector(`[name=trans_${loc}_description]`);
+        if (descEl) descEl.value = tr.description || '';
+        const objEl = f.querySelector(`[name=trans_${loc}_objectives]`);
+        if (objEl) objEl.value = tr.objectives || '';
+      });
+      document.getElementById('dialog-title').textContent = i18n.editTitle;
+      openD();
+    };
+
+    document.getElementById('edit-form')?.addEventListener('submit', async e => {
+      e.preventDefault();
+      const f = e.target;
+      const id = f.querySelector('[name=id]').value || undefined;
+      const translations = locales.map(loc => ({
+        locale: loc,
+        name: f.querySelector(`[name=trans_${loc}_name]`).value,
+        description: f.querySelector(`[name=trans_${loc}_description]`)?.value || '',
+        objectives: f.querySelector(`[name=trans_${loc}_objectives]`)?.value || '',
+      }));
+      const res = await API('saveFormation', {
+        id,
+        slug: f.slug.value,
+        imageUrl: f.imageUrl.value || undefined,
+        duration: f.duration.value || undefined,
+        price: f.price.value ? parseFloat(f.price.value).toFixed(2) : undefined,
+        isActive: f.querySelector('[name=isActive]').checked,
+        sortOrder: parseInt(f.sortOrder.value) || 0,
+        translations,
+      });
+      if (res.error) { showToast(i18n.toastErrorSave, 'destructive'); return; }
+      showToast(id ? i18n.toastUpdated : i18n.toastCreated, 'success');
+      closeD();
+      load();
+    });
+
+    window.delItem = async function(id) {
+      if (!confirm(i18n.confirmDelete)) return;
+      const res = await API('deleteFormation', { id });
+      if (res.error) { showToast(i18n.toastErrorDelete, 'destructive'); return; }
+      showToast(i18n.toastDeleted, 'default');
+      load();
+    };
+
+    load();
+  </script>
+</AdminLayout>

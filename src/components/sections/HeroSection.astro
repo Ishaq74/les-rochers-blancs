@@ -20,7 +20,7 @@ const [location, heroTitle, subtitle, tagline, cta] = await Promise.all([
 ]);
 ---
 
-<section id="hero" class="relative h-screen min-h-[700px] flex items-center justify-center overflow-hidden">
+<section id="hero" class="relative h-screen min-h-175 flex items-center justify-center overflow-hidden">
   <!-- Background Video -->
   <div class="absolute inset-0">
     <video
@@ -51,9 +51,9 @@ const [location, heroTitle, subtitle, tagline, cta] = await Promise.all([
 
       <!-- Ornamental divider under title -->
       <div class="flex items-center justify-center gap-3 mb-4 animate-fade-up" style="animation-delay: 0.5s;">
-        <span class="block w-12 h-px bg-gradient-to-r from-transparent to-gold/80"></span>
+        <span class="block w-12 h-px bg-linear-to-r from-transparent to-gold/80"></span>
         <span class="block w-2 h-2 rotate-45 bg-gold"></span>
-        <span class="block w-12 h-px bg-gradient-to-l from-transparent to-gold/80"></span>
+        <span class="block w-12 h-px bg-linear-to-l from-transparent to-gold/80"></span>
       </div>
 
       <p class="type-heading text-snow/90 mb-2 animate-fade-up" style="animation-delay: 0.6s; font-size: clamp(1.25rem, 2.5vw, 1.75rem);">

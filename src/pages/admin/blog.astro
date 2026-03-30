@@ -50,6 +50,13 @@ const i18n = {
       <button data-pub="false" class="rounded-full px-3 py-1 text-xs font-medium border border-input hover:bg-muted">{t('blog.filterDraft', lang)}</button>
     </div>
 
+    <div class="flex flex-col sm:flex-row gap-3">
+      <div class="relative flex-1">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="blog-search" type="search" placeholder={t('common.searchPlaceholder', lang)} class="flex h-9 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm placeholder:text-muted-foreground" />
+      </div>
+    </div>
+
     <div class="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
       <table class="w-full text-sm">
         <thead class="border-b border-border bg-muted/50">
@@ -166,7 +173,9 @@ const i18n = {
       });
     });
 
-    let currentPage=1,publishedOnly=null;
+    let currentPage=1,publishedOnly=null,searchTerm='';
+    AdminKit.initSearch(document.getElementById('blog-search'), (v) => { searchTerm = v; currentPage = 1; load(); }, 350);
+    document.getElementById('blog-search')?.addEventListener('search', () => { searchTerm = ''; currentPage = 1; load(); });
     let result={items:[],total:0,totalPages:0};
     let mediaItems=[];
     let mediaTarget='';
@@ -256,6 +265,7 @@ const i18n = {
     async function load(){
       const p={page:currentPage,limit:20};
       if(publishedOnly!==null)p.publishedOnly=publishedOnly;
+      if(searchTerm)p.search=searchTerm;
       const r=await API('listBlogPosts',p);result=r.data??r;render();
     }
     function render(){

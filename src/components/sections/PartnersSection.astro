@@ -5,14 +5,7 @@ import { db } from '@/db';
 import { partners as partnersTable } from '@/db/schema';
 import { eq, asc } from 'drizzle-orm';
 import { cms } from '@/lib/settings';
-
-// Static fallback imports
-import alpesBivouac from '@/assets/partners/alpes_bivouac.webp';
-import amtOrganisation from '@/assets/partners/amt-organisation.webp';
-import annecyAventure from '@/assets/partners/annecy_aventure.webp';
-import annecyTakamaka from '@/assets/partners/Annecy_Takamaka.webp';
-import queFaireAnnecy from '@/assets/partners/que-faire-a-annecy.webp';
-import semnoz from '@/assets/partners/Semnoz.webp';
+import { DEFAULT_PARTNER_LOGOS, normalizeSlug } from '@/lib/default-media';
 
 interface Props {
   lang: Locale;
@@ -21,31 +14,13 @@ interface Props {
 const { lang } = Astro.props;
 
 const fallbackPartners = [
-  { name: 'Alpes Bivouac', logoUrl: alpesBivouac.src, websiteUrl: null },
-  { name: 'AMT Organisation', logoUrl: amtOrganisation.src, websiteUrl: null },
-  { name: 'Annecy Aventure', logoUrl: annecyAventure.src, websiteUrl: null },
-  { name: 'Annecy Takamaka', logoUrl: annecyTakamaka.src, websiteUrl: null },
-  { name: 'Que Faire a Annecy', logoUrl: queFaireAnnecy.src, websiteUrl: null },
-  { name: 'Semnoz', logoUrl: semnoz.src, websiteUrl: null },
+  { name: 'Alpes Bivouac', logoUrl: DEFAULT_PARTNER_LOGOS['alpes-bivouac'], websiteUrl: null },
+  { name: 'AMT Organisation', logoUrl: DEFAULT_PARTNER_LOGOS['amt-organisation'], websiteUrl: null },
+  { name: 'Annecy Aventure', logoUrl: DEFAULT_PARTNER_LOGOS['annecy-aventure'], websiteUrl: null },
+  { name: 'Annecy Takamaka', logoUrl: DEFAULT_PARTNER_LOGOS['annecy-takamaka'], websiteUrl: null },
+  { name: 'Que Faire a Annecy', logoUrl: DEFAULT_PARTNER_LOGOS['que-faire-a-annecy'], websiteUrl: null },
+  { name: 'Semnoz', logoUrl: DEFAULT_PARTNER_LOGOS.semnoz, websiteUrl: null },
 ];
-
-const fallbackLogosBySlug: Record<string, string> = {
-  'alpes-bivouac': alpesBivouac.src,
-  'amt-organisation': amtOrganisation.src,
-  'annecy-aventure': annecyAventure.src,
-  'annecy-takamaka': annecyTakamaka.src,
-  'que-faire-a-annecy': queFaireAnnecy.src,
-  'semnoz': semnoz.src,
-};
-
-function normalizeSlug(value: string): string {
-  return value
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
 
 let partners: { name: string; logoUrl: string | null; websiteUrl: string | null }[] = [];
 try {
@@ -57,7 +32,7 @@ try {
         const normalized = normalizeSlug(row.slug || row.name || '');
         return {
           ...row,
-          logoUrl: row.logoUrl || fallbackLogosBySlug[normalized] || null,
+          logoUrl: row.logoUrl || DEFAULT_PARTNER_LOGOS[normalized] || null,
         };
       })
     : fallbackPartners;
@@ -91,7 +66,7 @@ const [partnersTitle, partnersDescription] = await Promise.all([
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-item">
       {partners.map((partner, i) => (
         <div
-          class="partner-logo card-elevated p-3 aspect-[3/2] animate-fade-up"
+          class="partner-logo card-elevated p-3 aspect-3/2 animate-fade-up"
           style={`animation-delay: ${i * 0.07}s;`}
         >
           {partner.websiteUrl ? (

@@ -604,3 +604,50 @@ export const pageSections = pgTable('page_sections', {
 }, (table) => [
   uniqueIndex('page_sections_slug_key').on(table.pageSlug, table.sectionKey),
 ]);
+
+// =====================================================
+// GALLERY IMAGES (hotel, restaurant, room carousels)
+// =====================================================
+export const galleryImages = pgTable('gallery_images', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  sectionKey: text('section_key').notNull(),
+  entityId: uuid('entity_id'),
+  imageUrl: text('image_url').notNull(),
+  altText: text('alt_text'),
+  caption: text('caption'),
+  sortOrder: integer('sort_order').notNull().default(0),
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  index('idx_gallery_section_entity').on(table.sectionKey, table.entityId),
+]);
+
+// =====================================================
+// RESTAURANT PRICING ITEMS
+// Replaces the CMS-key hack (pricing.dailySpecial, etc.)
+// with a proper relational table that carries a real price
+// column and full i18n support.
+// =====================================================
+
+export const restaurantPricingItems = pgTable('restaurant_pricing_items', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  slug: text('slug').notNull().unique(),
+  price: numeric('price', { precision: 10, scale: 2 }),
+  isActive: boolean('is_active').notNull().default(true),
+  sortOrder: integer('sort_order').notNull().default(0),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  index('idx_rest_pricing_slug').on(table.slug),
+]);
+
+export const restaurantPricingTranslations = pgTable('restaurant_pricing_translations', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  itemId: uuid('item_id').notNull().references(() => restaurantPricingItems.id, { onDelete: 'cascade' }),
+  locale: text('locale').notNull(),
+  name: text('name').notNull(),
+  description: text('description'),
+}, (table) => [
+  uniqueIndex('rest_pricing_trans_unique').on(table.itemId, table.locale),
+]);

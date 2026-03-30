@@ -282,7 +282,9 @@
       "media": "Media Library",
       "theme": "Theme",
       "settings": "Settings",
-      "dividerHotel": "Hotel",
+      "hotel": "The Hotel",
+      "restaurant": "The Restaurant",
+      "dividerHotel": "Hotel & Restaurant",
       "dividerCms": "CMS",
       "dividerBusiness": "Management",
       "dividerConfig": "Configuration"
@@ -331,7 +333,17 @@
     "label": "Label",
     "year": "Year",
     "published": "Published",
-    "draft": "Draft"
+    "draft": "Draft",
+    "searchPlaceholder": "Search…",
+    "sortBy": "Sort by",
+    "sortNewest": "Newest first",
+    "sortOldest": "Oldest first",
+    "sortNameAsc": "Name A-Z",
+    "sortNameDesc": "Name Z-A",
+    "sortAmountAsc": "Amount ↑",
+    "sortAmountDesc": "Amount ↓",
+    "nItems": "items",
+    "exportCsv": "Export CSV"
   },
   "rooms": {
     "title": "Rooms",
@@ -365,6 +377,15 @@
       "pricePerNight": "Price/night",
       "status": "Status",
       "actions": "Actions"
+    },
+    "types": {
+      "single": "Single",
+      "double": "Double",
+      "twin": "Twin",
+      "triple": "Triple",
+      "quad": "Quad",
+      "five": "Five-bed",
+      "suite": "Suite"
     },
     "toast": {
       "created": "Room created",
@@ -491,6 +512,7 @@
       "overdue": "Overdue",
       "cancelled": "Cancelled"
     },
+    "countSuffix": "invoice(s)",
     "toast": {
       "created": "Invoice created",
       "updated": "Invoice updated",
@@ -618,6 +640,9 @@
     "untitled": "(untitled)",
     "publishedLabel": "Published",
     "selectImage": "Select an image",
+    "preview": "Preview",
+    "editMode": "Edit",
+    "noMediaItems": "No media items.",
     "markdown": {
       "bold": "Bold",
       "italic": "Italic",
@@ -757,6 +782,8 @@
     "countSuffix": "file(s)",
     "uploading": "Uploading…",
     "siteAssets": "Site assets (read-only)",
+    "uploadHint": "Max 10 MB. JPEG, PNG, WebP, GIF, SVG, PDF.",
+    "staticCount": "image(s)",
     "form": {
       "file": "File",
       "alt": "Alt text",
@@ -804,6 +831,12 @@
       "tagline": "A haven of peace in the Alps",
       "primaryButton": "Primary Button",
       "accentButton": "Accent Button"
+    },
+    "types": {
+      "color": "Color",
+      "text": "Text",
+      "number": "Number",
+      "font": "Font"
     },
     "toast": {
       "saved": "Theme saved",

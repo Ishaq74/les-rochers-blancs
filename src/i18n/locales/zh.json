@@ -241,7 +241,9 @@
       "media": "媒体库",
       "theme": "主题",
       "settings": "设置",
-      "dividerHotel": "酒店",
+      "hotel": "酒店",
+      "restaurant": "餐厅",
+      "dividerHotel": "酒店与餐厅",
       "dividerCms": "CMS",
       "dividerBusiness": "管理",
       "dividerConfig": "配置"

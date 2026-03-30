@@ -18,10 +18,14 @@ const pageTitle = title ? `${title} — Admin` : 'Admin — Les Rochers Blancs';
 const navItems: Array<{ key: string; href?: string; icon?: string; type?: 'divider' }> = [
   { key: 'dashboard', href: '/admin', icon: 'layout-dashboard' },
   { key: 'divider-hotel', type: 'divider' },
+  { key: 'hotel', href: '/admin/hotel', icon: 'building-2' },
+  { key: 'restaurant', href: '/admin/restaurant', icon: 'chef-hat' },
   { key: 'rooms', href: '/admin/rooms', icon: 'bed' },
   { key: 'menu', href: '/admin/menus', icon: 'utensils' },
   { key: 'openings', href: '/admin/openings', icon: 'calendar' },
   { key: 'partners', href: '/admin/partners', icon: 'handshake' },
+  { key: 'services', href: '/admin/services', icon: 'sparkles' },
+  { key: 'formations', href: '/admin/formations', icon: 'graduation-cap' },
   { key: 'divider-cms', type: 'divider' },
   { key: 'pages', href: '/admin/cms', icon: 'file-stack' },
   { key: 'media', href: '/admin/media', icon: 'image' },
@@ -45,6 +49,10 @@ function navLabel(key: string): string {
     menu: 'adminLayout.nav.menu',
     openings: 'openings.sectionLabel',
     partners: 'partners.sectionLabel',
+    hotel: 'adminLayout.nav.hotel',
+    restaurant: 'adminLayout.nav.restaurant',
+    services: 'adminLayout.nav.services',
+    formations: 'adminLayout.nav.formations',
     reservations: 'reservations.title',
     clients: 'clients.title',
     invoices: 'invoices.title',
@@ -77,6 +85,10 @@ const svgIcons: Record<string, string> = {
   'mail': '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
   'pen-line': '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>',
   'message-circle': '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
+  'sparkles': '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>',
+  'building-2': '<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>',
+  'chef-hat': '<path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="M6 17h12"/>',
+  'graduation-cap': '<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>',
   'globe': '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
   'rows': '<rect x="3" y="3" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="17" width="18" height="4" rx="1"/>',
   'file-stack': '<path d="M16 2H6a2 2 0 0 0-2 2v12"/><path d="M10 6h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/>',
@@ -170,6 +182,56 @@ const svgIcons: Record<string, string> = {
     </script>
     <script is:inline>
       window.escapeHtml=function(value){return String(value??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');};
+    </script>
+    <script is:inline>
+      window.AdminKit={
+        debounce:function(fn,ms){var t;return function(){var a=arguments,c=this;clearTimeout(t);t=setTimeout(function(){fn.apply(c,a)},ms)}},
+        fmtDate:function(d,opts){if(!d)return'—';return new Date(d).toLocaleDateString('fr-FR',opts||{day:'2-digit',month:'short',year:'numeric'})},
+        fmtDateTime:function(d){if(!d)return'—';return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})},
+        statusBadge:function(s,colors,labels){return'<span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium '+(colors[s]||'')+'">'+(escapeHtml(labels[s]||s))+'</span>'},
+        activeBadge:function(active,labels){return'<span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium '+(active?'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400':'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400')+'">'+(active?escapeHtml(labels.active):escapeHtml(labels.inactive))+'</span>'},
+        pagination:function(el,o){
+          if(!el)return;
+          var p=o.page,tp=o.totalPages||1,t=o.total||0,suf=o.suffix||'',prev=o.prev||'Précédent',next=o.next||'Suivant';
+          el.innerHTML='<span>'+t+' '+escapeHtml(suf)+'</span><div class="flex items-center gap-2">'
+            +(p>1?'<button onclick="goPage('+(p-1)+')" class="inline-flex items-center rounded-md border border-input px-3 py-1.5 text-xs font-medium hover:bg-muted transition-colors">&larr; '+escapeHtml(prev)+'</button>':'')
+            +(tp>1?'<span class="text-xs tabular-nums">'+p+' / '+tp+'</span>':'')
+            +(tp>p?'<button onclick="goPage('+(p+1)+')" class="inline-flex items-center rounded-md border border-input px-3 py-1.5 text-xs font-medium hover:bg-muted transition-colors">'+escapeHtml(next)+' &rarr;</button>':'')
+            +'</div>';
+        },
+        initFilters:function(containerId,onFilter){
+          document.querySelectorAll('#'+containerId+' [data-filter]').forEach(function(btn){
+            btn.addEventListener('click',function(){
+              document.querySelectorAll('#'+containerId+' [data-filter]').forEach(function(b){b.classList.remove('bg-primary','text-primary-foreground');b.classList.add('border-input','text-muted-foreground','hover:bg-muted')});
+              btn.classList.add('bg-primary','text-primary-foreground');btn.classList.remove('border-input','text-muted-foreground','hover:bg-muted');
+              onFilter(btn.dataset.filter);
+            });
+          });
+        },
+        sortArray:function(arr,key,dir){
+          return arr.slice().sort(function(a,b){
+            var va=a[key],vb=b[key];
+            if(va==null)va='';if(vb==null)vb='';
+            if(typeof va==='string')va=va.toLowerCase();
+            if(typeof vb==='string')vb=vb.toLowerCase();
+            if(va<vb)return dir==='asc'?-1:1;
+            if(va>vb)return dir==='asc'?1:-1;
+            return 0;
+          });
+        },
+        initSort:function(selectEl,onSort){
+          if(!selectEl)return;
+          selectEl.addEventListener('change',function(){
+            var v=selectEl.value.split(':');
+            onSort(v[0],v[1]||'asc');
+          });
+        },
+        initSearch:function(inputEl,onSearch,ms){
+          if(!inputEl)return;
+          var debounced=AdminKit.debounce(function(val){onSearch(val)},ms||300);
+          inputEl.addEventListener('input',function(){debounced(inputEl.value)});
+        }
+      };
     </script>
   </head>
   <body class="bg-background text-foreground antialiased">

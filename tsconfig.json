@@ -12,8 +12,6 @@
     },
     "skipLibCheck": true,
     "strictNullChecks": false,
-    "jsx": "react-jsx",
-    "jsxImportSource": "react",
     "resolveJsonModule": true,
     "baseUrl": "."
   },

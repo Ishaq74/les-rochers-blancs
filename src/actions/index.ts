@@ -143,6 +143,148 @@ export const server = {
 
   // -------------------------------------------------
   // ROOMS
+
+    // -------------------------------------------------
+    // BULK CMS UPSERT — saves all fields for a section at once
+    // Used by the dedicated Hotel / Restaurant admin panels
+    // -------------------------------------------------
+    bulkUpsertCms: defineAction({
+      input: z.object({
+        sectionKey: z.string().min(1),
+        locale: localeField,
+        fields: z.array(z.object({
+          fieldKey: z.string().min(1),
+          content: z.string(),
+        })),
+      }),
+      handler: async (input, ctx) => {
+        adminGuard(ctx);
+        await Promise.all(
+          input.fields.map(f =>
+            db.insert(schema.cmsContent).values({
+              sectionKey: input.sectionKey,
+              locale: input.locale,
+              fieldKey: f.fieldKey,
+              content: f.content,
+            }).onConflictDoUpdate({
+              target: [schema.cmsContent.sectionKey, schema.cmsContent.locale, schema.cmsContent.fieldKey],
+              set: { content: f.content, updatedAt: new Date() },
+            })
+          )
+        );
+        return { success: true };
+      },
+    }),
+
+    // -------------------------------------------------
+    // GALLERY IMAGES
+    // -------------------------------------------------
+    listGallery: defineAction({
+      input: z.object({
+        sectionKey: z.string().min(1),
+        entityId: uuidField.optional(),
+      }),
+      handler: async (input, ctx) => {
+        adminGuard(ctx);
+        const conditions = input.entityId
+          ? and(eq(schema.galleryImages.sectionKey, input.sectionKey), eq(schema.galleryImages.entityId, input.entityId))
+          : eq(schema.galleryImages.sectionKey, input.sectionKey);
+        return db.select().from(schema.galleryImages).where(conditions).orderBy(asc(schema.galleryImages.sortOrder));
+      },
+    }),
+
+    saveGalleryImage: defineAction({
+      input: z.object({
+        id: uuidField.optional(),
+        sectionKey: z.string().min(1),
+        entityId: uuidField.optional(),
+        imageUrl: z.string().min(1),
+        altText: z.string().optional(),
+        caption: z.string().optional(),
+        sortOrder: z.number().int().default(0),
+        isActive: z.boolean().default(true),
+      }),
+      handler: async (input, ctx) => {
+        adminGuard(ctx);
+        const { id, ...data } = input;
+        if (id) {
+          await db.update(schema.galleryImages).set({ ...data, updatedAt: new Date() }).where(eq(schema.galleryImages.id, id));
+          return { id };
+        }
+        const [row] = await db.insert(schema.galleryImages).values(data).returning({ id: schema.galleryImages.id });
+        return row;
+      },
+    }),
+
+    deleteGalleryImage: defineAction({
+      input: z.object({ id: uuidField }),
+      handler: async (input, ctx) => {
+        adminGuard(ctx);
+        await db.delete(schema.galleryImages).where(eq(schema.galleryImages.id, input.id));
+        return { success: true };
+      },
+    }),
+
+    // -------------------------------------------------
+    // RESTAURANT PRICING ITEMS
+    // -------------------------------------------------
+    listRestaurantPricingItems: defineAction({
+      handler: async (_input, ctx) => {
+        adminGuard(ctx);
+        const rows = await db.select().from(schema.restaurantPricingItems).orderBy(asc(schema.restaurantPricingItems.sortOrder));
+        const translations = await db.select().from(schema.restaurantPricingTranslations);
+        return rows.map(r => ({
+          ...r,
+          translations: translations.filter(t => t.itemId === r.id),
+        }));
+      },
+    }),
+
+    saveRestaurantPricingItem: defineAction({
+      input: z.object({
+        id: uuidField.optional(),
+        slug: z.string().min(1),
+        price: z.string().nullable().optional(),
+        isActive: z.boolean().default(true),
+        sortOrder: z.number().int().default(0),
+        translations: z.array(z.object({
+          locale: localeField,
+          name: z.string().min(1),
+          description: z.string().optional(),
+        })),
+      }),
+      handler: async (input, ctx) => {
+        adminGuard(ctx);
+        const { id, translations, ...data } = input;
+        return db.transaction(async (tx) => {
+          let itemId: string;
+          if (id) {
+            await tx.update(schema.restaurantPricingItems).set({ ...data, updatedAt: new Date() }).where(eq(schema.restaurantPricingItems.id, id));
+            itemId = id;
+            await tx.delete(schema.restaurantPricingTranslations).where(eq(schema.restaurantPricingTranslations.itemId, id));
+          } else {
+            const [row] = await tx.insert(schema.restaurantPricingItems).values(data).returning({ id: schema.restaurantPricingItems.id });
+            itemId = row.id;
+          }
+          if (translations.length > 0) {
+            await tx.insert(schema.restaurantPricingTranslations).values(translations.map(t => ({ ...t, itemId })));
+          }
+          return { id: itemId };
+        });
+      },
+    }),
+
+    deleteRestaurantPricingItem: defineAction({
+      input: z.object({ id: uuidField }),
+      handler: async (input, ctx) => {
+        adminGuard(ctx);
+        await db.delete(schema.restaurantPricingItems).where(eq(schema.restaurantPricingItems.id, input.id));
+        return { success: true };
+      },
+    }),
+
+    // -------------------------------------------------
+    // ROOMS
   // -------------------------------------------------
   listRooms: defineAction({
     handler: async (_input, ctx) => {
@@ -718,19 +860,42 @@ export const server = {
   // BLOG POSTS
   // -------------------------------------------------
   listBlogPosts: defineAction({
-    input: z.object({ ...paginationInput, publishedOnly: z.boolean().default(false) }),
+    input: z.object({ ...paginationInput, publishedOnly: z.boolean().default(false), search: z.string().optional() }),
     handler: async (input, ctx) => {
       adminGuard(ctx);
       const { offset, limit } = paginate(input.page, input.limit);
-      const conditions = input.publishedOnly ? eq(schema.blogPosts.isPublished, true) : undefined;
+
+      const publishedCond = input.publishedOnly ? eq(schema.blogPosts.isPublished, true) : undefined;
+      const slugSearchCond = input.search ? ilike(schema.blogPosts.slug, `%${input.search}%`) : undefined;
+
+      // When searching, also check blog post translations titles via subquery approach
+      let postIdsFromTranslations: string[] = [];
+      if (input.search) {
+        const titleMatches = await db.select({ postId: schema.blogPostTranslations.postId })
+          .from(schema.blogPostTranslations)
+          .where(ilike(schema.blogPostTranslations.title, `%${input.search}%`));
+        postIdsFromTranslations = titleMatches.map(r => r.postId);
+      }
+
+      const buildConditions = (includeSearch: boolean) => {
+        if (!includeSearch) return publishedCond;
+        const searchTermConds = input.search
+          ? (postIdsFromTranslations.length > 0
+            ? or(slugSearchCond, sql`${schema.blogPosts.id} = ANY(ARRAY[${sql.raw(postIdsFromTranslations.map(id => `'${id}'`).join(','))}]::uuid[])`)
+            : slugSearchCond)
+          : undefined;
+        return publishedCond && searchTermConds ? and(publishedCond, searchTermConds) : publishedCond ?? searchTermConds;
+      };
+
+      const conditions = buildConditions(true);
       const rows = await db.select().from(schema.blogPosts).where(conditions)
         .orderBy(desc(schema.blogPosts.createdAt)).limit(limit).offset(offset);
-      const translations = await db.select().from(schema.blogPostTranslations);
+      const allTranslations = await db.select().from(schema.blogPostTranslations);
       const [total] = await db.select({ value: count() }).from(schema.blogPosts).where(conditions);
       return {
         items: rows.map(r => ({
           ...r,
-          translations: translations.filter(t => t.postId === r.id),
+          translations: allTranslations.filter(t => t.postId === r.id),
         })),
         total: total.value,
         page: input.page,
@@ -809,18 +974,29 @@ export const server = {
     input: z.object({
       ...paginationInput,
       status: z.enum(['pending', 'approved', 'rejected']).optional(),
+      search: z.string().optional(),
     }),
     handler: async (input, ctx) => {
       adminGuard(ctx);
       const { offset, limit } = paginate(input.page, input.limit);
 
-      const conditions = input.status === 'pending'
+      const statusCond = input.status === 'pending'
         ? and(eq(schema.comments.isApproved, false), eq(schema.comments.isRejected, false))
         : input.status === 'approved'
           ? eq(schema.comments.isApproved, true)
           : input.status === 'rejected'
             ? eq(schema.comments.isRejected, true)
             : undefined;
+
+      const searchCond = input.search
+        ? or(
+            ilike(schema.comments.authorName, `%${input.search}%`),
+            ilike(schema.comments.authorEmail, `%${input.search}%`),
+            ilike(schema.comments.content, `%${input.search}%`),
+          )
+        : undefined;
+
+      const conditions = statusCond && searchCond ? and(statusCond, searchCond) : statusCond ?? searchCond;
 
       const rows = await db.select({
         id: schema.comments.id,
@@ -1060,6 +1236,14 @@ export const server = {
     },
   }),
 
+  listInvoiceItems: defineAction({
+    input: z.object({ invoiceId: uuidField }),
+    handler: async (input, ctx) => {
+      adminGuard(ctx);
+      return db.select().from(schema.invoiceItems).where(eq(schema.invoiceItems.invoiceId, input.invoiceId)).orderBy(schema.invoiceItems.sortOrder);
+    },
+  }),
+
   // -------------------------------------------------
   // QUOTES
   // -------------------------------------------------
@@ -1132,6 +1316,14 @@ export const server = {
     },
   }),
 
+  listQuoteItems: defineAction({
+    input: z.object({ quoteId: uuidField }),
+    handler: async (input, ctx) => {
+      adminGuard(ctx);
+      return db.select().from(schema.quoteItems).where(eq(schema.quoteItems.quoteId, input.quoteId)).orderBy(schema.quoteItems.sortOrder);
+    },
+  }),
+
   convertQuoteToInvoice: defineAction({
     input: z.object({
       quoteId: uuidField,
@@ -1194,11 +1386,19 @@ export const server = {
   // CONTACT MESSAGES (admin)
   // -------------------------------------------------
   listContactMessages: defineAction({
-    input: z.object({ ...paginationInput, unreadOnly: z.boolean().default(false) }),
+    input: z.object({ ...paginationInput, unreadOnly: z.boolean().default(false), search: z.string().optional() }),
     handler: async (input, ctx) => {
       adminGuard(ctx);
       const { offset, limit } = paginate(input.page, input.limit);
-      const conditions = input.unreadOnly ? eq(schema.contactMessages.isRead, false) : undefined;
+      const unreadCond = input.unreadOnly ? eq(schema.contactMessages.isRead, false) : undefined;
+      const searchCond = input.search
+        ? or(
+            ilike(schema.contactMessages.name, `%${input.search}%`),
+            ilike(schema.contactMessages.email, `%${input.search}%`),
+            ilike(schema.contactMessages.message, `%${input.search}%`),
+          )
+        : undefined;
+      const conditions = unreadCond && searchCond ? and(unreadCond, searchCond) : unreadCond ?? searchCond;
       const rows = await db.select().from(schema.contactMessages).where(conditions)
         .orderBy(desc(schema.contactMessages.createdAt)).limit(limit).offset(offset);
       const [total] = await db.select({ value: count() }).from(schema.contactMessages).where(conditions);

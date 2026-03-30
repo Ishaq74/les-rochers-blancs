@@ -11,8 +11,6 @@ type Props = HTMLAttributes<"div"> & {
    * @default 200
    */
   closeDelay?: number;
-
-  children: any;
 };
 
 const { class: className, openOnHover = false, closeDelay = 200, ...rest } = Astro.props;

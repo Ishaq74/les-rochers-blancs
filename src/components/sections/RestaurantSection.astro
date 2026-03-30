@@ -3,11 +3,11 @@ import type { Locale } from '@/lib/i18n';
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/starwind/carousel';
 import { Button } from '@/components/starwind/button';
 import { Icon } from 'astro-icon/components';
-import { Image } from 'astro:assets';
-import restaurantImage from '@/assets/restaurant.jpg';
-import summerImage from '@/assets/season-summer.jpg';
-import heroImage from '@/assets/hero-mountain.jpg';
+import { db } from '@/db';
+import { galleryImages, restaurantPricingItems, restaurantPricingTranslations } from '@/db/schema';
+import { and, asc, eq } from 'drizzle-orm';
 import { cms, getSetting } from '@/lib/settings';
+import { DEFAULT_RESTAURANT_GALLERY } from '@/lib/default-media';
 
 interface Props {
   lang: Locale;
@@ -28,18 +28,54 @@ const [restTitle, restSubtitle, restDescription, groupTitle, groupDescription, c
 
 const contactEmail = await getSetting('contact_email', 'contact.emailValue', lang);
 
-const pricingKeys = ['dailySpecial', 'specialty', 'menu', 'childMenu'] as const;
-const pricingItems = await Promise.all(
-  pricingKeys.map(async (key) => ({
-    label: await cms('restaurant', `pricing.${key}`, lang, `restaurant.pricing.${key}`),
-  }))
-);
+let pricingItems: Array<{ label: string; price?: string | null; description?: string | null }> = [];
+let carouselImages: Array<{ src: string; alt: string }> = [];
 
-const carouselImages = [
-  { src: restaurantImage, alt: restTitle },
-  { src: summerImage, alt: restTitle },
-  { src: heroImage, alt: restTitle },
-];
+try {
+  const [pricingRows, pricingTransRows, galleryRows] = await Promise.all([
+    db.select().from(restaurantPricingItems).where(eq(restaurantPricingItems.isActive, true)).orderBy(asc(restaurantPricingItems.sortOrder)),
+    db.select().from(restaurantPricingTranslations).where(eq(restaurantPricingTranslations.locale, lang)),
+    db.select().from(galleryImages)
+      .where(and(eq(galleryImages.sectionKey, 'restaurant'), eq(galleryImages.isActive, true)))
+      .orderBy(asc(galleryImages.sortOrder)),
+  ]);
+
+  if (pricingRows.length > 0) {
+    const trMap = new Map(pricingTransRows.map((tr) => [tr.itemId, tr]));
+    pricingItems = pricingRows.map((row) => {
+      const tr = trMap.get(row.id);
+      return {
+        label: tr?.name ?? row.slug,
+        description: tr?.description ?? null,
+        price: row.price,
+      };
+    });
+  }
+
+  if (galleryRows.length > 0) {
+    carouselImages = galleryRows.map((img) => ({
+      src: img.imageUrl,
+      alt: img.altText || img.caption || restTitle,
+    }));
+  }
+} catch {
+  // Keep fallback content below when DB is unavailable.
+}
+
+if (pricingItems.length === 0) {
+  const pricingKeys = ['dailySpecial', 'specialty', 'menu', 'childMenu'] as const;
+  pricingItems = await Promise.all(
+    pricingKeys.map(async (key) => ({
+      label: await cms('restaurant', `pricing.${key}`, lang, `restaurant.pricing.${key}`),
+      price: null,
+      description: null,
+    }))
+  );
+}
+
+if (carouselImages.length === 0) {
+  carouselImages = DEFAULT_RESTAURANT_GALLERY.map((src) => ({ src, alt: restTitle }));
+}
 ---
 
 <section id="restaurant" class="relative overflow-hidden section-padding bg-secondary">
@@ -66,13 +102,12 @@ const carouselImages = [
           <CarouselContent>
             {carouselImages.map((img) => (
               <CarouselItem>
-                <div class="relative w-full aspect-[3/4] overflow-hidden rounded-xl shadow-large">
-                  <Image
+                <div class="relative w-full aspect-3/4 overflow-hidden rounded-xl shadow-large">
+                  <img
                     src={img.src}
                     alt={img.alt}
+                    loading="lazy"
                     class="w-full h-full object-cover hover:scale-105 transition-transform duration-700 ease-out"
-                    widths={[400, 640, 800]}
-                    sizes="(max-width: 1024px) 100vw, 50vw"
                   />
                 </div>
               </CarouselItem>
@@ -118,6 +153,12 @@ const carouselImages = [
                 <p class="text-sm text-foreground font-medium leading-relaxed">
                   {item.label}
                 </p>
+                {item.price && (
+                  <p class="text-base font-semibold text-accent mt-1">{item.price}€</p>
+                )}
+                {item.description && (
+                  <p class="text-xs text-muted-foreground mt-1">{item.description}</p>
+                )}
               </div>
             ))}
           </div>

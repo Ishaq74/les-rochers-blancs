@@ -1,0 +1,541 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import { LOCALES } from '@/lib/i18n';
+import { DEFAULT_HOTEL_GALLERY } from '@/lib/default-media';
+export const prerender = false;
+const lang = 'fr';
+const locales = LOCALES;
+
+// CMS field definitions with labels and hints for the UI
+// These match the fieldKeys used in RoomsSection.astro via cms()
+const cmsFields = [
+  { key: 'title',        label: 'Titre principal',            hint: 'Titre de la section affiché sur le site. Ex : L\'Hôtel',             type: 'input',    required: true },
+  { key: 'subtitle',     label: 'Sous-titre',                  hint: '16 chambres confortables à 1700m d\'altitude',                         type: 'input',    required: false },
+  { key: 'description',  label: 'Description principale',     hint: 'Premier paragraphe (ambiance, altitude, équipements de base…)',       type: 'textarea', required: false },
+  { key: 'description2', label: 'Description secondaire',     hint: 'Deuxième paragraphe (confort, literie, calme…)',                       type: 'textarea', required: false },
+  { key: 'groupNote',    label: 'Note groupes & réservations', hint: 'Affiché dans un encadré en surbrillance (ex : résa hors saison)',     type: 'textarea', required: false },
+  { key: 'closingNote',  label: 'Note de fermeture',           hint: 'Petite note en italique sur les dates différentes hôtel / restaurant', type: 'input',    required: false },
+  { key: 'pricingTitle', label: 'Titre section « Les Tarifs »', hint: 'Ex : Les Tarifs — affiché au-dessus du tableau des chambres',        type: 'input',    required: false },
+  { key: 'extrasTitle',  label: 'Titre section « Suppléments »', hint: 'Ex : Suppléments — affiché au-dessus de la liste des options',      type: 'input',    required: false },
+];
+---
+
+<AdminLayout title="Hôtel — Contenu" activeNav="hotel" lang={lang}>
+  <div class="space-y-6">
+
+    <!-- Page header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">Hôtel — Gestion du contenu</h1>
+        <p class="text-muted-foreground">Modifiez les textes, la galerie photos et les infos affichés dans la section Hôtel du site.</p>
+      </div>
+      <a href="/admin/rooms" class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-muted transition-colors self-start sm:self-auto">
+        <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4v7h20V4"/><path d="M2 11v6h20v-6"/><path d="M6 11V8h12v3"/></svg>
+        Gérer les chambres →
+      </a>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex gap-0 border-b border-border">
+      <button type="button" data-tab="content" class="tab-btn px-5 py-2.5 text-sm font-medium border-b-2 border-primary text-primary -mb-px">
+        📝 Contenu textuel
+      </button>
+      <button type="button" data-tab="gallery" class="tab-btn px-5 py-2.5 text-sm font-medium border-b-2 border-transparent text-muted-foreground hover:text-foreground -mb-px transition-colors">
+        🖼️ Galerie du carrousel
+      </button>
+    </div>
+
+    <!-- ============================================================
+         TAB: CONTENT
+         ============================================================ -->
+    <div id="tab-content" class="space-y-6">
+
+      <!-- Locale selector + save controls -->
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="text-sm font-medium text-muted-foreground shrink-0">Langue éditée :</span>
+        <div class="flex gap-0.5 rounded-md border border-input p-0.5 bg-muted/40">
+          {locales.map((loc, i) => (
+            <button
+              type="button"
+              data-locale={loc}
+              class:list={['locale-btn rounded px-3 py-1.5 text-xs font-semibold transition-colors',
+                i === 0 ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'
+              ]}
+            >{loc.toUpperCase()}</button>
+          ))}
+        </div>
+        <div id="dirty-badge" class="hidden items-center gap-1.5 rounded-full border border-amber-300 bg-amber-50 px-2.5 py-1 text-[11px] font-medium text-amber-800">
+          <span class="inline-flex size-1.5 rounded-full bg-amber-500"></span>
+          Modifications non sauvegardées
+        </div>
+        <button id="btn-save" type="button" class="ml-auto inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-60 transition-colors">
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>
+          Sauvegarder
+        </button>
+      </div>
+
+      <!-- Info banner for non-FR languages -->
+      <div id="translate-notice" class="hidden rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">
+        <strong>Traduction</strong> — Remplissez ces champs dans la langue sélectionnée. Laissez vide pour utiliser le texte français par défaut.
+      </div>
+
+      <!-- Section: Présentation -->
+      <div class="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+        <div class="border-b border-border bg-muted/40 px-5 py-3">
+          <h3 class="text-sm font-semibold">Présentation</h3>
+          <p class="text-xs text-muted-foreground mt-0.5">Textes visibles dans l'en-tête de la section Hôtel sur le site</p>
+        </div>
+        <div class="p-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
+          {cmsFields.filter(f => ['title','subtitle'].includes(f.key)).map(f => (
+            <div class="space-y-1.5">
+              <label class="text-sm font-medium">
+                {f.label}{f.required && <span class="text-destructive ml-1">*</span>}
+              </label>
+              <input data-field={f.key} type="text" placeholder={f.hint}
+                class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+              <p class="text-xs text-muted-foreground">{f.hint}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Section: Descriptions -->
+      <div class="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+        <div class="border-b border-border bg-muted/40 px-5 py-3">
+          <h3 class="text-sm font-semibold">Descriptions</h3>
+          <p class="text-xs text-muted-foreground mt-0.5">Paragraphes affichés à droite du carrousel</p>
+        </div>
+        <div class="p-5 space-y-5">
+          {cmsFields.filter(f => ['description','description2'].includes(f.key)).map(f => (
+            <div class="space-y-1.5">
+              <label class="text-sm font-medium">{f.label}</label>
+              <p class="text-xs text-muted-foreground">{f.hint}</p>
+              <textarea data-field={f.key} rows={4}
+                class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"></textarea>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Section: Informations importantes -->
+      <div class="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+        <div class="border-b border-border bg-muted/40 px-5 py-3">
+          <h3 class="text-sm font-semibold">Informations importantes</h3>
+          <p class="text-xs text-muted-foreground mt-0.5">Encadré et note de bas de section</p>
+        </div>
+        <div class="p-5 space-y-5">
+          {cmsFields.filter(f => ['groupNote','closingNote'].includes(f.key)).map(f => (
+            <div class="space-y-1.5">
+              <label class="text-sm font-medium">{f.label}</label>
+              <p class="text-xs text-muted-foreground">{f.hint}</p>
+              {f.type === 'textarea'
+                ? <textarea data-field={f.key} rows={2} class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"></textarea>
+                : <input data-field={f.key} type="text" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+              }
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Section: Titres des sous-sections -->
+      <div class="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+        <div class="border-b border-border bg-muted/40 px-5 py-3">
+          <h3 class="text-sm font-semibold">Titres des sous-sections</h3>
+          <p class="text-xs text-muted-foreground mt-0.5">Titres affichés au-dessus des tableaux de tarifs et suppléments</p>
+        </div>
+        <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {cmsFields.filter(f => ['pricingTitle','extrasTitle'].includes(f.key)).map(f => (
+            <div class="space-y-1.5">
+              <label class="text-sm font-medium">{f.label}</label>
+              <input data-field={f.key} type="text" placeholder={f.hint}
+                class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+              <p class="text-xs text-muted-foreground">{f.hint}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+    </div><!-- /tab-content -->
+
+    <!-- ============================================================
+         TAB: GALLERY
+         ============================================================ -->
+    <div id="tab-gallery" class="hidden space-y-4">
+
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <p class="text-sm text-muted-foreground max-w-xl">
+            Photos affichées dans le <strong>carrousel</strong> de la section Hôtel.
+            L'ordre dans cette liste correspond à l'ordre sur le site.
+            Les images de la médiathèque sont recommandées pour de meilleures performances.
+          </p>
+        </div>
+        <button id="btn-add-photo" type="button" class="shrink-0 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          Ajouter une photo
+        </button>
+      </div>
+
+      <div id="gallery-list" class="space-y-2"></div>
+      <p id="gallery-empty" class="hidden rounded-xl border-2 border-dashed border-border p-12 text-center text-sm text-muted-foreground">
+        Aucune photo dans la galerie. Cliquez sur « Ajouter une photo » pour commencer.
+      </p>
+
+    </div><!-- /tab-gallery -->
+
+  </div><!-- /space-y-6 -->
+
+  <!-- ============================================================
+       DRAWER: Add / edit photo
+       ============================================================ -->
+  <div id="photo-drawer" class="fixed inset-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50" id="photo-backdrop"></div>
+    <div class="fixed inset-y-0 right-0 w-full max-w-lg overflow-y-auto bg-card border-l border-border shadow-xl p-6 space-y-5">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold">Ajouter / modifier une photo</h2>
+        <button type="button" id="btn-close-photo" class="rounded-md p-1 hover:bg-muted">
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <form id="photo-form" class="space-y-5">
+        <input type="hidden" id="photo-id" />
+
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium">Image <span class="text-destructive">*</span></label>
+          <div class="flex gap-2">
+            <input id="photo-url" type="text" required placeholder="https://... ou /uploads/votre-image.jpg"
+              class="flex h-9 flex-1 rounded-md border border-input bg-background px-3 text-sm" />
+            <button type="button" id="btn-pick-media" class="shrink-0 inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 text-sm hover:bg-muted">
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+              Médiathèque
+            </button>
+          </div>
+          <div id="photo-preview-wrap" class="hidden mt-2 overflow-hidden rounded-md border border-border aspect-video bg-muted">
+            <img id="photo-preview-img" src="" alt="Aperçu" class="h-full w-full object-cover" />
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium">Légende</label>
+          <input id="photo-caption" type="text" placeholder="Ex : Vue panoramique depuis la terrasse de l'hôtel"
+            class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+          <p class="text-xs text-muted-foreground">Texte affiché sous la photo dans le carrousel (facultatif)</p>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium">Texte alternatif <span class="text-muted-foreground font-normal">(accessibilité)</span></label>
+          <input id="photo-alt" type="text" placeholder="Description de l'image pour les malvoyants"
+            class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" />
+        </div>
+
+        <div class="flex gap-2 pt-2 border-t border-border">
+          <button type="submit" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+            Enregistrer
+          </button>
+          <button type="button" id="btn-cancel-photo" class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">
+            Annuler
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Media picker dialog (reuse pattern from blog) -->
+  <div id="media-dialog" class="fixed inset-0 z-60 hidden">
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" data-close-media></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+      <div class="bg-card rounded-xl border border-border shadow-2xl p-6 space-y-4 w-full max-w-4xl max-h-[85vh] overflow-hidden">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold">Choisir une image de la médiathèque</h3>
+          <button type="button" data-close-media class="rounded-md p-1 hover:bg-muted text-muted-foreground">
+            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button>
+        </div>
+        <div id="media-picker-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 overflow-y-auto max-h-[65vh]"></div>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ locales, defaultHotelGallery: DEFAULT_HOTEL_GALLERY }}>
+    const API = (a, b) => fetch(`/_actions/${a}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b ?? {}) }).then(r => r.json());
+
+    // ──────────────────────────────────────────────
+    // TABS
+    // ──────────────────────────────────────────────
+    function activateTab(tabName) {
+      ['content', 'gallery'].forEach(t => {
+        document.getElementById(`tab-${t}`)?.classList.toggle('hidden', t !== tabName);
+      });
+      document.querySelectorAll('[data-tab]').forEach(btn => {
+        const active = btn.dataset.tab === tabName;
+        btn.classList.toggle('border-primary', active);
+        btn.classList.toggle('text-primary', active);
+        btn.classList.toggle('border-transparent', !active);
+        btn.classList.toggle('text-muted-foreground', !active);
+      });
+      if (tabName === 'gallery') loadGallery();
+    }
+    document.querySelectorAll('[data-tab]').forEach(btn => btn.addEventListener('click', () => activateTab(btn.dataset.tab)));
+
+    // ──────────────────────────────────────────────
+    // CONTENT — locale + fields
+    // ──────────────────────────────────────────────
+    const FIELDS = ['title', 'subtitle', 'description', 'description2', 'groupNote', 'closingNote', 'pricingTitle', 'extrasTitle'];
+    let cmsData = {}; // { [locale]: { [fieldKey]: string } }
+    let currentLocale = 'fr';
+    let dirty = false;
+
+    async function loadContent() {
+      const r = await API('listCmsContent', { sectionKey: 'hotel' });
+      const rows = r.data ?? r ?? [];
+      cmsData = {};
+      rows.forEach(row => {
+        if (!cmsData[row.locale]) cmsData[row.locale] = {};
+        cmsData[row.locale][row.fieldKey] = row.content;
+      });
+      fillForm();
+    }
+
+    function fillForm() {
+      const data = cmsData[currentLocale] || {};
+      FIELDS.forEach(f => {
+        const el = document.querySelector(`[data-field="${f}"]`);
+        if (el) el.value = data[f] || '';
+      });
+      setDirty(false);
+    }
+
+    function setDirty(val) {
+      dirty = val;
+      const badge = document.getElementById('dirty-badge');
+      badge?.classList.toggle('hidden', !val);
+      badge?.classList.toggle('flex', val);
+    }
+
+    // Locale switcher
+    document.querySelectorAll('[data-locale]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (dirty && !confirm('Des modifications non sauvegardées seront perdues. Continuer ?')) return;
+        currentLocale = btn.dataset.locale;
+        document.querySelectorAll('[data-locale]').forEach(b => {
+          const active = b.dataset.locale === currentLocale;
+          b.classList.toggle('bg-background', active);
+          b.classList.toggle('shadow-sm', active);
+          b.classList.toggle('text-foreground', active);
+          b.classList.toggle('text-muted-foreground', !active);
+        });
+        document.getElementById('translate-notice')?.classList.toggle('hidden', currentLocale === 'fr');
+        fillForm();
+      });
+    });
+
+    // Mark dirty on any field change
+    FIELDS.forEach(f => {
+      document.querySelector(`[data-field="${f}"]`)?.addEventListener('input', () => setDirty(true));
+    });
+
+    // Save
+    document.getElementById('btn-save')?.addEventListener('click', async () => {
+      const btn = document.getElementById('btn-save');
+      btn.disabled = true;
+      btn.innerHTML = '<svg class="size-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Sauvegarde…';
+      const fields = FIELDS.map(f => ({ fieldKey: f, content: document.querySelector(`[data-field="${f}"]`)?.value || '' }));
+      await API('bulkUpsertCms', { sectionKey: 'hotel', locale: currentLocale, fields });
+      // Refresh local cache
+      if (!cmsData[currentLocale]) cmsData[currentLocale] = {};
+      fields.forEach(f => { cmsData[currentLocale][f.fieldKey] = f.content; });
+      setDirty(false);
+      btn.disabled = false;
+      btn.innerHTML = '<svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg> Sauvegarder';
+      showToast('Contenu sauvegardé ✓', 'success');
+    });
+
+    // ──────────────────────────────────────────────
+    // GALLERY
+    // ──────────────────────────────────────────────
+    let gallery = [];
+    let defaultGalleryBootstrapped = false;
+
+    async function bootstrapDefaultGalleryIfEmpty() {
+      if (defaultGalleryBootstrapped) return;
+      defaultGalleryBootstrapped = true;
+      await Promise.all(
+        (defaultHotelGallery || []).map((imageUrl, sortOrder) =>
+          API('saveGalleryImage', {
+            sectionKey: 'hotel',
+            imageUrl,
+            altText: '',
+            caption: '',
+            sortOrder,
+            isActive: true,
+          })
+        )
+      );
+    }
+
+    async function loadGallery() {
+      const r = await API('listGallery', { sectionKey: 'hotel' });
+      gallery = r.data ?? r ?? [];
+      if (!gallery.length && (defaultHotelGallery || []).length) {
+        await bootstrapDefaultGalleryIfEmpty();
+        const rr = await API('listGallery', { sectionKey: 'hotel' });
+        gallery = rr.data ?? rr ?? [];
+      }
+      renderGallery();
+    }
+
+    function renderGallery() {
+      const list = document.getElementById('gallery-list');
+      const empty = document.getElementById('gallery-empty');
+      if (!gallery.length) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      list.innerHTML = gallery.map((img, idx) => `
+        <div class="flex items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-sm">
+          <div class="relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-md border border-border bg-muted">
+            <img src="${escapeHtml(img.imageUrl)}" alt="${escapeHtml(img.altText || '')}"
+              class="h-full w-full object-cover" loading="lazy"
+              onerror="this.parentElement.innerHTML='<div class=\'flex h-full w-full items-center justify-center text-muted-foreground\'><svg class=\'size-6\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.5\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'9\' cy=\'9\' r=\'2\'/><path d=\'m21 15-3-3-6 6\'/></svg></div>'" />
+          </div>
+          <div class="flex-1 min-w-0">
+            ${img.caption ? `<p class="text-sm font-medium truncate">${escapeHtml(img.caption)}</p>` : ''}
+            <p class="text-xs text-muted-foreground truncate">${escapeHtml(img.imageUrl)}</p>
+            <div class="flex items-center gap-3 mt-1">
+              <span class="text-[11px] text-muted-foreground">Photo ${idx + 1} sur ${gallery.length}</span>
+              ${img.isActive
+                ? '<span class="inline-flex rounded-full bg-emerald-100 text-emerald-700 px-1.5 py-0.5 text-[10px] font-medium">Visible</span>'
+                : '<span class="inline-flex rounded-full bg-muted text-muted-foreground px-1.5 py-0.5 text-[10px] font-medium">Masquée</span>'}
+            </div>
+          </div>
+          <div class="flex flex-col items-center gap-0.5 shrink-0">
+            ${idx > 0
+              ? `<button onclick="movePhoto('${escapeHtml(img.id)}','up')" title="Monter" class="rounded p-1.5 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg></button>`
+              : '<span class="size-7"></span>'}
+            ${idx < gallery.length - 1
+              ? `<button onclick="movePhoto('${escapeHtml(img.id)}','down')" title="Descendre" class="rounded p-1.5 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>`
+              : '<span class="size-7"></span>'}
+          </div>
+          <div class="flex flex-col items-center gap-0.5 shrink-0 border-l border-border pl-2">
+            <button onclick="editPhoto('${escapeHtml(img.id)}')" title="Modifier" class="rounded p-1.5 hover:bg-muted text-muted-foreground hover:text-primary transition-colors">
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+            </button>
+            <button onclick="deletePhoto('${escapeHtml(img.id)}')" title="Supprimer" class="rounded p-1.5 hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window['movePhoto'] = async (id, dir) => {
+      const idx = gallery.findIndex(g => g.id === id);
+      if (dir === 'up' && idx > 0) [gallery[idx - 1], gallery[idx]] = [gallery[idx], gallery[idx - 1]];
+      else if (dir === 'down' && idx < gallery.length - 1) [gallery[idx], gallery[idx + 1]] = [gallery[idx + 1], gallery[idx]];
+      else return;
+      await Promise.all(gallery.map((img, i) =>
+        API('saveGalleryImage', { id: img.id, sectionKey: 'hotel', imageUrl: img.imageUrl, altText: img.altText || '', caption: img.caption || '', sortOrder: i, isActive: img.isActive !== false })
+      ));
+      await loadGallery();
+    };
+
+    window['editPhoto'] = (id) => {
+      const img = gallery.find(g => g.id === id);
+      if (!img) return;
+      document.getElementById('photo-id').value = img.id;
+      document.getElementById('photo-url').value = img.imageUrl;
+      document.getElementById('photo-caption').value = img.caption || '';
+      document.getElementById('photo-alt').value = img.altText || '';
+      const wrap = document.getElementById('photo-preview-wrap');
+      const preview = document.getElementById('photo-preview-img');
+      preview.src = img.imageUrl;
+      wrap.classList.remove('hidden');
+      openPhotoDrawer();
+    };
+
+    window['deletePhoto'] = async (id) => {
+      if (!confirm('Supprimer cette photo de la galerie de l\'hôtel ?')) return;
+      await API('deleteGalleryImage', { id });
+      loadGallery();
+    };
+
+    function openPhotoDrawer() { document.getElementById('photo-drawer')?.classList.remove('hidden'); }
+    function closePhotoDrawer() { document.getElementById('photo-drawer')?.classList.add('hidden'); }
+
+    document.getElementById('btn-add-photo')?.addEventListener('click', () => {
+      document.getElementById('photo-id').value = '';
+      document.getElementById('photo-url').value = '';
+      document.getElementById('photo-caption').value = '';
+      document.getElementById('photo-alt').value = '';
+      document.getElementById('photo-preview-wrap')?.classList.add('hidden');
+      openPhotoDrawer();
+    });
+    document.getElementById('btn-close-photo')?.addEventListener('click', closePhotoDrawer);
+    document.getElementById('btn-cancel-photo')?.addEventListener('click', closePhotoDrawer);
+    document.getElementById('photo-backdrop')?.addEventListener('click', closePhotoDrawer);
+
+    document.getElementById('photo-url')?.addEventListener('input', e => {
+      const url = e.target.value.trim();
+      const wrap = document.getElementById('photo-preview-wrap');
+      const img = document.getElementById('photo-preview-img');
+      if (url) { img.src = url; wrap.classList.remove('hidden'); }
+      else wrap.classList.add('hidden');
+    });
+
+    document.getElementById('photo-form')?.addEventListener('submit', async e => {
+      e.preventDefault();
+      const id = document.getElementById('photo-id').value || undefined;
+      const imageUrl = document.getElementById('photo-url').value.trim();
+      if (!imageUrl) return;
+      const existingSortOrder = id ? (gallery.find(g => g.id === id)?.sortOrder ?? gallery.length) : gallery.length;
+      await API('saveGalleryImage', {
+        id,
+        sectionKey: 'hotel',
+        imageUrl,
+        altText: document.getElementById('photo-alt').value.trim(),
+        caption: document.getElementById('photo-caption').value.trim(),
+        sortOrder: existingSortOrder,
+        isActive: true,
+      });
+      closePhotoDrawer();
+      loadGallery();
+    });
+
+    // Media picker
+    let mediaItems = [];
+    document.getElementById('btn-pick-media')?.addEventListener('click', async () => {
+      if (!mediaItems.length) {
+        const r = await API('listMedia', { page: 1, limit: 200 });
+        const p = r.data ?? r;
+        mediaItems = p.items ?? [];
+      }
+      renderMediaPicker();
+      document.getElementById('media-dialog')?.classList.remove('hidden');
+    });
+
+    function renderMediaPicker() {
+      const grid = document.getElementById('media-picker-grid');
+      const images = mediaItems.filter(m => (m.fileType || '').startsWith('image/'));
+      if (!images.length) { grid.innerHTML = '<p class="col-span-full text-sm text-muted-foreground text-center py-8">Aucune image dans la médiathèque.<br>Allez dans <a href="/admin/media" class="text-primary underline">Médias</a> pour en uploader.</p>'; return; }
+      grid.innerHTML = images.map(m => `
+        <button type="button" data-url="${escapeHtml(m.fileUrl)}" data-alt="${escapeHtml(m.altText || m.originalFilename || '')}"
+          class="border border-border rounded-lg overflow-hidden hover:border-primary hover:shadow-md transition-all text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+          <div class="aspect-square bg-muted overflow-hidden">
+            <img src="${escapeHtml(m.fileUrl)}" alt="" class="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div class="p-1.5 text-[11px] truncate text-muted-foreground">${escapeHtml(m.originalFilename || m.fileUrl)}</div>
+        </button>
+      `).join('');
+      grid.querySelectorAll('[data-url]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.getElementById('photo-url').value = btn.dataset.url;
+          document.getElementById('photo-url').dispatchEvent(new Event('input'));
+          if (!document.getElementById('photo-alt').value) document.getElementById('photo-alt').value = btn.dataset.alt || '';
+          document.getElementById('media-dialog')?.classList.add('hidden');
+        });
+      });
+    }
+    document.querySelectorAll('[data-close-media]').forEach(el => el.addEventListener('click', () => document.getElementById('media-dialog')?.classList.add('hidden')));
+
+    // Init
+    loadContent();
+  </script>
+</AdminLayout>

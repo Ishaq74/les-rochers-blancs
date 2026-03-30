@@ -51,7 +51,7 @@ const Icon = icons[variant];
   {...rest}
 >
   <slot name="icon">
-    {Icon && (variant === "loading" ? <Icon class="animate-spin" /> : <Icon />)}
+    {Icon && (variant === "loading" ? <Icon className="animate-spin" /> : <Icon />)}
   </slot>
   <span data-toast-title-text><slot /></span>
 </div>

@@ -241,7 +241,9 @@
       "media": "مكتبة الوسائط",
       "theme": "السمة",
       "settings": "الإعدادات",
-      "dividerHotel": "الفندق",
+      "hotel": "الفندق",
+      "restaurant": "المطعم",
+      "dividerHotel": "الفندق والمطعم",
       "dividerCms": "CMS",
       "dividerBusiness": "الإدارة",
       "dividerConfig": "الإعدادات"
@@ -290,7 +292,17 @@
     "label": "التسمية",
     "year": "السنة",
     "published": "منشور",
-    "draft": "مسودة"
+    "draft": "مسودة",
+    "searchPlaceholder": "بحث…",
+    "sortBy": "ترتيب حسب",
+    "sortNewest": "الأحدث أولاً",
+    "sortOldest": "الأقدم أولاً",
+    "sortNameAsc": "الاسم أ-ي",
+    "sortNameDesc": "الاسم ي-أ",
+    "sortAmountAsc": "المبلغ ↑",
+    "sortAmountDesc": "المبلغ ↓",
+    "nItems": "عناصر",
+    "exportCsv": "تصدير CSV"
   },
   "rooms": {
     "title": "الغرف",
@@ -324,6 +336,15 @@
       "pricePerNight": "السعر/ليلة",
       "status": "الحالة",
       "actions": "إجراءات"
+    },
+    "types": {
+      "single": "فردية",
+      "double": "مزدوجة",
+      "twin": "توأم",
+      "triple": "ثلاثية",
+      "quad": "رباعية",
+      "five": "خماسية",
+      "suite": "جناح"
     },
     "toast": {
       "created": "تم إنشاء الغرفة",
@@ -450,6 +471,7 @@
       "overdue": "متأخرة",
       "cancelled": "ملغاة"
     },
+    "countSuffix": "فاتورة/فواتير",
     "toast": {
       "created": "تم إنشاء الفاتورة",
       "updated": "تم تحديث الفاتورة",
@@ -569,6 +591,9 @@
     "untitled": "(بدون عنوان)",
     "publishedLabel": "منشور",
     "selectImage": "اختيار صورة",
+    "preview": "معاينة",
+    "editMode": "تعديل",
+    "noMediaItems": "لا توجد صور في المكتبة.",
     "markdown": { "bold": "عريض", "italic": "مائل", "link": "رابط", "image": "صورة" },
     "form": {
       "slug": "المعرّف (URL)",
@@ -703,6 +728,8 @@
     "countSuffix": "ملف/ملفات",
     "uploading": "جار الرفع…",
     "siteAssets": "أصول الموقع (للقراءة فقط)",
+    "uploadHint": "الحد الأقصى 10 ميغابايت. JPEG, PNG, WebP, GIF, SVG, PDF.",
+    "staticCount": "صورة/صور",
     "form": { "file": "ملف", "alt": "نص بديل", "folder": "مجلد" },
     "filter": { "all": "جميع المجلدات", "general": "عام", "rooms": "الغرف", "restaurant": "المطعم", "blog": "المدوّنة" },
     "toast": {
@@ -740,6 +767,12 @@
       "tagline": "ملاذ هادئ في قلب جبال الألب",
       "primaryButton": "الزر الرئيسي",
       "accentButton": "زر التمييز"
+    },
+    "types": {
+      "color": "لون",
+      "text": "نص",
+      "number": "رقم",
+      "font": "خط"
     },
     "toast": {
       "saved": "تم حفظ المظهر",

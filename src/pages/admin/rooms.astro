@@ -27,6 +27,20 @@ const i18n = {
       <button id="btn-add-room" type="button" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">+ {t('rooms.new', lang)}</button>
     </div>
 
+    <!-- Search + Sort rooms -->
+    <div class="flex flex-col sm:flex-row gap-3">
+      <div class="relative flex-1">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="room-search" type="search" placeholder={t('common.searchPlaceholder', lang)} class="flex h-9 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm placeholder:text-muted-foreground" />
+      </div>
+      <select id="room-sort" class="flex h-9 rounded-md border border-input bg-background px-3 text-sm">
+        <option value="name:asc">{t('common.sortNameAsc', lang)}</option>
+        <option value="name:desc">{t('common.sortNameDesc', lang)}</option>
+        <option value="pricePerNight:asc">Prix/nuit ↑</option>
+        <option value="pricePerNight:desc">Prix/nuit ↓</option>
+      </select>
+    </div>
+
     <!-- Rooms table -->
     <div class="rounded-xl border border-border bg-card shadow-sm overflow-x-auto">
       <table class="w-full text-sm">
@@ -225,18 +239,45 @@ const i18n = {
     });
 
     // === ROOMS ===
-    let rooms = [];
+    let rooms = [], filteredRooms = [];
     async function loadRooms() {
       const res = await API('listRooms', {});
       rooms = res.data ?? res ?? [];
+      applyRoomFilters();
+    }
+    function applyRoomFilters() {
+      const q = document.getElementById('room-search')?.value.trim().toLowerCase() || '';
+      let arr = rooms.slice();
+      if (q) arr = arr.filter(r => {
+        const frName = r.translations?.find(t => t.locale === 'fr')?.name?.toLowerCase() || '';
+        return frName.includes(q) || r.slug?.toLowerCase().includes(q) || r.roomType?.toLowerCase().includes(q);
+      });
+      const sortVal = document.getElementById('room-sort')?.value || 'name:asc';
+      const [sk, sd] = sortVal.split(':');
+      if (sk === 'name') {
+        arr.sort((a, b) => {
+          const va = (a.translations?.find(t => t.locale === 'fr')?.name || '').toLowerCase();
+          const vb = (b.translations?.find(t => t.locale === 'fr')?.name || '').toLowerCase();
+          return sd === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+        });
+      } else {
+        arr.sort((a, b) => {
+          const va = parseFloat(a[sk]) || 0;
+          const vb = parseFloat(b[sk]) || 0;
+          return sd === 'asc' ? va - vb : vb - va;
+        });
+      }
+      filteredRooms = arr;
       renderRooms();
     }
+    AdminKit.initSearch(document.getElementById('room-search'), () => applyRoomFilters(), 250);
+    AdminKit.initSort(document.getElementById('room-sort'), () => applyRoomFilters());
     function renderRooms() {
       const tbody = document.getElementById('rooms-tbody');
       const empty = document.getElementById('rooms-empty');
-      if (!rooms.length) { tbody.innerHTML = ''; empty.classList.remove('hidden'); return; }
+      if (!filteredRooms.length) { tbody.innerHTML = ''; empty.classList.remove('hidden'); return; }
       empty.classList.add('hidden');
-      tbody.innerHTML = rooms.map(r => {
+      tbody.innerHTML = filteredRooms.map(r => {
         const frTrans = r.translations?.find(t => t.locale === 'fr');
         return `<tr class="border-b border-border hover:bg-muted/50">
           <td class="px-4 py-3 font-medium">${escapeHtml(frTrans?.name || '—')}</td>
