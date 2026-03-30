@@ -10,14 +10,33 @@ const i18n = {
 
 <AdminLayout title={t('settings.title', lang)} activeNav="settings" lang={lang}>
   <div class="space-y-6">
-    <div>
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <h1 class="text-2xl font-bold tracking-tight">{t('settings.title', lang)}</h1>
       <p class="text-muted-foreground">{t('settings.subtitle', lang)}</p>
+      <div class="flex items-center gap-2 sm:ml-auto">
+        <span id="pending-badge" class="hidden rounded-full border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-800"></span>
+        <button id="btn-reset" type="button" class="inline-flex items-center rounded-md border border-input px-3 py-2 text-sm font-medium hover:bg-muted disabled:opacity-50" disabled>
+          Annuler les changements
+        </button>
+        <button id="btn-save-all" type="button" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-60" disabled>
+          Sauvegarder tous les changements
+        </button>
+      </div>
     </div>
 
     <div id="loading" class="p-8 text-center text-muted-foreground">{t('common.loading', lang)}</div>
 
     <div id="settings-form" class="hidden space-y-6">
+      <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
+        <h2 class="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Champs legaux recommandes</h2>
+        <p class="mt-1 text-sm text-muted-foreground">Ces cles sont utilisees pour alimenter la page Mentions legales de facon synchronisee.</p>
+        <div class="mt-3 flex flex-wrap gap-2">
+          <button type="button" id="btn-seed-legal" class="inline-flex items-center rounded-md border border-input px-3 py-2 text-sm font-medium hover:bg-muted">
+            Initialiser les cles legales manquantes
+          </button>
+        </div>
+      </div>
+
       <div id="categories-container" class="space-y-8"></div>
 
       <div class="border-t border-border pt-6 space-y-4">
@@ -38,10 +57,49 @@ const i18n = {
   <script is:inline define:vars={{ i18n }}>
     const API=(a,b)=>fetch(`/_actions/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());
 
+    const LEGAL_KEYS = [
+      { key: 'legal_company_form', label: 'Forme juridique', category: 'legal' },
+      { key: 'legal_siret', label: 'SIRET', category: 'legal' },
+      { key: 'legal_vat', label: 'TVA intracommunautaire', category: 'legal' },
+      { key: 'legal_rcs', label: 'RCS', category: 'legal' },
+      { key: 'legal_publishing_director', label: 'Directeur de publication', category: 'legal' },
+      { key: 'legal_host_name', label: 'Hebergeur - nom', category: 'legal' },
+      { key: 'legal_host_address', label: 'Hebergeur - adresse', category: 'legal' },
+      { key: 'legal_host_phone', label: 'Hebergeur - telephone', category: 'legal' },
+      { key: 'legal_host_website', label: 'Hebergeur - site web', category: 'legal' },
+      { key: 'legal_photo_credits', label: 'Credits photographiques', category: 'legal' },
+      { key: 'legal_mediator', label: 'Mediateur consommation', category: 'legal' },
+    ];
+
     let settings=[];
+    const pendingValues=new Map();
+
+    function getInputType(settingType){
+      if(settingType==='email')return 'email';
+      if(settingType==='url')return 'url';
+      if(settingType==='number')return 'number';
+      return 'text';
+    }
+
+    function updateToolbar(){
+      const hasChanges=pendingValues.size>0;
+      const saveBtn=document.getElementById('btn-save-all');
+      const resetBtn=document.getElementById('btn-reset');
+      const badge=document.getElementById('pending-badge');
+      if(saveBtn)saveBtn.disabled=!hasChanges;
+      if(resetBtn)resetBtn.disabled=!hasChanges;
+      if(badge){
+        badge.classList.toggle('hidden',!hasChanges);
+        badge.textContent=hasChanges?`${pendingValues.size} changement(s) en attente`:'';
+      }
+    }
 
     async function load(){
-      const r=await API('listSiteSettings',{});settings=r.data??r;render();
+      const r=await API('listSiteSettings',{});
+      settings=r.data??r??[];
+      pendingValues.clear();
+      render();
+      updateToolbar();
     }
 
     function render(){
@@ -64,32 +122,90 @@ const i18n = {
           <div class="border-b border-border bg-muted/50 px-4 py-3"><h3 class="text-sm font-semibold uppercase tracking-wider">${escapeHtml(cat)}</h3></div>
           <div class="p-4 space-y-3">
             ${categories[cat].map(s=>{
+              const key=escapeHtml(s.settingKey);
+              const value=escapeHtml(s.settingValue||'');
               if(s.settingType==='textarea'){
-                return `<div class="space-y-1"><label class="text-sm font-medium">${escapeHtml(s.settingKey)}</label><textarea rows="3" onchange="saveSetting('${escapeHtml(s.settingKey)}',this.value,'${escapeHtml(s.settingType)}','${escapeHtml(s.category)}')" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm">${escapeHtml(s.settingValue||'')}</textarea></div>`;
+                return `<div class="space-y-1"><label class="text-sm font-medium">${key}</label><textarea rows="3" oninput="setSettingValue('${key}',this.value)" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm">${value}</textarea></div>`;
               }
               if(s.settingType==='boolean'){
-                return `<div class="flex items-center gap-3"><label class="text-sm font-medium w-48 shrink-0">${escapeHtml(s.settingKey)}</label><input type="checkbox" ${s.settingValue==='true'?'checked':''} onchange="saveSetting('${escapeHtml(s.settingKey)}',this.checked?'true':'false','${escapeHtml(s.settingType)}','${escapeHtml(s.category)}')" class="rounded border-input" /></div>`;
+                return `<div class="flex items-center gap-3"><label class="text-sm font-medium w-64 shrink-0">${key}</label><input type="checkbox" ${s.settingValue==='true'?'checked':''} onchange="setSettingValue('${key}',this.checked?'true':'false')" class="rounded border-input" /></div>`;
               }
-              return `<div class="flex items-center gap-4"><label class="text-sm font-medium w-48 shrink-0">${escapeHtml(s.settingKey)}</label><input type="${s.settingType==='email'?'email':s.settingType==='url'?'url':s.settingType==='number'?'number':'text'}" value="${escapeHtml(s.settingValue||'')}" onchange="saveSetting('${escapeHtml(s.settingKey)}',this.value,'${escapeHtml(s.settingType)}','${escapeHtml(s.category)}')" class="flex h-9 w-full max-w-md rounded-md border border-input bg-background px-3 text-sm" /></div>`;
+              return `<div class="flex items-center gap-4"><label class="text-sm font-medium w-64 shrink-0">${key}</label><input type="${getInputType(s.settingType)}" value="${value}" oninput="setSettingValue('${key}',this.value)" class="flex h-9 w-full max-w-xl rounded-md border border-input bg-background px-3 text-sm" /></div>`;
             }).join('')}
           </div>
         </div>`).join('');
     }
 
-    window.saveSetting=async function(key,value,type,category){
-      await API('saveSiteSetting',{settingKey:key,settingValue:value,settingType:type,category});
-      await load();
+    window.setSettingValue=function(key,value){
+      const setting=settings.find(s=>s.settingKey===key);
+      if(!setting)return;
+      if((setting.settingValue||'')===value)pendingValues.delete(key);
+      else pendingValues.set(key,value);
+      updateToolbar();
     };
+
+    document.getElementById('btn-reset')?.addEventListener('click',()=>{
+      pendingValues.clear();
+      render();
+      updateToolbar();
+    });
+
+    document.getElementById('btn-save-all')?.addEventListener('click',async()=>{
+      const btn=document.getElementById('btn-save-all');
+      if(!pendingValues.size)return;
+      btn.disabled=true;
+      btn.textContent='Sauvegarde...';
+      try{
+        const updates=settings
+          .filter(s=>pendingValues.has(s.settingKey))
+          .map(s=>API('saveSiteSetting',{
+            settingKey:s.settingKey,
+            settingValue:pendingValues.get(s.settingKey),
+            settingType:s.settingType,
+            category:s.category,
+          }));
+        await Promise.all(updates);
+        showToast('Parametres sauvegardes', 'success');
+        await load();
+      }catch(_e){
+        showToast('Erreur de sauvegarde', 'destructive');
+      }finally{
+        btn.textContent='Sauvegarder tous les changements';
+        updateToolbar();
+      }
+    });
+
+    document.getElementById('btn-seed-legal')?.addEventListener('click',async()=>{
+      const existing=new Set(settings.map(s=>s.settingKey));
+      const missing=LEGAL_KEYS.filter(k=>!existing.has(k.key));
+      if(!missing.length){
+        showToast('Les cles legales existent deja', 'default');
+        return;
+      }
+      await Promise.all(missing.map(k=>API('saveSiteSetting',{
+        settingKey:k.key,
+        settingValue:'',
+        settingType:'text',
+        category:k.category,
+      })));
+      showToast('Cles legales initialisees', 'success');
+      await load();
+    });
 
     document.getElementById('btn-add')?.addEventListener('click',async()=>{
       const key=document.getElementById('new-key')?.value?.trim();
       const value=document.getElementById('new-value')?.value?.trim();
       const type=document.getElementById('new-type')?.value||'text';
       const category=document.getElementById('new-category')?.value?.trim()||'general';
-      if(!key)return;
+      if(!key){
+        showToast('Cle requise', 'destructive');
+        return;
+      }
       await API('saveSiteSetting',{settingKey:key,settingValue:value||'',settingType:type,category});
-      document.getElementById('new-key').value='';document.getElementById('new-value').value='';
+      document.getElementById('new-key').value='';
+      document.getElementById('new-value').value='';
       await load();
+      showToast('Parametre ajoute', 'success');
     });
 
     load();

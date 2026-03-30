@@ -5,13 +5,10 @@ import Footer from '@/components/layout/Footer.astro';
 import { Badge } from '@/components/starwind/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/starwind/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/starwind/accordion';
-import { t, getSection, LOCALES, type Locale } from '@/lib/i18n';
+import { t, getSection, type Locale } from '@/lib/i18n';
+import { getSiteSettings } from '@/lib/settings';
 
-export const prerender = true;
-
-export function getStaticPaths() {
-  return LOCALES.map((lang) => ({ params: { lang } }));
-}
+export const prerender = false;
 
 const { lang } = Astro.params as { lang: Locale };
 
@@ -29,6 +26,19 @@ const legal = getSection('legal', lang) as {
 const sections = legal.sections ?? [];
 const firstTab = sections.length > 0 ? `section-0` : '';
 
+const settings = await getSiteSettings();
+const companyName = settings.get('brand_name') || t('footer.brandName', lang);
+const legalIdentity = {
+  companyForm: settings.get('legal_company_form') || 'A definir',
+  siret: settings.get('legal_siret') || 'A definir',
+  vat: settings.get('legal_vat') || 'A definir',
+  rcs: settings.get('legal_rcs') || 'A definir',
+  publishingDirector: settings.get('legal_publishing_director') || companyName,
+  address: settings.get('contact_address') || 'A definir',
+  phone: settings.get('contact_phone') || 'A definir',
+  email: settings.get('contact_email') || 'A definir',
+};
+
 const pageTitle = `${legal.heading} — ${t('footer.brandName', lang)}`;
 const description = legal.eyebrow;
 ---
@@ -42,6 +52,24 @@ const description = legal.eyebrow;
         <h1 class="font-heading mt-3 text-3xl font-semibold tracking-tight md:text-4xl lg:text-5xl">
           {legal.heading}
         </h1>
+      </div>
+
+      <div class="mb-10 rounded-2xl border border-border bg-card p-5 shadow-sm">
+        <h2 class="text-lg font-semibold">Informations legales synchronisees</h2>
+        <p class="text-muted-foreground mt-1 text-sm">
+          Ces donnees proviennent des Parametres Admin et se mettent a jour automatiquement.
+        </p>
+        <div class="mt-4 grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
+          <p><span class="font-medium">Raison sociale:</span> {companyName}</p>
+          <p><span class="font-medium">Forme juridique:</span> {legalIdentity.companyForm}</p>
+          <p><span class="font-medium">SIRET:</span> {legalIdentity.siret}</p>
+          <p><span class="font-medium">TVA intracommunautaire:</span> {legalIdentity.vat}</p>
+          <p><span class="font-medium">RCS:</span> {legalIdentity.rcs}</p>
+          <p><span class="font-medium">Directeur de publication:</span> {legalIdentity.publishingDirector}</p>
+          <p class="md:col-span-2"><span class="font-medium">Adresse:</span> {legalIdentity.address}</p>
+          <p><span class="font-medium">Telephone:</span> {legalIdentity.phone}</p>
+          <p><span class="font-medium">Email:</span> {legalIdentity.email}</p>
+        </div>
       </div>
 
       <div class="min-h-96">

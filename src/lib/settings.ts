@@ -84,6 +84,13 @@ export async function getSetting(siteKey: string, i18nKey: string, locale: Local
 
 let cmsCache: { data: Map<string, string>; ts: number } | null = null;
 
+export function invalidateSettingsCache() {
+  themeCache = null;
+  siteCache = null;
+  cmsCache = null;
+  sectionCache = null;
+}
+
 export async function getCmsContent(): Promise<Map<string, string>> {
   if (cmsCache && Date.now() - cmsCache.ts < CACHE_TTL) return cmsCache.data;
   try {

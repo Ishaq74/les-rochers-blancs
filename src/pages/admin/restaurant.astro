@@ -1,7 +1,6 @@
 ---
 import AdminLayout from '@/layouts/AdminLayout.astro';
 import { LOCALES } from '@/lib/i18n';
-import { DEFAULT_RESTAURANT_GALLERY } from '@/lib/default-media';
 export const prerender = false;
 const lang = 'fr';
 const locales = LOCALES;
@@ -361,7 +360,7 @@ const cmsFields = [
     </div>
   </div>
 
-  <script is:inline define:vars={{ locales, defaultRestaurantGallery: DEFAULT_RESTAURANT_GALLERY }}>
+  <script is:inline define:vars={{ locales }}>
     const API = (a, b) => fetch(`/_actions/${a}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b ?? {}) }).then(r => r.json());
 
     // ──────────────────────────────────────────────
@@ -457,33 +456,10 @@ const cmsFields = [
     // ──────────────────────────────────────────────
     let gallery = [];
     let galleryLoaded = false;
-    let defaultGalleryBootstrapped = false;
-
-    async function bootstrapDefaultGalleryIfEmpty() {
-      if (defaultGalleryBootstrapped) return;
-      defaultGalleryBootstrapped = true;
-      await Promise.all(
-        (defaultRestaurantGallery || []).map((imageUrl, sortOrder) =>
-          API('saveGalleryImage', {
-            sectionKey: 'restaurant',
-            imageUrl,
-            altText: '',
-            caption: '',
-            sortOrder,
-            isActive: true,
-          })
-        )
-      );
-    }
 
     async function loadGallery() {
       const r = await API('listGallery', { sectionKey: 'restaurant' });
       gallery = r.data ?? r ?? [];
-      if (!gallery.length && (defaultRestaurantGallery || []).length) {
-        await bootstrapDefaultGalleryIfEmpty();
-        const rr = await API('listGallery', { sectionKey: 'restaurant' });
-        gallery = rr.data ?? rr ?? [];
-      }
       galleryLoaded = true;
       renderGallery();
     }

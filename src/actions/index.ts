@@ -3,6 +3,8 @@ import { z } from 'astro/zod';
 import { db } from '@/db';
 import { eq, desc, asc, and, or, sql, count, ilike } from 'drizzle-orm';
 import * as schema from '@/db/schema';
+import { DEFAULT_HOTEL_GALLERY, DEFAULT_RESTAURANT_GALLERY } from '@/lib/default-media';
+import { invalidateSettingsCache } from '@/lib/settings';
 
 // =====================================================
 // HELPERS
@@ -49,6 +51,37 @@ const FILE_EXTENSION_BY_MIME: Record<string, string> = {
   'image/svg+xml': 'svg',
   'application/pdf': 'pdf',
 };
+
+const DEFAULT_SECTION_GALLERIES: Record<string, readonly string[]> = {
+  hotel: DEFAULT_HOTEL_GALLERY,
+  restaurant: DEFAULT_RESTAURANT_GALLERY,
+};
+
+async function ensureDefaultGalleryIfEmpty(sectionKey: string, entityId?: string) {
+  // Only auto-bootstrap top-level hotel/restaurant galleries.
+  if (entityId) return;
+
+  const defaults = DEFAULT_SECTION_GALLERIES[sectionKey];
+  if (!defaults || defaults.length === 0) return;
+
+  const [existing] = await db
+    .select({ value: count() })
+    .from(schema.galleryImages)
+    .where(eq(schema.galleryImages.sectionKey, sectionKey));
+
+  if ((existing?.value ?? 0) > 0) return;
+
+  await db.insert(schema.galleryImages).values(
+    defaults.map((imageUrl, sortOrder) => ({
+      sectionKey,
+      imageUrl,
+      altText: '',
+      caption: '',
+      sortOrder,
+      isActive: true,
+    }))
+  );
+}
 
 // =====================================================
 // ACTIONS
@@ -186,6 +219,7 @@ export const server = {
       }),
       handler: async (input, ctx) => {
         adminGuard(ctx);
+        await ensureDefaultGalleryIfEmpty(input.sectionKey, input.entityId);
         const conditions = input.entityId
           ? and(eq(schema.galleryImages.sectionKey, input.sectionKey), eq(schema.galleryImages.entityId, input.entityId))
           : eq(schema.galleryImages.sectionKey, input.sectionKey);
@@ -1533,6 +1567,7 @@ export const server = {
           updatedAt: new Date(),
         },
       }).returning({ id: schema.siteSettings.id });
+      invalidateSettingsCache();
       return { id: row.id };
     },
   }),
@@ -1565,6 +1600,7 @@ export const server = {
           updatedAt: new Date(),
         },
       }).returning({ id: schema.themeSettings.id });
+      invalidateSettingsCache();
       return { id: row.id };
     },
   }),
