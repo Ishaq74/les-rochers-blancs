@@ -7,6 +7,8 @@ if (!connectionString) throw new Error('DATABASE_URL environment variable is req
 
 const client = postgres(connectionString, {
   ssl: (process.env.NODE_ENV === 'production' || import.meta.env.PROD) ? 'require' : false,
+  max: 10,
+  idle_timeout: 30,
 });
 
 export const db = drizzle(client, { schema });

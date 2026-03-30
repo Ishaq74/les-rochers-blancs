@@ -1,4 +1,5 @@
 ---
+import { t } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle } from '@/components/starwind/sheet';
 import { Dropdown, DropdownTrigger, DropdownContent, DropdownItem } from '@/components/starwind/dropdown';
@@ -46,7 +47,7 @@ const languages = [
   <div class="container-wide mx-auto px-6 lg:px-12">
     <div class="flex items-center justify-between h-20">
       <!-- Logo -->
-      <a href="#hero" class="flex items-center gap-3">
+      <a href="#hero" class="flex items-center gap-3" aria-label={t('nav.home', lang)}>
         <span class="font-serif text-2xl font-bold tracking-wide navbar-logo-text text-snow">
           {brandName}
         </span>
@@ -68,7 +69,7 @@ const languages = [
       <div class="flex items-center gap-3">
         <!-- Language Switcher -->
         <Dropdown>
-          <DropdownTrigger class="navbar-action-btn text-snow hover:bg-snow/10 rounded-md size-11 inline-flex items-center justify-center">
+          <DropdownTrigger class="navbar-action-btn text-snow hover:bg-snow/10 rounded-md size-11 inline-flex items-center justify-center" aria-label={t('nav.language', lang)}>
             <Icon name="mdi:translate" />
           </DropdownTrigger>
           <DropdownContent align="end" class="min-w-40">
@@ -90,7 +91,7 @@ const languages = [
 
         <!-- Mobile Menu Toggle -->
         <Sheet>
-          <SheetTrigger class="lg:hidden navbar-action-btn text-snow hover:bg-snow/10 rounded-md size-11 inline-flex items-center justify-center">
+          <SheetTrigger class="lg:hidden navbar-action-btn text-snow hover:bg-snow/10 rounded-md size-11 inline-flex items-center justify-center" aria-label={t('nav.menuToggle', lang)}>
             <Icon name="mdi:menu" />
           </SheetTrigger>
           <SheetContent side="right">
@@ -119,13 +120,20 @@ const languages = [
   // Handle navbar scroll state
   const navbar = document.getElementById('site-navbar');
   if (navbar) {
+    let ticking = false;
     const update = () => {
       const scrolled = window.scrollY > 50;
       navbar.classList.toggle('navbar-glass', scrolled);
       navbar.classList.toggle('shadow-medium', scrolled);
       navbar.classList.toggle('bg-transparent', !scrolled);
+      ticking = false;
     };
-    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(update);
+        ticking = true;
+      }
+    }, { passive: true });
     update();
   }
 

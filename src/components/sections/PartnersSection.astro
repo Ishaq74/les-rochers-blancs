@@ -7,6 +7,8 @@ import { eq, asc } from 'drizzle-orm';
 import { cms } from '@/lib/settings';
 import { DEFAULT_PARTNER_LOGOS, normalizeSlug } from '@/lib/default-media';
 
+const isValidExternalUrl = (url: string) => /^https?:\/\//i.test(url);
+
 interface Props {
   lang: Locale;
 }
@@ -69,7 +71,7 @@ const [partnersTitle, partnersDescription] = await Promise.all([
           class="partner-logo card-elevated p-3 aspect-3/2 animate-fade-up"
           style={`animation-delay: ${i * 0.07}s;`}
         >
-          {partner.websiteUrl ? (
+          {partner.websiteUrl && isValidExternalUrl(partner.websiteUrl) ? (
             <a href={partner.websiteUrl} target="_blank" rel="noopener noreferrer"
               class="w-full h-full rounded-lg flex items-center justify-center p-3">
               <img

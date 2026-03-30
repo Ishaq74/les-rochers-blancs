@@ -161,6 +161,7 @@ export const server = {
           updatedAt: new Date(),
         },
       }).returning({ id: schema.cmsContent.id });
+      invalidateSettingsCache();
       return row.id;
     },
   }),
@@ -170,6 +171,7 @@ export const server = {
     handler: async (input, ctx) => {
       adminGuard(ctx);
       await db.delete(schema.cmsContent).where(eq(schema.cmsContent.id, input.id));
+      invalidateSettingsCache();
       return { success: true };
     },
   }),
@@ -205,6 +207,7 @@ export const server = {
             })
           )
         );
+        invalidateSettingsCache();
         return { success: true };
       },
     }),
@@ -1763,6 +1766,7 @@ export const server = {
           },
         });
       }
+      invalidateSettingsCache();
       return { success: true };
     },
   }),

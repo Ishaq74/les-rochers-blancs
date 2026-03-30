@@ -20,7 +20,8 @@ export function isRtl(locale: string): boolean {
  * e.g. t('hero.title', 'fr') → the French hero title
  */
 export function t(key: string, locale: string): string {
-  const lang = translations[locale] ?? translations.fr;
+  const normalized = locale.split('-')[0];
+  const lang = translations[normalized] ?? translations.fr;
   const parts = key.split('.');
   let current: unknown = lang;
 
@@ -37,7 +38,8 @@ export function t(key: string, locale: string): string {
  * e.g. getSection('hero', 'fr') → { title: '...', subtitle: '...', ... }
  */
 export function getSection(section: string, locale: string): Record<string, unknown> {
-  const lang = translations[locale] ?? translations.fr;
+  const normalized = locale.split('-')[0];
+  const lang = translations[normalized] ?? translations.fr;
   const result = (lang as Record<string, unknown>)[section];
   return (typeof result === 'object' && result !== null ? result : {}) as Record<string, unknown>;
 }

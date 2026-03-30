@@ -54,10 +54,6 @@ declare module '@/components/starwind/tabs' {
   export const TabsContent: (props: Record<string, unknown>) => unknown;
 }
 
-declare module 'astro/types' {
-  export type HTMLAttributes<T = unknown> = Record<string, unknown>;
-}
-
 declare module '@iconify/utils' {
   export const getIconData: (...args: unknown[]) => unknown;
   export const iconToSVG: (...args: unknown[]) => {

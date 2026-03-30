@@ -91,6 +91,10 @@ if ((sessionResult?.user as { role?: string } | undefined)?.role === 'admin') {
             body: JSON.stringify({ email, password }),
           });
           if (!res.ok) {
+            if (res.status === 429) {
+              const retryAfter = res.headers.get('Retry-After');
+              throw new Error(retryAfter ? `Trop de tentatives. Reessayez dans ${retryAfter}s` : 'Trop de tentatives. Veuillez patienter.');
+            }
             const data = await res.json().catch(() => ({}));
             throw new Error(data?.message || 'Email ou mot de passe incorrect');
           }

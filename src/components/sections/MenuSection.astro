@@ -194,15 +194,15 @@ const [
     <div class="text-center mt-14 pt-8 border-t border-border animate-fade-up print:hidden">
       <div class="flex items-center justify-center gap-6 text-sm text-muted-foreground flex-wrap">
         <div class="flex items-center gap-2">
-          <Icon name="mdi:leaf" class="size-4 text-primary" />
+          <Icon name="mdi:leaf" class="size-4 text-primary" aria-hidden="true" />
           <span>{vegetarianLabel}</span>
         </div>
         <div class="flex items-center gap-2">
-          <Icon name="mdi:barley-off" class="size-4 text-accent" />
+          <Icon name="mdi:barley-off" class="size-4 text-accent" aria-hidden="true" />
           <span>{glutenFreeLabel}</span>
         </div>
         <div class="flex items-center gap-2">
-          <Icon name="mdi:star" class="size-4 text-accent" />
+          <Icon name="mdi:star" class="size-4 text-accent" aria-hidden="true" />
           <span>{chefSignatureLabel}</span>
         </div>
       </div>
@@ -441,7 +441,7 @@ const [
                                     {item.name}
                                   </h5>
                                   {item.is_signature && (
-                                    <Icon name="mdi:star" class="size-4 text-accent print:size-2.5 print:text-gray-600" />
+                                    <Icon name="mdi:star" class="size-4 text-accent print:size-2.5 print:text-gray-600" aria-label={chefSignatureLabel} />
                                   )}
                                   {item.is_vegetarian && (
                                     <Icon name="mdi:leaf" class="size-4 text-primary print:size-2.5 print:text-gray-600" aria-label={vegetarianLabel} />

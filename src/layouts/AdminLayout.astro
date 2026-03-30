@@ -13,6 +13,9 @@ interface Props {
 
 const { lang = 'fr', title, activeNav = 'dashboard' } = Astro.props;
 const user = Astro.locals.user;
+if (!user || user.role !== 'admin') {
+  return Astro.redirect('/admin/login');
+}
 const pageTitle = title ? `${title} — Admin` : 'Admin — Les Rochers Blancs';
 
 const navItems: Array<{ key: string; href?: string; icon?: string; type?: 'divider' }> = [
@@ -360,7 +363,12 @@ const svgIcons: Record<string, string> = {
 
       // Sign out
       document.getElementById('signout-btn')?.addEventListener('click', async () => {
-        await fetch('/api/auth/sign-out', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+        try {
+          const res = await fetch('/api/auth/sign-out', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+          if (!res.ok) console.error('Sign-out failed:', res.status);
+        } catch (e) {
+          console.error('Sign-out error:', e);
+        }
         window.location.href = '/admin/login';
       });
     </script>

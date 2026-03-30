@@ -90,7 +90,9 @@ const [phone, email, address, hours] = await Promise.all([
           <input type="hidden" name="locale" value={lang} />
           <input type="text" name="_honey" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <div>
+            <label for="contact-name" class="sr-only">{t('contact.form.name', lang)}</label>
             <input
+              id="contact-name"
               type="text"
               name="name"
               required
@@ -98,29 +100,30 @@ const [phone, email, address, hours] = await Promise.all([
               maxlength={200}
               placeholder={t('contact.form.name', lang)}
               class="input-elegant flex h-12 w-full rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none"
-              aria-label={t('contact.form.name', lang)}
             />
           </div>
           <div>
+            <label for="contact-email" class="sr-only">{t('contact.form.email', lang)}</label>
             <input
+              id="contact-email"
               type="email"
               name="email"
               required
               maxlength={300}
               placeholder={t('contact.form.email', lang)}
               class="input-elegant flex h-12 w-full rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none"
-              aria-label={t('contact.form.email', lang)}
             />
           </div>
           <div>
+            <label for="contact-message" class="sr-only">{t('contact.form.message', lang)}</label>
             <textarea
+              id="contact-message"
               name="message"
               required
               minlength={10}
               maxlength={5000}
               placeholder={t('contact.form.message', lang)}
               class="input-elegant flex min-h-37.5 w-full rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none resize-none"
-              aria-label={t('contact.form.message', lang)}
             ></textarea>
           </div>
           <button

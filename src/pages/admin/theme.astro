@@ -63,169 +63,258 @@ const i18n = {
   </div>
 
   <script is:inline define:vars={{ i18n }}>
-    const API=(a,b)=>fetch(`/_actions/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());
+    /**
+     * Call an Astro action with proper error handling.
+     * Throws if response is not ok or if JSON parsing fails.
+     */
+    async function API(action, payload) {
+      const res = await fetch(`/_actions/${action}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`API error: ${res.status} ${res.statusText}`);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error.message || 'Unknown API error');
+      return data;
+    }
 
-    const CORE_THEME_FIELDS=[
-      { key:'primary-color', type:'color', category:'colors', label:'Couleur primaire' },
-      { key:'primary-foreground-color', type:'color', category:'colors', label:'Texte sur primaire' },
-      { key:'background-color', type:'color', category:'colors', label:'Fond global' },
-      { key:'text-color', type:'color', category:'colors', label:'Texte principal' },
-      { key:'border-color', type:'color', category:'colors', label:'Couleur des bordures' },
-      { key:'radius-md', type:'text', category:'shape', label:'Rayon standard (ex: 0.75rem)' },
-      { key:'shadow-soft', type:'text', category:'effects', label:'Ombre douce (CSS box-shadow)' },
-      { key:'font-heading', type:'font', category:'typography', label:'Police titres' },
-      { key:'font-body', type:'font', category:'typography', label:'Police texte' },
+    const CORE_THEME_FIELDS = [
+      { key: 'primary-color', type: 'color', category: 'colors', label: 'Couleur primaire' },
+      { key: 'primary-foreground-color', type: 'color', category: 'colors', label: 'Texte sur primaire' },
+      { key: 'background-color', type: 'color', category: 'colors', label: 'Fond global' },
+      { key: 'text-color', type: 'color', category: 'colors', label: 'Texte principal' },
+      { key: 'border-color', type: 'color', category: 'colors', label: 'Couleur des bordures' },
+      { key: 'radius-md', type: 'text', category: 'shape', label: 'Rayon standard (ex: 0.75rem)' },
+      { key: 'shadow-soft', type: 'text', category: 'effects', label: 'Ombre douce (CSS box-shadow)' },
+      { key: 'font-heading', type: 'font', category: 'typography', label: 'Police titres' },
+      { key: 'font-body', type: 'font', category: 'typography', label: 'Police texte' },
     ];
 
-    let settings=[];
-    const pendingValues=new Map();
+    let settings = [];
+    const pendingValues = new Map();
 
-    function byKey(key){ return settings.find(s=>s.settingKey===key); }
+    /**
+     * Find a setting by its key.
+     */
+    function byKey(key) {
+      return settings.find(s => s.settingKey === key);
+    }
 
-    function updateToolbar(){
-      const hasChanges=pendingValues.size>0;
-      const saveBtn=document.getElementById('btn-save-theme');
-      const resetBtn=document.getElementById('btn-reset');
-      const badge=document.getElementById('pending-badge');
-      if(saveBtn)saveBtn.disabled=!hasChanges;
-      if(resetBtn)resetBtn.disabled=!hasChanges;
-      if(badge){
-        badge.classList.toggle('hidden',!hasChanges);
-        badge.textContent=hasChanges?`${pendingValues.size} changement(s) en attente`:'';
+    /**
+     * Update toolbar button states and pending changes badge.
+     */
+    function updateToolbar() {
+      const hasChanges = pendingValues.size > 0;
+      const saveBtn = document.getElementById('btn-save-theme');
+      const resetBtn = document.getElementById('btn-reset');
+      const badge = document.getElementById('pending-badge');
+      
+      if (saveBtn) saveBtn.disabled = !hasChanges;
+      if (resetBtn) resetBtn.disabled = !hasChanges;
+      if (badge) {
+        badge.classList.toggle('hidden', !hasChanges);
+        badge.textContent = hasChanges ? `${pendingValues.size} changement(s) en attente` : '';
       }
     }
 
-    async function load(){
-      const r=await API('listThemeSettings',{});
-      settings=r.data??r??[];
-      pendingValues.clear();
-      ensureCoreFields();
-      render();
-      updateToolbar();
+    /**
+     * Load theme settings from API and render form.
+     */
+    async function load() {
+      try {
+        const res = await API('listThemeSettings', {});
+        settings = res.data ?? res ?? [];
+        pendingValues.clear();
+        ensureCoreFields();
+        render();
+        updateToolbar();
+      } catch (err) {
+        showToast(`Erreur de chargement: ${err.message}`, 'destructive');
+      }
     }
 
-    function ensureCoreFields(){
-      const existing=new Set(settings.map(s=>s.settingKey));
-      CORE_THEME_FIELDS.forEach(f=>{
-        if(existing.has(f.key)) return;
+    /**
+     * Ensure all core theme fields exist in settings array.
+     * Creates placeholder entries with default values if missing.
+     */
+    function ensureCoreFields() {
+      const existing = new Set(settings.map(s => s.settingKey));
+      CORE_THEME_FIELDS.forEach(f => {
+        if (existing.has(f.key)) return;
         settings.push({
-          settingKey:f.key,
-          settingValue:f.type==='color'?'#000000':'',
-          settingType:f.type,
-          category:f.category,
+          settingKey: f.key,
+          settingValue: f.type === 'color' ? '#000000' : '',
+          settingType: f.type,
+          category: f.category,
         });
       });
     }
 
-    function previewValue(key){
-      if(pendingValues.has(key)) return pendingValues.get(key);
+    /**
+     * Get preview value: pending edits take precedence over saved values.
+     */
+    function previewValue(key) {
+      if (pendingValues.has(key)) return pendingValues.get(key);
       return byKey(key)?.settingValue || '';
     }
 
-    function applyPreview(){
-      const preview=document.getElementById('theme-preview');
-      if(!preview) return;
-      const vars={
+    /**
+     * Apply theme variable changes to live preview block.
+     */
+    function applyPreview() {
+      const preview = document.getElementById('theme-preview');
+      if (!preview) return;
+      
+      const vars = {
         '--primary-color': previewValue('primary-color') || '#1a1a2e',
         '--primary-foreground-color': previewValue('primary-foreground-color') || '#ffffff',
         '--background-color': previewValue('background-color') || '#ffffff',
         '--text-color': previewValue('text-color') || '#111827',
         '--border-color': previewValue('border-color') || '#e5e7eb',
       };
-      Object.entries(vars).forEach(([k,v])=>preview.style.setProperty(k,v));
-      const radius=previewValue('radius-md');
-      if(radius) preview.style.borderRadius=radius;
-      const shadow=previewValue('shadow-soft');
-      preview.style.boxShadow=shadow || 'none';
+      
+      Object.entries(vars).forEach(([k, v]) => preview.style.setProperty(k, v));
+      
+      const radius = previewValue('radius-md');
+      if (radius) preview.style.borderRadius = radius;
+      
+      const shadow = previewValue('shadow-soft');
+      preview.style.boxShadow = shadow || 'none';
     }
 
-    function render(){
+    /**
+     * Render theme settings into categorized cards with color pickers and text inputs.
+     */
+    function render() {
       document.getElementById('loading')?.classList.add('hidden');
       document.getElementById('theme-form')?.classList.remove('hidden');
 
-      const categories={};
-      (settings||[]).forEach(s=>{
-        const cat=s.category||'general';
-        if(!categories[cat])categories[cat]=[];
+      const categories = {};
+      (settings || []).forEach(s => {
+        const cat = s.category || 'general';
+        if (!categories[cat]) categories[cat] = [];
         categories[cat].push(s);
       });
 
-      const container=document.getElementById('categories-container');
-      const cats=Object.keys(categories).sort();
-      if(!cats.length){container.innerHTML=`<p class="text-muted-foreground">${escapeHtml(i18n.noSettings)}</p>`;return;}
+      const container = document.getElementById('categories-container');
+      const cats = Object.keys(categories).sort();
+      if (!cats.length) {
+        container.innerHTML = `<p class="text-muted-foreground">${escapeHtml(i18n.noSettings)}</p>`;
+        return;
+      }
 
-      container.innerHTML=cats.map(cat=>`
+      container.innerHTML = cats.map(cat => `
         <div class="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
-          <div class="border-b border-border bg-muted/50 px-4 py-3"><h3 class="text-sm font-semibold uppercase tracking-wider">${escapeHtml(cat)}</h3></div>
+          <div class="border-b border-border bg-muted/50 px-4 py-3">
+            <h3 class="text-sm font-semibold uppercase tracking-wider">${escapeHtml(cat)}</h3>
+          </div>
           <div class="p-4 space-y-3">
-            ${categories[cat].map(s=>`
+            ${categories[cat].map(s => `
               <div class="flex items-center gap-4">
                 <label class="text-sm font-medium w-64 shrink-0">${escapeHtml(s.settingKey)}</label>
-                ${s.settingType==='color'
-                  ? `<input type="color" value="${escapeHtml(s.settingValue||'#000000')}" oninput="setThemeValue('${escapeHtml(s.settingKey)}',this.value)" class="h-9 w-12 rounded border border-input cursor-pointer" /><span class="text-xs text-muted-foreground">${escapeHtml(s.settingValue||'')}</span>`
-                  : `<input type="text" value="${escapeHtml(s.settingValue||'')}" oninput="setThemeValue('${escapeHtml(s.settingKey)}',this.value)" class="flex h-9 w-full max-w-xl rounded-md border border-input bg-background px-3 text-sm" />`
+                ${s.settingType === 'color'
+                  ? `
+                    <input type="color" value="${escapeHtml(s.settingValue || '#000000')}" 
+                      oninput="setThemeValue('${escapeHtml(s.settingKey)}',this.value)" 
+                      class="h-9 w-12 rounded border border-input cursor-pointer" />
+                    <span class="text-xs text-muted-foreground">${escapeHtml(s.settingValue || '')}</span>
+                  `
+                  : `
+                    <input type="text" value="${escapeHtml(s.settingValue || '')}" 
+                      oninput="setThemeValue('${escapeHtml(s.settingKey)}',this.value)" 
+                      class="flex h-9 w-full max-w-xl rounded-md border border-input bg-background px-3 text-sm" />
+                  `
                 }
-              </div>`).join('')}
+              </div>
+            `).join('')}
           </div>
-        </div>`).join('');
+        </div>
+      `).join('');
+      
       applyPreview();
     }
 
-    window.setThemeValue=function(key,value){
-      const setting=byKey(key);
-      if(!setting) return;
-      if((setting.settingValue||'')===value) pendingValues.delete(key);
-      else pendingValues.set(key,value);
+    /**
+     * Track a theme value change and update UI state and preview.
+     */
+    window.setThemeValue = function (key, value) {
+      const setting = byKey(key);
+      if (!setting) return;
+      if ((setting.settingValue || '') === value) {
+        pendingValues.delete(key);
+      } else {
+        pendingValues.set(key, value);
+      }
       updateToolbar();
       applyPreview();
     };
 
-    document.getElementById('btn-reset')?.addEventListener('click',()=>{
+    /**
+     * Reset all changes and restore original state.
+     */
+    document.getElementById('btn-reset')?.addEventListener('click', () => {
       pendingValues.clear();
       render();
       updateToolbar();
     });
 
-    document.getElementById('btn-save-theme')?.addEventListener('click',async()=>{
-      if(!pendingValues.size) return;
-      const btn=document.getElementById('btn-save-theme');
-      btn.disabled=true;
-      btn.textContent='Sauvegarde...';
-      try{
-        const updates=settings
-          .filter(s=>pendingValues.has(s.settingKey))
-          .map(s=>API('saveThemeSetting',{
-            settingKey:s.settingKey,
-            settingValue:pendingValues.get(s.settingKey),
-            settingType:s.settingType||'text',
-            category:s.category||'general',
+    /**
+     * Save all pending theme changes via batch API call.
+     */
+    document.getElementById('btn-save-theme')?.addEventListener('click', async () => {
+      if (!pendingValues.size) return;
+      const btn = document.getElementById('btn-save-theme');
+      btn.disabled = true;
+      btn.textContent = 'Sauvegarde...';
+      try {
+        const updates = settings
+          .filter(s => pendingValues.has(s.settingKey))
+          .map(s => API('saveThemeSetting', {
+            settingKey: s.settingKey,
+            settingValue: pendingValues.get(s.settingKey),
+            settingType: s.settingType || 'text',
+            category: s.category || 'general',
           }));
         await Promise.all(updates);
         showToast('Theme sauvegarde', 'success');
         await load();
-      }catch(_e){
-        showToast('Erreur de sauvegarde theme', 'destructive');
-      }finally{
-        btn.textContent='Sauvegarder le theme';
-        updateToolbar();
+      } catch (err) {
+        showToast(`Erreur: ${err.message}`, 'destructive');
+        btn.disabled = false;
+        btn.textContent = 'Sauvegarder le theme';
       }
     });
 
-    document.getElementById('btn-add')?.addEventListener('click',async()=>{
-      const key=document.getElementById('new-key')?.value?.trim();
-      const value=document.getElementById('new-value')?.value?.trim();
-      const type=document.getElementById('new-type')?.value||'color';
-      const category=document.getElementById('new-category')?.value?.trim()||'general';
-      if(!key){
+    /**
+     * Add a custom theme variable.
+     */
+    document.getElementById('btn-add')?.addEventListener('click', async () => {
+      const key = document.getElementById('new-key')?.value?.trim();
+      const value = document.getElementById('new-value')?.value?.trim();
+      const type = document.getElementById('new-type')?.value || 'color';
+      const category = document.getElementById('new-category')?.value?.trim() || 'general';
+      if (!key) {
         showToast('Cle requise', 'destructive');
         return;
       }
-      await API('saveThemeSetting',{settingKey:key,settingValue:value||'',settingType:type,category});
-      document.getElementById('new-key').value='';document.getElementById('new-value').value='';
-      showToast('Variable ajoutee', 'success');
-      await load();
+      try {
+        await API('saveThemeSetting', {
+          settingKey: key,
+          settingValue: value || '',
+          settingType: type,
+          category,
+        });
+        document.getElementById('new-key').value = '';
+        document.getElementById('new-value').value = '';
+        showToast('Variable ajoutee', 'success');
+        await load();
+      } catch (err) {
+        showToast(`Erreur: ${err.message}`, 'destructive');
+      }
     });
 
+    // Initialize on page load
     load();
   </script>
 </AdminLayout>

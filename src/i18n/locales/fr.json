@@ -8,7 +8,13 @@
     "about": "À propos",
     "access": "Accès",
     "contact": "Contact",
-    "book": "Réserver"
+    "book": "Réserver",
+    "language": "Changer de langue",
+    "menuToggle": "Ouvrir le menu"
+  },
+  "carousel": {
+    "previous": "Diapositive précédente",
+    "next": "Diapositive suivante"
   },
   "hero": {
     "location": "Semnoz, Haute-Savoie",

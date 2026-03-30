@@ -55,7 +55,21 @@ const i18n = {
   </div>
 
   <script is:inline define:vars={{ i18n }}>
-    const API=(a,b)=>fetch(`/_actions/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());
+    /**
+     * Call an Astro action with proper error handling.
+     * Throws if response is not ok or if JSON parsing fails.
+     */
+    async function API(action, payload) {
+      const res = await fetch(`/_actions/${action}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`API error: ${res.status} ${res.statusText}`);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error.message || 'Unknown API error');
+      return data;
+    }
 
     const LEGAL_KEYS = [
       { key: 'legal_company_form', label: 'Forme juridique', category: 'legal' },
@@ -71,35 +85,49 @@ const i18n = {
       { key: 'legal_mediator', label: 'Mediateur consommation', category: 'legal' },
     ];
 
-    let settings=[];
-    const pendingValues=new Map();
+    let settings = [];
+    const pendingValues = new Map();
 
-    function getInputType(settingType){
-      if(settingType==='email')return 'email';
-      if(settingType==='url')return 'url';
-      if(settingType==='number')return 'number';
+    /**
+     * Map setting type to HTML input type for proper form control.
+     */
+    function getInputType(settingType) {
+      if (settingType === 'email') return 'email';
+      if (settingType === 'url') return 'url';
+      if (settingType === 'number') return 'number';
       return 'text';
     }
 
-    function updateToolbar(){
-      const hasChanges=pendingValues.size>0;
-      const saveBtn=document.getElementById('btn-save-all');
-      const resetBtn=document.getElementById('btn-reset');
-      const badge=document.getElementById('pending-badge');
-      if(saveBtn)saveBtn.disabled=!hasChanges;
-      if(resetBtn)resetBtn.disabled=!hasChanges;
-      if(badge){
-        badge.classList.toggle('hidden',!hasChanges);
-        badge.textContent=hasChanges?`${pendingValues.size} changement(s) en attente`:'';
+    /**
+     * Update toolbar button states and pending changes badge.
+     */
+    function updateToolbar() {
+      const hasChanges = pendingValues.size > 0;
+      const saveBtn = document.getElementById('btn-save-all');
+      const resetBtn = document.getElementById('btn-reset');
+      const badge = document.getElementById('pending-badge');
+      
+      if (saveBtn) saveBtn.disabled = !hasChanges;
+      if (resetBtn) resetBtn.disabled = !hasChanges;
+      if (badge) {
+        badge.classList.toggle('hidden', !hasChanges);
+        badge.textContent = hasChanges ? `${pendingValues.size} changement(s) en attente` : '';
       }
     }
 
-    async function load(){
-      const r=await API('listSiteSettings',{});
-      settings=r.data??r??[];
-      pendingValues.clear();
-      render();
-      updateToolbar();
+    /**
+     * Load settings from API and render form.
+     */
+    async function load() {
+      try {
+        const res = await API('listSiteSettings', {});
+        settings = res.data ?? res ?? [];
+        pendingValues.clear();
+        render();
+        updateToolbar();
+      } catch (err) {
+        showToast(`Erreur de chargement: ${err.message}`, 'destructive');
+      }
     }
 
     function render(){

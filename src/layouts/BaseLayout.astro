@@ -45,7 +45,6 @@ const dir = isRtl(lang) ? 'rtl' : 'ltr';
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" content="#1a1a2e" />
     {description && <meta name="description" content={description} />}
     <title>{pageTitle}</title>
@@ -70,6 +69,9 @@ const dir = isRtl(lang) ? 'rtl' : 'ltr';
     <Font cssVariable="--font-manrope" />
   </head>
   <body class="bg-background text-foreground antialiased">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100 focus:px-4 focus:py-2 focus:bg-accent focus:text-accent-foreground focus:rounded-md">
+      Skip to main content
+    </a>
     <slot />
     <script is:inline>
       // Theme: apply saved preference or system default before paint

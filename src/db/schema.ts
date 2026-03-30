@@ -110,7 +110,7 @@ export const cmsContent = pgTable('cms_content', {
 export const restaurantMenus = pgTable('restaurant_menus', {
   id: uuid('id').defaultRandom().primaryKey(),
   slug: text('slug').notNull().unique(),
-  price: numeric('price'),
+  price: numeric('price', { precision: 10, scale: 2 }),
   year: integer('year'),
   startDate: date('start_date'),
   endDate: date('end_date'),
