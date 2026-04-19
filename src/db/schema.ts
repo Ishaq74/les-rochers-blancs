@@ -10,6 +10,7 @@ import {
   date,
   uniqueIndex,
   index,
+  foreignKey,
 } from 'drizzle-orm/pg-core';
 
 // =====================================================
@@ -644,10 +645,15 @@ export const restaurantPricingItems = pgTable('restaurant_pricing_items', {
 
 export const restaurantPricingTranslations = pgTable('restaurant_pricing_translations', {
   id: uuid('id').defaultRandom().primaryKey(),
-  itemId: uuid('item_id').notNull().references(() => restaurantPricingItems.id, { onDelete: 'cascade' }),
+  itemId: uuid('item_id').notNull(),
   locale: text('locale').notNull(),
   name: text('name').notNull(),
   description: text('description'),
 }, (table) => [
+  foreignKey({
+    columns: [table.itemId],
+    foreignColumns: [restaurantPricingItems.id],
+    name: 'rpt_item_fk',
+  }).onDelete('cascade'),
   uniqueIndex('rest_pricing_trans_unique').on(table.itemId, table.locale),
 ]);
