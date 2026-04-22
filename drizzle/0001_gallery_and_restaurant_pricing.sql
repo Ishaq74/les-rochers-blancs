@@ -30,7 +30,7 @@ CREATE TABLE "restaurant_pricing_translations" (
 	"description" text
 );
 --> statement-breakpoint
-ALTER TABLE "restaurant_pricing_translations" ADD CONSTRAINT "restaurant_pricing_translations_item_id_restaurant_pricing_items_id_fk" FOREIGN KEY ("item_id") REFERENCES "public"."restaurant_pricing_items"("id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "restaurant_pricing_translations" ADD CONSTRAINT "rpt_item_fk" FOREIGN KEY ("item_id") REFERENCES "public"."restaurant_pricing_items"("id") ON DELETE cascade ON UPDATE no action;
 --> statement-breakpoint
 CREATE INDEX "idx_gallery_section_entity" ON "gallery_images" USING btree ("section_key","entity_id");
 --> statement-breakpoint
