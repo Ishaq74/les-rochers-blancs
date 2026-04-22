@@ -19,11 +19,31 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
+// ---- Rate limiter for public contact form ----
+const contactAttempts = new Map<string, { count: number; resetAt: number }>();
+const CONTACT_RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 60 minutes
+const CONTACT_RATE_LIMIT_MAX = 5; // max submissions per window
+
+function isContactRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = contactAttempts.get(ip);
+  if (!entry || now > entry.resetAt) {
+    contactAttempts.set(ip, { count: 1, resetAt: now + CONTACT_RATE_LIMIT_WINDOW });
+    return false;
+  }
+  entry.count++;
+  if (entry.count > CONTACT_RATE_LIMIT_MAX) return true;
+  return false;
+}
+
 // Periodic cleanup to avoid memory leaks (unref so it doesn't block shutdown)
 const cleanupInterval = setInterval(() => {
   const now = Date.now();
   for (const [ip, entry] of loginAttempts) {
     if (now > entry.resetAt) loginAttempts.delete(ip);
+  }
+  for (const [ip, entry] of contactAttempts) {
+    if (now > entry.resetAt) contactAttempts.delete(ip);
   }
 }, 60 * 1000);
 cleanupInterval.unref();
@@ -88,6 +108,17 @@ const authMiddleware = defineMiddleware(async (context, next): Promise<Response>
       return new Response(JSON.stringify({ error: 'Too many login attempts. Please try again later.' }), {
         status: 429,
         headers: { 'Content-Type': 'application/json', 'Retry-After': '900' },
+      });
+    }
+  }
+
+  // Rate limit public contact form (5 submissions / 60 min / IP)
+  if (url.pathname === '/_actions/sendContact' && request.method === 'POST') {
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+    if (isContactRateLimited(ip)) {
+      return new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json', 'Retry-After': '3600' },
       });
     }
   }

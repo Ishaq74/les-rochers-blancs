@@ -9,9 +9,10 @@ import { cms, getSetting } from '@/lib/settings';
 
 interface Props {
   lang: Locale;
+  opaqueNavbar?: boolean;
 }
 
-const { lang } = Astro.props;
+const { lang, opaqueNavbar = false } = Astro.props;
 
 const [brandName, navHome, navHotel, navRestaurant, navMenu, navAccess] = await Promise.all([
   getSetting('brand_name', 'footer.brandName', lang),
@@ -22,12 +23,17 @@ const [brandName, navHome, navHotel, navRestaurant, navMenu, navAccess] = await 
   cms('nav', 'access', lang, 'nav.access'),
 ]);
 
+// Resolve anchor links: prefix with the home URL when not on the homepage
+// so that /fr/legal#access navigates to /fr/#access instead of staying on the legal page.
+const homeBase = `/${lang}/`;
+const anchor = (id: string) => `${homeBase}#${id}`;
+
 const navItems = [
-  { label: navHome, href: '#hero' },
-  { label: navHotel, href: '#rooms' },
-  { label: navRestaurant, href: '#restaurant' },
-  { label: navMenu, href: '#menu' },
-  { label: navAccess, href: '#access' },
+  { label: navHome, href: anchor('hero') },
+  { label: navHotel, href: anchor('rooms') },
+  { label: navRestaurant, href: anchor('restaurant') },
+  { label: navMenu, href: anchor('menu') },
+  { label: navAccess, href: anchor('access') },
 ];
 
 const languages = [
@@ -42,12 +48,16 @@ const languages = [
 <nav
   id="site-navbar"
   data-site-navbar="true"
-  class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-transparent"
+  data-navbar-opaque={opaqueNavbar ? 'true' : 'false'}
+  class:list={[
+    'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
+    opaqueNavbar ? 'navbar-glass shadow-medium' : 'bg-transparent',
+  ]}
 >
   <div class="container-wide mx-auto px-6 lg:px-12">
     <div class="flex items-center justify-between h-20">
       <!-- Logo -->
-      <a href="#hero" class="flex items-center gap-3" aria-label={t('nav.home', lang)}>
+      <a href={anchor('hero')} class="flex items-center gap-3" aria-label={t('nav.home', lang)}>
         <span class="font-serif text-2xl font-bold tracking-wide navbar-logo-text text-snow">
           {brandName}
         </span>
@@ -58,6 +68,7 @@ const languages = [
         {navItems.map((item) => (
           <a
             href={item.href}
+            data-nav-anchor
             class="font-medium transition-colors hover:text-accent navbar-link text-snow"
           >
             {item.label}
@@ -102,6 +113,7 @@ const languages = [
               {navItems.map((item) => (
                 <a
                   href={item.href}
+                  data-nav-anchor
                   class="text-foreground font-medium py-2 hover:text-accent transition-colors"
                   data-sheet-nav-link
                 >
@@ -120,8 +132,15 @@ const languages = [
   // Handle navbar scroll state
   const navbar = document.getElementById('site-navbar');
   if (navbar) {
+    const alwaysOpaque = navbar.dataset.navbarOpaque === 'true';
     let ticking = false;
     const update = () => {
+      if (alwaysOpaque) {
+        navbar.classList.add('navbar-glass', 'shadow-medium');
+        navbar.classList.remove('bg-transparent');
+        ticking = false;
+        return;
+      }
       const scrolled = window.scrollY > 50;
       navbar.classList.toggle('navbar-glass', scrolled);
       navbar.classList.toggle('shadow-medium', scrolled);
@@ -144,4 +163,30 @@ const languages = [
       if (closeBtn instanceof HTMLElement) closeBtn.click();
     });
   });
+
+  // Smooth scroll for anchor links when already on the homepage.
+  // Links are of the form "/{lang}/#section" — if we're already on that origin+pathname,
+  // intercept the click and scroll smoothly instead of doing a full navigation.
+  function initNavAnchorSmooth() {
+    document.querySelectorAll<HTMLAnchorElement>('[data-nav-anchor]').forEach((link) => {
+      link.addEventListener('click', (e) => {
+        const href = link.getAttribute('href') ?? '';
+        const hashIdx = href.indexOf('#');
+        if (hashIdx === -1) return;
+        const path = href.slice(0, hashIdx);
+        const hash = href.slice(hashIdx + 1);
+        // Only intercept if we're already on the target page
+        if (path && window.location.pathname.replace(/\/$/, '') !== path.replace(/\/$/, '')) return;
+        e.preventDefault();
+        const target = document.getElementById(hash);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+          history.replaceState(null, '', `#${hash}`);
+        }
+      });
+    });
+  }
+
+  initNavAnchorSmooth();
+  document.addEventListener('astro:after-swap', initNavAnchorSmooth);
 </script>

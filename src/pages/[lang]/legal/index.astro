@@ -44,8 +44,8 @@ const description = legal.eyebrow;
 ---
 
 <BaseLayout title={pageTitle} description={description} lang={lang} canonicalPath={`/${lang}/legal`}>
-  <Navbar lang={lang} />
-  <main>
+  <Navbar lang={lang} opaqueNavbar={true} />
+  <main class="pt-24">
     <section class="mx-auto w-full max-w-5xl px-4 py-16 md:py-24">
       <div class="mb-12">
         <Badge variant="primary" size="sm">{legal.eyebrow}</Badge>
@@ -55,20 +55,17 @@ const description = legal.eyebrow;
       </div>
 
       <div class="mb-10 rounded-2xl border border-border bg-card p-5 shadow-sm">
-        <h2 class="text-lg font-semibold">Informations legales synchronisees</h2>
-        <p class="text-muted-foreground mt-1 text-sm">
-          Ces donnees proviennent des Parametres Admin et se mettent a jour automatiquement.
-        </p>
+        <h2 class="text-lg font-semibold">{t('legal.identity.title', lang)}</h2>
         <div class="mt-4 grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
-          <p><span class="font-medium">Raison sociale:</span> {companyName}</p>
-          <p><span class="font-medium">Forme juridique:</span> {legalIdentity.companyForm}</p>
-          <p><span class="font-medium">SIRET:</span> {legalIdentity.siret}</p>
-          <p><span class="font-medium">TVA intracommunautaire:</span> {legalIdentity.vat}</p>
-          <p><span class="font-medium">RCS:</span> {legalIdentity.rcs}</p>
-          <p><span class="font-medium">Directeur de publication:</span> {legalIdentity.publishingDirector}</p>
-          <p class="md:col-span-2"><span class="font-medium">Adresse:</span> {legalIdentity.address}</p>
-          <p><span class="font-medium">Telephone:</span> {legalIdentity.phone}</p>
-          <p><span class="font-medium">Email:</span> {legalIdentity.email}</p>
+          <p><span class="font-medium">{t('legal.identity.companyName', lang)}:</span> {companyName}</p>
+          <p><span class="font-medium">{t('legal.identity.companyForm', lang)}:</span> {legalIdentity.companyForm}</p>
+          <p><span class="font-medium">{t('legal.identity.siret', lang)}:</span> {legalIdentity.siret}</p>
+          <p><span class="font-medium">{t('legal.identity.vat', lang)}:</span> {legalIdentity.vat}</p>
+          <p><span class="font-medium">{t('legal.identity.rcs', lang)}:</span> {legalIdentity.rcs}</p>
+          <p><span class="font-medium">{t('legal.identity.publishingDirector', lang)}:</span> {legalIdentity.publishingDirector}</p>
+          <p class="md:col-span-2"><span class="font-medium">{t('legal.identity.address', lang)}:</span> {legalIdentity.address}</p>
+          <p><span class="font-medium">{t('legal.identity.phone', lang)}:</span> {legalIdentity.phone}</p>
+          <p><span class="font-medium">{t('legal.identity.email', lang)}:</span> {legalIdentity.email}</p>
         </div>
       </div>
 

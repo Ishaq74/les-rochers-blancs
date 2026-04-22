@@ -1053,6 +1053,18 @@
   "legal": {
     "eyebrow": "Informations légales",
     "heading": "Mentions légales & Confidentialité",
+    "identity": {
+      "title": "Informations légales",
+      "companyName": "Raison sociale",
+      "companyForm": "Forme juridique",
+      "siret": "SIRET",
+      "vat": "TVA intracommunautaire",
+      "rcs": "RCS",
+      "publishingDirector": "Directeur de publication",
+      "address": "Adresse",
+      "phone": "Téléphone",
+      "email": "Email"
+    },
     "sections": [
       {
         "id": "mentions-legales",

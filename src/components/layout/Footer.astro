@@ -86,22 +86,22 @@ const isValidExternalUrl = (url: string) => /^https?:\/\//i.test(url);
         <h4 class="font-serif text-lg font-semibold mb-4">{t('footer.quickLinksLabel', lang)}</h4>
         <ul class="space-y-2">
           <li>
-            <a href="#rooms" class="text-primary-foreground/80 hover:text-accent transition-colors">
+            <a href={`/${lang}/#rooms`} class="text-primary-foreground/80 hover:text-accent transition-colors">
               {t('nav.rooms', lang)}
             </a>
           </li>
           <li>
-            <a href="#restaurant" class="text-primary-foreground/80 hover:text-accent transition-colors">
+            <a href={`/${lang}/#restaurant`} class="text-primary-foreground/80 hover:text-accent transition-colors">
               {t('nav.restaurant', lang)}
             </a>
           </li>
           <li>
-            <a href="#menu" class="text-primary-foreground/80 hover:text-accent transition-colors">
+            <a href={`/${lang}/#menu`} class="text-primary-foreground/80 hover:text-accent transition-colors">
               {t('nav.menu', lang)}
             </a>
           </li>
           <li>
-            <a href="#access" class="text-primary-foreground/80 hover:text-accent transition-colors">
+            <a href={`/${lang}/#access`} class="text-primary-foreground/80 hover:text-accent transition-colors">
               {t('nav.access', lang)}
             </a>
           </li>

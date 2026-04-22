@@ -947,6 +947,18 @@
   "legal": {
     "eyebrow": "معلومات قانونية",
     "heading": "الإشعار القانوني وسياسة الخصوصية",
+    "identity": {
+      "title": "البيانات القانونية",
+      "companyName": "الاسم التجاري",
+      "companyForm": "الشكل القانوني",
+      "siret": "SIRET",
+      "vat": "رقم ضريبة القيمة المضافة",
+      "rcs": "RCS",
+      "publishingDirector": "مدير النشر",
+      "address": "العنوان",
+      "phone": "الهاتف",
+      "email": "البريد الإلكتروني"
+    },
     "sections": [
       {
         "id": "legal-notice",

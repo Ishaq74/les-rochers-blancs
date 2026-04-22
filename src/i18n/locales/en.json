@@ -1053,6 +1053,18 @@
   "legal": {
     "eyebrow": "Legal information",
     "heading": "Legal Notice & Privacy Policy",
+    "identity": {
+      "title": "Legal details",
+      "companyName": "Company name",
+      "companyForm": "Legal form",
+      "siret": "SIRET",
+      "vat": "EU VAT number",
+      "rcs": "RCS",
+      "publishingDirector": "Publishing director",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email"
+    },
     "sections": [
       {
         "id": "legal-notice",

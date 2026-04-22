@@ -35,6 +35,9 @@ dist-ssr
 .astro/
 .astro/*
 
+# Uploaded user files (stored on server, not in git)
+public/uploads/
+
 # Playwright screenshots
 .playwright-mcp/
 .playwright-mcp/*

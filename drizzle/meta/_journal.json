@@ -8,6 +8,20 @@
       "when": 1774791266128,
       "tag": "0000_special_harry_osborn",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774791267000,
+      "tag": "0001_gallery_and_restaurant_pricing",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1745301600000,
+      "tag": "0002_drop_formations",
+      "breakpoints": true
     }
   ]
 }

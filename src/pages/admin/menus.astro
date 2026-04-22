@@ -18,6 +18,8 @@ const i18n = {
   confirmDeleteMenu: t('menuManager.confirmDeleteMenu', lang),
   confirmDeleteCategory: t('menuManager.confirmDeleteCategory', lang),
   confirmDeleteItem: t('menuManager.confirmDeleteItem', lang),
+  active: t('common.active', lang),
+  inactive: t('common.inactive', lang),
 };
 ---
 
@@ -202,7 +204,7 @@ const i18n = {
         const mCats = categories.filter(c => c && c.menuId === m.id);
         return `<div class="rounded-xl border border-border bg-card shadow-sm">
           <div class="flex items-center justify-between border-b border-border px-4 py-3">
-            <div><span class="font-semibold">${frName(m.translations)}</span> <span class="text-xs text-muted-foreground ml-2">${escapeHtml(m.slug)} · ${m.price ? escapeHtml(m.price) + ' €' : 'à la carte'} ${m.year ? '· ' + escapeHtml(String(m.year)) : ''}</span></div>
+            <div class="flex items-center gap-2"><span class="font-semibold">${frName(m.translations)}</span> <span class="text-xs text-muted-foreground">${escapeHtml(m.slug)} · ${m.price ? escapeHtml(m.price) + ' €' : 'à la carte'} ${m.year ? '· ' + escapeHtml(String(m.year)) : ''}</span>${AdminKit.activeBadge(m.isActive, { active: i18n.active, inactive: i18n.inactive })}</div>
             <div class="flex gap-2">
               <button onclick="addCat('${escapeHtml(m.id)}')" class="text-xs text-primary hover:underline">+ ${i18n.addCategory}</button>
               <button onclick="editMenu('${escapeHtml(m.id)}')" class="text-xs text-primary hover:underline">${i18n.edit}</button>
@@ -214,7 +216,7 @@ const i18n = {
             const cItems = items.filter(it => it && it.categoryId === c.id);
             return `<div class="border-b border-border last:border-0 px-4 py-2">
               <div class="flex items-center justify-between">
-                <span class="text-sm font-medium">${frName(c.translations)}</span>
+                <div class="flex items-center gap-2"><span class="text-sm font-medium">${frName(c.translations)}</span>${AdminKit.activeBadge(c.isActive, { active: i18n.active, inactive: i18n.inactive })}</div>
                 <div class="flex gap-2">
                   <button onclick="addItem('${escapeHtml(c.id)}')" class="text-xs text-primary hover:underline">+ ${i18n.addItem}</button>
                   <button onclick="editCat('${escapeHtml(c.id)}')" class="text-xs text-primary hover:underline">${i18n.edit}</button>
@@ -222,7 +224,7 @@ const i18n = {
                 </div>
               </div>
               ${cItems.length ? `<div class="ml-4 mt-1 space-y-1">${cItems.map(it => `<div class="flex items-center justify-between text-sm">
-                <span>${frName(it.translations)} ${it.isSignature ? '⭐' : ''} ${it.isVegetarian ? '🌿' : ''}</span>
+                <div class="flex items-center gap-2"><span>${frName(it.translations)} ${it.isSignature ? '⭐' : ''} ${it.isVegetarian ? '🌿' : ''}</span>${AdminKit.activeBadge(it.isActive, { active: i18n.active, inactive: i18n.inactive })}</div>
                 <div class="flex items-center gap-2"><span class="text-muted-foreground">${escapeHtml(it.price)} €</span>
                   <button onclick="editItem('${escapeHtml(it.id)}')" class="text-xs text-primary hover:underline">${i18n.edit}</button>
                   <button onclick="delItem('${escapeHtml(it.id)}')" class="text-xs text-destructive hover:underline">${i18n.delete}</button>

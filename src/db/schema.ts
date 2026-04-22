@@ -21,7 +21,7 @@ export const reservationStatusEnum = pgEnum('reservation_status', [
 ]);
 
 export const reservationTypeEnum = pgEnum('reservation_type', [
-  'room', 'restaurant', 'service', 'formation',
+  'room', 'restaurant', 'service',
 ]);
 
 export const invoiceStatusEnum = pgEnum('invoice_status', [
@@ -212,35 +212,6 @@ export const serviceTranslations = pgTable('service_translations', {
   description: text('description'),
 }, (table) => [
   uniqueIndex('svc_trans_unique').on(table.serviceId, table.locale),
-]);
-
-// =====================================================
-// FORMATIONS
-// =====================================================
-
-export const formations = pgTable('formations', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  slug: text('slug').notNull().unique(),
-  imageUrl: text('image_url'),
-  duration: text('duration'),
-  price: numeric('price'),
-  isActive: boolean('is_active').notNull().default(true),
-  sortOrder: integer('sort_order').notNull().default(0),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-}, (table) => [
-  index('idx_formations_slug').on(table.slug),
-]);
-
-export const formationTranslations = pgTable('formation_translations', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  formationId: uuid('formation_id').notNull().references(() => formations.id, { onDelete: 'cascade' }),
-  locale: text('locale').notNull(),
-  name: text('name').notNull(),
-  description: text('description'),
-  objectives: text('objectives'),
-}, (table) => [
-  uniqueIndex('form_trans_unique').on(table.formationId, table.locale),
 ]);
 
 // =====================================================

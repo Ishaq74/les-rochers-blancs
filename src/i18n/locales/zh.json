@@ -896,6 +896,18 @@
   "legal": {
     "eyebrow": "法律信息",
     "heading": "法律声明与隐私政策",
+    "identity": {
+      "title": "法律信息",
+      "companyName": "公司名称",
+      "companyForm": "法律形式",
+      "siret": "SIRET",
+      "vat": "欧盟增值税号",
+      "rcs": "RCS",
+      "publishingDirector": "出版负责人",
+      "address": "地址",
+      "phone": "电话",
+      "email": "电子邮件"
+    },
     "sections": [
       {
         "id": "legal-notice",
