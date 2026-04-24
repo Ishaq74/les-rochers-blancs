@@ -93,9 +93,8 @@ try {
     };
   });
 } catch (err) {
-  if (import.meta.env.DEV) {
-    console.warn('MenuSection SSR fallback to empty data:', err);
-  }
+  const details = err instanceof Error ? err.message : String(err);
+  console.error('MenuSection SSR fallback to empty data:', details);
 }
 
 // ------- Helpers -------

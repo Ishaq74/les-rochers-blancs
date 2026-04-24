@@ -7,6 +7,9 @@ interface ImportMetaEnv {
   readonly BETTER_AUTH_SECRET: string;
   readonly BETTER_AUTH_URL: string;
   readonly SITE_URL?: string;
+  readonly UPLOADS_DIR?: string;
+  readonly ALLOW_LEGACY_UPLOAD_FALLBACK?: string;
+  readonly APP_DOMAIN?: string;
   readonly HOST?: string;
   readonly PORT?: string;
 }

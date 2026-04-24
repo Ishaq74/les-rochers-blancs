@@ -104,8 +104,8 @@ const staticAssets = Object.entries(staticAssetsModules)
         <form id="upload-form" class="space-y-4" enctype="multipart/form-data">
           <div class="space-y-1">
             <label class="text-sm font-medium">{t('media.form.file', lang)}</label>
-            <input name="file" type="file" required accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml,application/pdf" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
-            <p class="text-xs text-muted-foreground">Max 10 Mo. JPEG, PNG, WebP, GIF, SVG, PDF.</p>
+            <input name="file" type="file" required accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+            <p class="text-xs text-muted-foreground">Max 10 Mo. JPEG, PNG, WebP, GIF, PDF. Les SVG sont refuses en production.</p>
           </div>
           <div class="space-y-1"><label class="text-sm font-medium">{t('media.form.alt', lang)}</label><input name="altText" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
           <div class="space-y-1">

@@ -1,10 +1,11 @@
 import { defineAction, ActionError } from 'astro:actions';
 import { z } from 'astro/zod';
 import { db } from '@/db';
-import { eq, desc, asc, and, or, sql, count, ilike } from 'drizzle-orm';
+import { eq, desc, asc, and, or, sql, count, ilike, inArray } from 'drizzle-orm';
 import * as schema from '@/db/schema';
 import { DEFAULT_HOTEL_GALLERY, DEFAULT_RESTAURANT_GALLERY } from '@/lib/default-media';
 import { invalidateSettingsCache } from '@/lib/settings';
+import { findStoredUploadAbsolutePath, getUploadPublicUrl, getUploadsRoot } from '@/lib/uploads';
 
 // =====================================================
 // HELPERS
@@ -29,11 +30,11 @@ const localeField = z.enum(['fr', 'en', 'ar', 'zh']);
 
 const dateField = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be YYYY-MM-DD');
 const datetimeField = z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?(Z|[+\-]\d{2}:\d{2})$/, 'Must be ISO 8601 datetime');
-const emailField = z.string().regex(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/, 'Invalid email');
+const emailField = z.string().trim().check(z.email({ message: 'Invalid email' }));
 const uuidField = z.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i, 'Invalid UUID');
 
 const ALLOWED_UPLOAD_TYPES = new Set([
-  'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'application/pdf',
+  'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'application/pdf',
 ]);
 const MAX_UPLOAD_SIZE = 10 * 1024 * 1024; // 10 MB
 const ALLOWED_MEDIA_FOLDERS = ['general', 'rooms', 'restaurant', 'blog'] as const;
@@ -48,7 +49,6 @@ const FILE_EXTENSION_BY_MIME: Record<string, string> = {
   'image/png': 'png',
   'image/webp': 'webp',
   'image/gif': 'gif',
-  'image/svg+xml': 'svg',
   'application/pdf': 'pdf',
 };
 
@@ -835,24 +835,25 @@ export const server = {
     handler: async (input, ctx) => {
       adminGuard(ctx);
       const { offset, limit } = paginate(input.page, input.limit);
+      const escapedSearch = input.search ? escapeLikePattern(input.search.trim()) : undefined;
 
       const publishedCond = input.publishedOnly ? eq(schema.blogPosts.isPublished, true) : undefined;
-      const slugSearchCond = input.search ? ilike(schema.blogPosts.slug, `%${input.search}%`) : undefined;
+      const slugSearchCond = escapedSearch ? ilike(schema.blogPosts.slug, `%${escapedSearch}%`) : undefined;
 
       // When searching, also check blog post translations titles via subquery approach
       let postIdsFromTranslations: string[] = [];
-      if (input.search) {
+      if (escapedSearch) {
         const titleMatches = await db.select({ postId: schema.blogPostTranslations.postId })
           .from(schema.blogPostTranslations)
-          .where(ilike(schema.blogPostTranslations.title, `%${input.search}%`));
+          .where(ilike(schema.blogPostTranslations.title, `%${escapedSearch}%`));
         postIdsFromTranslations = titleMatches.map(r => r.postId);
       }
 
       const buildConditions = (includeSearch: boolean) => {
         if (!includeSearch) return publishedCond;
-        const searchTermConds = input.search
+        const searchTermConds = escapedSearch
           ? (postIdsFromTranslations.length > 0
-            ? or(slugSearchCond, sql`${schema.blogPosts.id} = ANY(ARRAY[${sql.raw(postIdsFromTranslations.map(id => `'${id}'`).join(','))}]::uuid[])`)
+            ? or(slugSearchCond, inArray(schema.blogPosts.id, postIdsFromTranslations))
             : slugSearchCond)
           : undefined;
         return publishedCond && searchTermConds ? and(publishedCond, searchTermConds) : publishedCond ?? searchTermConds;
@@ -1102,7 +1103,7 @@ export const server = {
     input: z.object({
       id: uuidField.optional(),
       clientId: uuidField.nullable().optional(),
-      type: z.enum(['room', 'restaurant', 'service', 'formation']),
+      type: z.enum(['room', 'restaurant', 'service']),
       referenceId: uuidField.nullable().optional(),
       status: z.enum(['pending', 'confirmed', 'cancelled', 'completed']).default('pending'),
       startDate: datetimeField,
@@ -1431,12 +1432,12 @@ export const server = {
       const buffer = Buffer.from(await file.arrayBuffer());
       const ext = FILE_EXTENSION_BY_MIME[file.type] ?? 'bin';
       const filename = `${crypto.randomUUID()}.${ext}`;
-      const filePath = `uploads/${folder}/${filename}`;
+      const filePath = `${folder}/${filename}`;
 
       // Write file to disk
       const { mkdir, writeFile } = await import('node:fs/promises');
       const { join } = await import('node:path');
-      const dir = join(process.cwd(), 'public', 'uploads', folder);
+      const dir = join(getUploadsRoot(), folder);
       await mkdir(dir, { recursive: true });
       await writeFile(join(dir, filename), buffer);
 
@@ -1444,7 +1445,7 @@ export const server = {
         filename,
         originalFilename: file.name,
         filePath,
-        fileUrl: `/${filePath}`,
+        fileUrl: getUploadPublicUrl(filePath),
         fileType: file.type,
         fileSize: file.size,
         altText: altText || null,
@@ -1465,9 +1466,11 @@ export const server = {
         // Delete DB first, then attempt FS cleanup
         await db.delete(schema.media).where(eq(schema.media.id, input.id));
         const { unlink } = await import('node:fs/promises');
-        const { join } = await import('node:path');
         try {
-          await unlink(join(process.cwd(), 'public', item.filePath));
+          const filePath = await findStoredUploadAbsolutePath(item.filePath);
+          if (filePath) {
+            await unlink(filePath);
+          }
         } catch (err) {
           console.warn(`[deleteMedia] Failed to remove file ${item.filePath}:`, err);
         }

@@ -29,20 +29,21 @@ const i18n = {
     <div id="theme-form" class="hidden space-y-6">
       <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
         <h2 class="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Variables essentielles</h2>
-        <p class="mt-1 text-sm text-muted-foreground">On privilegie ici les variables utiles et stables pour un theming coherent globalement.</p>
+        <p class="mt-1 text-sm text-muted-foreground">Ces valeurs surchargent les couleurs du mode <strong>clair uniquement</strong>. Le mode sombre possède ses propres valeurs fixes dans le CSS. Les polices de caractères sont gérées séparément et ne sont pas modifiables ici.</p>
       </div>
 
       <div id="categories-container" class="space-y-8"></div>
 
       <div class="rounded-xl border border-border bg-card p-5 shadow-sm">
         <h3 class="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Apercu rapide</h3>
-        <div id="theme-preview" class="mt-3 rounded-xl border p-5" style="background: var(--background-color, #ffffff); color: var(--text-color, #111827); border-color: var(--border-color, #e5e7eb);">
+        <div id="theme-preview" class="mt-3 rounded-xl border p-5" style="background: var(--background); color: var(--foreground); border-color: var(--border);">
           <p class="text-xs uppercase tracking-wider opacity-70">Brand UI Preview</p>
           <h4 class="mt-2 text-xl font-semibold">Les Rochers Blancs</h4>
           <p class="mt-1 text-sm opacity-80">Apercu direct des couleurs principales et du contraste.</p>
           <div class="mt-4 flex gap-2">
-            <button type="button" class="rounded-md px-3 py-2 text-sm font-medium" style="background: var(--primary-color, #1a1a2e); color: var(--primary-foreground-color, #ffffff);">Bouton principal</button>
-            <button type="button" class="rounded-md border px-3 py-2 text-sm font-medium" style="border-color: var(--border-color, #e5e7eb); color: var(--text-color, #111827); background: transparent;">Secondaire</button>
+            <button type="button" class="rounded-md px-3 py-2 text-sm font-medium" style="background: var(--primary); color: var(--primary-foreground);">Bouton principal</button>
+            <button type="button" class="rounded-md border px-3 py-2 text-sm font-medium" style="border-color: var(--border); color: var(--foreground); background: transparent;">Secondaire</button>
+            <button type="button" class="rounded-md px-3 py-2 text-sm font-medium" style="background: var(--accent); color: var(--accent-foreground);">Accent or</button>
           </div>
         </div>
       </div>
@@ -79,16 +80,33 @@ const i18n = {
       return data;
     }
 
+    // Keys must match CSS custom property names exactly (--key in :root).
+    // Dark mode values are hardcoded in .dark {} — overrides here apply to light mode only.
     const CORE_THEME_FIELDS = [
-      { key: 'primary-color', type: 'color', category: 'colors', label: 'Couleur primaire' },
-      { key: 'primary-foreground-color', type: 'color', category: 'colors', label: 'Texte sur primaire' },
-      { key: 'background-color', type: 'color', category: 'colors', label: 'Fond global' },
-      { key: 'text-color', type: 'color', category: 'colors', label: 'Texte principal' },
-      { key: 'border-color', type: 'color', category: 'colors', label: 'Couleur des bordures' },
-      { key: 'radius-md', type: 'text', category: 'shape', label: 'Rayon standard (ex: 0.75rem)' },
-      { key: 'shadow-soft', type: 'text', category: 'effects', label: 'Ombre douce (CSS box-shadow)' },
-      { key: 'font-heading', type: 'font', category: 'typography', label: 'Police titres' },
-      { key: 'font-body', type: 'font', category: 'typography', label: 'Police texte' },
+      // Colors — Primary
+      { key: 'primary', type: 'color', category: 'couleurs', label: 'Couleur primaire (forêt)' },
+      { key: 'primary-foreground', type: 'color', category: 'couleurs', label: 'Texte sur couleur primaire' },
+      // Colors — Accent
+      { key: 'accent', type: 'color', category: 'couleurs', label: 'Couleur accent (or)' },
+      { key: 'accent-foreground', type: 'color', category: 'couleurs', label: 'Texte sur accent' },
+      // Colors — Background / Surface
+      { key: 'background', type: 'color', category: 'couleurs', label: 'Fond global' },
+      { key: 'foreground', type: 'color', category: 'couleurs', label: 'Texte principal' },
+      { key: 'card', type: 'color', category: 'couleurs', label: 'Fond des cartes' },
+      { key: 'muted', type: 'color', category: 'couleurs', label: 'Surface atténuée' },
+      { key: 'muted-foreground', type: 'color', category: 'couleurs', label: 'Texte atténué' },
+      // Colors — Borders
+      { key: 'border', type: 'color', category: 'couleurs', label: 'Couleur des bordures' },
+      // Alpine brand colors
+      { key: 'gold', type: 'color', category: 'marque', label: 'Or (gold)' },
+      { key: 'forest', type: 'color', category: 'marque', label: 'Vert forêt' },
+      { key: 'wood', type: 'color', category: 'marque', label: 'Bois (wood)' },
+      { key: 'cream', type: 'color', category: 'marque', label: 'Crème' },
+      // Shape
+      { key: 'radius', type: 'text', category: 'forme', label: 'Rayon de base (ex: 0.5rem) — tous les autres en dérivent' },
+      // Shadows
+      { key: 'shadow-soft', type: 'text', category: 'effets', label: 'Ombre douce' },
+      { key: 'shadow-medium', type: 'text', category: 'effets', label: 'Ombre moyenne' },
     ];
 
     let settings = [];
@@ -152,35 +170,30 @@ const i18n = {
     }
 
     /**
-     * Get preview value: pending edits take precedence over saved values.
-     */
-    function previewValue(key) {
-      if (pendingValues.has(key)) return pendingValues.get(key);
-      return byKey(key)?.settingValue || '';
-    }
-
-    /**
-     * Apply theme variable changes to live preview block.
+     * Apply pending theme variable overrides as inline CSS on the preview block.
+     * Only overrides values that are pending — already-set CSS vars come from :root.
      */
     function applyPreview() {
       const preview = document.getElementById('theme-preview');
       if (!preview) return;
-      
-      const vars = {
-        '--primary-color': previewValue('primary-color') || '#1a1a2e',
-        '--primary-foreground-color': previewValue('primary-foreground-color') || '#ffffff',
-        '--background-color': previewValue('background-color') || '#ffffff',
-        '--text-color': previewValue('text-color') || '#111827',
-        '--border-color': previewValue('border-color') || '#e5e7eb',
-      };
-      
-      Object.entries(vars).forEach(([k, v]) => preview.style.setProperty(k, v));
-      
-      const radius = previewValue('radius-md');
-      if (radius) preview.style.borderRadius = radius;
-      
-      const shadow = previewValue('shadow-soft');
-      preview.style.boxShadow = shadow || 'none';
+
+      // Color/text vars applied directly to preview element
+      const colorKeys = ['primary', 'primary-foreground', 'accent', 'accent-foreground',
+        'background', 'foreground', 'card', 'muted', 'muted-foreground', 'border',
+        'gold', 'forest', 'wood', 'cream'];
+
+      colorKeys.forEach(key => {
+        const val = pendingValues.get(key);
+        if (val) preview.style.setProperty(`--${key}`, val);
+        else preview.style.removeProperty(`--${key}`);
+      });
+
+      const radius = pendingValues.get('radius');
+      if (radius) preview.style.setProperty('--radius', radius);
+      else preview.style.removeProperty('--radius');
+
+      const shadow = pendingValues.get('shadow-soft');
+      preview.style.boxShadow = shadow || '';
     }
 
     /**

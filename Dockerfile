@@ -1,7 +1,7 @@
 # ---- Build stage ----
 FROM node:22-alpine AS build
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@10.28.0 --activate
 
 WORKDIR /app
 
@@ -13,16 +13,40 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm build
 
-# ---- Production stage ----
-FROM node:22-alpine AS runtime
+# ---- Production dependencies only ----
+FROM build AS prod-deps
+RUN pnpm prune --prod
 
+# ---- Migration image ----
+FROM node:22-alpine AS migrate
+
+RUN corepack enable && corepack prepare pnpm@10.28.0 --activate
 RUN addgroup -S app && adduser -S app -G app
 WORKDIR /app
 
-# Copy only the built output and production node_modules
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/package.json ./
+COPY --from=build --chown=app:app /app/node_modules ./node_modules
+COPY --from=build --chown=app:app /app/package.json ./
+COPY --from=build --chown=app:app /app/tsconfig.json ./
+COPY --from=build --chown=app:app /app/drizzle ./drizzle
+COPY --from=build --chown=app:app /app/drizzle.config.ts ./drizzle.config.ts
+COPY --from=build --chown=app:app /app/scripts ./scripts
+COPY --from=build --chown=app:app /app/src/db ./src/db
+
+USER app
+
+# ---- Production stage ----
+FROM node:22-alpine AS runtime
+
+RUN corepack enable && corepack prepare pnpm@10.28.0 --activate
+RUN addgroup -S app && adduser -S app -G app
+WORKDIR /app
+
+# Copy runtime app and production dependencies only.
+COPY --from=build --chown=app:app /app/dist ./dist
+COPY --from=prod-deps --chown=app:app /app/node_modules ./node_modules
+COPY --from=build --chown=app:app /app/package.json ./
+
+RUN mkdir -p /app/storage/uploads && chown -R app:app /app/storage
 
 # Non-root user
 USER app
@@ -30,6 +54,7 @@ USER app
 ENV HOST=0.0.0.0
 ENV PORT=4321
 ENV NODE_ENV=production
+ENV UPLOADS_DIR=/app/storage/uploads
 
 EXPOSE 4321
 

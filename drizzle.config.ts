@@ -8,6 +8,10 @@ export default defineConfig({
   dialect: 'postgresql',
   schema: './src/db/schema.ts',
   out: './drizzle',
+  migrations: {
+    schema: 'drizzle',
+    table: '__drizzle_migrations',
+  },
   dbCredentials: {
     url,
   },

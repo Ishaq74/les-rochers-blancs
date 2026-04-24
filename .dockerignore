@@ -6,6 +6,4 @@ dist
 !.env.example
 *.md
 .vscode
-drizzle
-scripts
 .astro

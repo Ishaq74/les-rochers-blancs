@@ -1,29 +1,61 @@
 services:
+  migrate:
+    build:
+      context: .
+      target: migrate
+    command: sh -c "pnpm db:wait && pnpm db:baseline && pnpm db:migrate"
+    environment:
+      - DATABASE_URL=${DATABASE_URL:?DATABASE_URL is required}
+      - DB_WAIT_MAX_ATTEMPTS=${DB_WAIT_MAX_ATTEMPTS:-30}
+      - DB_WAIT_DELAY_MS=${DB_WAIT_DELAY_MS:-2000}
+    restart: "no"
+
   app:
-    build: .
-    ports:
-      - "4321:4321"
+    build:
+      context: .
+      target: runtime
+    expose:
+      - "4321"
     environment:
       - HOST=0.0.0.0
       - PORT=4321
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@db:5432/rochers_blancs?sslmode=disable
-      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
-      - BETTER_AUTH_URL=${BETTER_AUTH_URL}
+      - DATABASE_URL=${DATABASE_URL:?DATABASE_URL is required}
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET is required}
+      - BETTER_AUTH_URL=https://${APP_DOMAIN:?APP_DOMAIN is required}
+      - UPLOADS_DIR=/app/storage/uploads
     volumes:
-      - uploads_data:/app/public/uploads
+      - uploads_data:/app/storage/uploads
     depends_on:
-      db:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  proxy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - APP_DOMAIN=${APP_DOMAIN:?APP_DOMAIN is required}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      app:
         condition: service_healthy
     restart: unless-stopped
 
   db:
+    profiles:
+      - local-db
     image: postgres:17-alpine
     volumes:
       - pgdata:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
       - POSTGRES_DB=rochers_blancs
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d rochers_blancs"]
@@ -35,3 +67,5 @@ services:
 volumes:
   pgdata:
   uploads_data:
+  caddy_data:
+  caddy_config:
