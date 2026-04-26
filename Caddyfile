@@ -1,9 +1,9 @@
 {$APP_DOMAIN:localhost} {
-  encode zstd gzip
+    encode zstd gzip
 
-  header {
-    -Server
-  }
+    header {
+        -Server
+    }
 
-  reverse_proxy app:4321
+    reverse_proxy app:4321
 }

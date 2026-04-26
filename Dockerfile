@@ -1,27 +1,32 @@
-# ---- Build stage ----
+# =============================================
+# Build stage
+# =============================================
 FROM node:22-alpine AS build
 
-RUN corepack enable && corepack prepare pnpm@10.28.0 --activate
+RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
 
 WORKDIR /app
 
-# Install deps first (cached layer)
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY .npmrc package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
-# Copy source and build
 COPY . .
 RUN pnpm build
 
-# ---- Production dependencies only ----
+# =============================================
+# Production dependencies only
+# =============================================
 FROM build AS prod-deps
 RUN pnpm prune --prod
 
-# ---- Migration image ----
+# =============================================
+# Migration stage
+# =============================================
 FROM node:22-alpine AS migrate
 
-RUN corepack enable && corepack prepare pnpm@10.28.0 --activate
+RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
 RUN addgroup -S app && adduser -S app -G app
+
 WORKDIR /app
 
 COPY --from=build --chown=app:app /app/node_modules ./node_modules
@@ -34,21 +39,22 @@ COPY --from=build --chown=app:app /app/src/db ./src/db
 
 USER app
 
-# ---- Production stage ----
+# =============================================
+# Runtime stage
+# =============================================
 FROM node:22-alpine AS runtime
 
-RUN corepack enable && corepack prepare pnpm@10.28.0 --activate
+RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
 RUN addgroup -S app && adduser -S app -G app
+
 WORKDIR /app
 
-# Copy runtime app and production dependencies only.
 COPY --from=build --chown=app:app /app/dist ./dist
 COPY --from=prod-deps --chown=app:app /app/node_modules ./node_modules
 COPY --from=build --chown=app:app /app/package.json ./
 
 RUN mkdir -p /app/storage/uploads && chown -R app:app /app/storage
 
-# Non-root user
 USER app
 
 ENV HOST=0.0.0.0
