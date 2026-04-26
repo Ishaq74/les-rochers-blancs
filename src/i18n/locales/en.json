@@ -664,6 +664,13 @@
       "metaTitle": "Meta Title (SEO)",
       "metaDescription": "Meta Description (SEO)"
     },
+    "seo": {
+      "previewTitle": "SEO preview",
+      "titleHint": "Recommended title length: 50–60 characters",
+      "descriptionHint": "Recommended description length: 120–160 characters",
+      "missingTitle": "Missing SEO title",
+      "missingDescription": "Missing SEO description"
+    },
     "table": {
       "title": "Title",
       "date": "Date",

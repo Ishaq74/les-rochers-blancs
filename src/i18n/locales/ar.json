@@ -610,6 +610,13 @@
       "metaTitle": "عنوان Meta (SEO)",
       "metaDescription": "وصف Meta (SEO)"
     },
+    "seo": {
+      "previewTitle": "معاينة SEO",
+      "titleHint": "طول العنوان الموصى به: 50–60 حرفًا",
+      "descriptionHint": "طول الوصف الموصى به: 120–160 حرفًا",
+      "missingTitle": "عنوان SEO مفقود",
+      "missingDescription": "وصف SEO مفقود"
+    },
     "table": {
       "title": "العنوان",
       "date": "التاريخ",

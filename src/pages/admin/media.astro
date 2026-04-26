@@ -1,34 +1,52 @@
 ---
-import AdminLayout from '@/layouts/AdminLayout.astro';
-import { t } from '@/lib/i18n';
 export const prerender = false;
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { t } from '../../lib/i18n';
+
 const lang = 'fr';
 const i18n = {
+  mediaLibrary: t('media.title', lang),
+  admin: 'Admin',
+  mediaLibraryDescription: t('media.subtitle', lang),
   upload: t('media.upload', lang),
-  filterAll: t('media.filter.all', lang),
-  filterGeneral: t('media.filter.general', lang),
-  filterRooms: t('media.filter.rooms', lang),
-  filterRestaurant: t('media.filter.restaurant', lang),
-  filterBlog: t('media.filter.blog', lang),
-  siteAssets: t('media.siteAssets', lang),
-  uploadTitle: t('media.uploadTitle', lang),
-  file: t('media.form.file', lang),
-  alt: t('media.form.alt', lang),
-  folder: t('media.form.folder', lang),
-  cancel: t('common.cancel', lang),
+  uploadMedia: t('media.upload', lang),
+  searchMedia: t('media.searchMedia', lang),
+  allFolders: t('media.allFolders', lang),
+  general: t('media.filter.general', lang),
+  rooms: t('media.filter.rooms', lang),
+  restaurant: t('media.filter.restaurant', lang),
+  blog: t('media.filter.blog', lang),
+  newestFirst: t('media.newestFirst', lang),
+  oldestFirst: t('media.oldestFirst', lang),
+  nameAZ: t('media.nameAZ', lang),
+  nameZA: t('media.nameZA', lang),
+  largestFirst: t('media.largestFirst', lang),
+  smallestFirst: t('media.smallestFirst', lang),
+  noMediaFound: t('media.noMediaFound', lang),
+  noMediaDescription: t('media.noMediaDescription', lang),
+  uploadFirstMedia: t('media.uploadFirstMedia', lang),
+  staticAssets: t('media.staticAssets', lang),
+  staticAsset: t('media.staticAsset', lang),
+  selectFiles: t('media.selectFiles', lang),
+  folder: t('media.folder', lang),
+  filename: t('media.filename', lang),
+  altText: t('media.altText', lang),
+  altTextPlaceholder: t('media.altTextPlaceholder', lang),
+  mediaDetails: t('media.mediaDetails', lang),
+  save: t('media.save', lang),
+  cancel: t('media.cancel', lang),
   copyUrl: t('media.copyUrl', lang),
-  delete: t('common.delete', lang),
-  previous: t('common.previous', lang),
-  next: t('common.next', lang),
-  countSuffix: t('media.countSuffix', lang),
-  urlCopied: t('media.toast.urlCopied', lang),
+  delete: t('media.delete', lang),
+  previous: t('media.previous', lang),
+  next: t('media.next', lang),
+  urlCopied: t('media.urlCopied', lang),
   uploading: t('media.uploading', lang),
-  errorUpload: t('media.toast.errorUpload', lang),
-  errorDelete: t('media.toast.errorDelete', lang),
+  errorUpload: t('media.errorUpload', lang),
+  errorDelete: t('media.errorDelete', lang),
   confirmDelete: t('media.confirmDelete', lang),
 };
 
-const staticAssetsModules = import.meta.glob('@/assets/**/*.{jpg,jpeg,png,webp,gif,svg,avif}', {
+const staticAssetsModules = import.meta.glob('../../assets/**/*.{jpg,jpeg,png,webp,gif,svg,avif}', {
   eager: true,
   import: 'default',
 }) as Record<string, string | { src?: string }>;
@@ -46,108 +64,291 @@ const staticAssets = Object.entries(staticAssetsModules)
   .sort((a, b) => a.name.localeCompare(b.name));
 ---
 
-<AdminLayout title={t('media.title', lang)} activeNav="media" lang={lang}>
+<AdminLayout title={`${i18n.mediaLibrary} - ${i18n.admin}`}>
   <div class="space-y-6">
-    <div class="flex items-center justify-between">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold tracking-tight">{t('media.title', lang)}</h1>
-        <p class="text-muted-foreground">{t('media.subtitle', lang)}</p>
+        <h1 class="text-2xl font-bold tracking-tight">{i18n.mediaLibrary}</h1>
+        <p class="text-muted-foreground">{i18n.mediaLibraryDescription}</p>
       </div>
-      <button id="btn-upload" type="button" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">+ {t('media.upload', lang)}</button>
+      <button id="btn-upload" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+        {i18n.uploadMedia}
+      </button>
     </div>
 
-    <div class="flex gap-4 items-center">
-      <select id="folder-filter" class="flex h-9 rounded-md border border-input bg-background px-3 text-sm">
-        <option value="">{t('media.filter.all', lang)}</option>
-        <option value="general">{t('media.filter.general', lang)}</option>
-        <option value="rooms">{t('media.filter.rooms', lang)}</option>
-        <option value="restaurant">{t('media.filter.restaurant', lang)}</option>
-        <option value="blog">{t('media.filter.blog', lang)}</option>
+    <!-- Filters and Search -->
+    <div class="flex flex-col sm:flex-row gap-4">
+      <div class="flex-1">
+        <input type="text" id="search-input" placeholder={i18n.searchMedia} class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+      </div>
+      <select id="folder-filter" class="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+        <option value="">{i18n.allFolders}</option>
+        <option value="general">{i18n.general}</option>
+        <option value="rooms">{i18n.rooms}</option>
+        <option value="restaurant">{i18n.restaurant}</option>
+        <option value="blog">{i18n.blog}</option>
+      </select>
+      <select id="sort-select" class="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+        <option value="createdAt_desc">{i18n.newestFirst}</option>
+        <option value="createdAt_asc">{i18n.oldestFirst}</option>
+        <option value="originalFilename_asc">{i18n.nameAZ}</option>
+        <option value="originalFilename_desc">{i18n.nameZA}</option>
+        <option value="fileSize_desc">{i18n.largestFirst}</option>
+        <option value="fileSize_asc">{i18n.smallestFirst}</option>
       </select>
     </div>
 
-    <section class="space-y-3">
-      <div class="flex items-center justify-between">
-        <h2 class="text-base font-semibold">{t('media.siteAssets', lang)}</h2>
-        <span class="text-xs text-muted-foreground">{staticAssets.length} image(s)</span>
-      </div>
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+    <!-- Media Grid -->
+    <div id="media-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      <!-- Media items will be rendered here -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="data-empty" class="hidden text-center">
+      <div class="grid place-items-center py-12">
+        <svg class="w-12 h-12 text-muted-foreground mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <h3 class="text-lg font-medium mb-2">{i18n.noMediaFound}</h3>
+        <p class="text-muted-foreground mb-4">{i18n.noMediaDescription}</p>
+        <button id="btn-upload-empty" class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+        {i18n.uploadFirstMedia}
+      </button>
+    </div>
+
+    <!-- Pagination -->
+    <div id="pagination" class="flex items-center justify-between pt-4 border-t">
+      <!-- Pagination controls will be rendered here -->
+    </div>
+
+    <!-- Static Assets Section -->
+    <div class="border-t pt-6">
+      <h2 class="text-lg font-semibold mb-4">{i18n.staticAssets}</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
         {staticAssets.map((asset) => (
           <button
             type="button"
-            class="group rounded-lg border border-border bg-card overflow-hidden text-left hover:border-primary"
+            class="group rounded-lg border border-border bg-card overflow-hidden text-left hover:border-primary transition-colors"
             data-copy-static={asset.url}
             title={asset.path}
           >
             <div class="aspect-square bg-muted overflow-hidden">
-              <img src={asset.url} alt={asset.name} class="h-full w-full object-cover" loading="lazy" />
+              <img src={asset.url} alt={asset.name} class="h-full w-full object-cover transition-transform group-hover:scale-105" loading="lazy" />
             </div>
-            <div class="p-2">
-              <p class="truncate text-[11px] text-muted-foreground">{asset.name}</p>
+            <div class="p-3">
+              <p class="text-sm font-medium truncate mb-1" title={asset.name}>{asset.name}</p>
+              <p class="text-xs text-muted-foreground">{i18n.staticAsset}</p>
             </div>
           </button>
         ))}
       </div>
-    </section>
-
-    <div id="media-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
-    <p id="data-empty" class="hidden p-8 text-center text-muted-foreground">{t('media.noItems', lang)}</p>
-    <div id="pagination" class="flex items-center justify-between text-sm text-muted-foreground"></div>
-  </div>
-
-  <!-- Upload Dialog -->
-  <div id="upload-dialog" class="fixed inset-0 z-50 hidden">
-    <div class="fixed inset-0 bg-black/50" data-close></div>
-    <div class="fixed inset-0 flex items-center justify-center p-4">
-      <div class="bg-card rounded-xl border border-border shadow-xl p-6 space-y-4 w-full max-w-md">
-        <h3 class="text-lg font-semibold">{t('media.uploadTitle', lang)}</h3>
-        <form id="upload-form" class="space-y-4" enctype="multipart/form-data">
-          <div class="space-y-1">
-            <label class="text-sm font-medium">{t('media.form.file', lang)}</label>
-            <input name="file" type="file" required accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
-            <p class="text-xs text-muted-foreground">Max 10 Mo. JPEG, PNG, WebP, GIF, PDF. Les SVG sont refuses en production.</p>
-          </div>
-          <div class="space-y-1"><label class="text-sm font-medium">{t('media.form.alt', lang)}</label><input name="altText" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
-          <div class="space-y-1">
-            <label class="text-sm font-medium">{t('media.form.folder', lang)}</label>
-            <select name="folder" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm">
-              <option value="general">{t('media.filter.general', lang)}</option><option value="rooms">{t('media.filter.rooms', lang)}</option><option value="restaurant">{t('media.filter.restaurant', lang)}</option><option value="blog">{t('media.filter.blog', lang)}</option>
-            </select>
-          </div>
-          <div class="flex gap-2">
-            <button type="submit" class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90" id="upload-btn">{t('media.upload', lang)}</button>
-            <button type="button" data-close class="inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted">{t('common.cancel', lang)}</button>
-          </div>
-        </form>
-      </div>
     </div>
   </div>
 
-  <script is:inline define:vars={{ i18n }}>
-    const API=(a,b)=>fetch(`/_actions/${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());
-    function openU(){document.getElementById('upload-dialog')?.classList.remove('hidden')}function closeU(){document.getElementById('upload-dialog')?.classList.add('hidden')}
-    document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeU));
+  <!-- Upload Dialog -->
+  <div id="upload-dialog" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm">
+    <div class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-background p-6 rounded-lg shadow-lg border">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold">{i18n.uploadMedia}</h3>
+        <button data-close class="rounded-md p-1 hover:bg-muted">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <form id="upload-form" enctype="multipart/form-data">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-2">{i18n.selectFiles}</label>
+            <input type="file" name="files" multiple accept="image/*,video/*,audio/*,application/pdf" required class="w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">{i18n.folder}</label>
+            <select name="folder" class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+              <option value="general">{i18n.general}</option>
+              <option value="rooms">{i18n.rooms}</option>
+              <option value="restaurant">{i18n.restaurant}</option>
+              <option value="blog">{i18n.blog}</option>
+            </select>
+          </div>
+          <div class="flex gap-3 pt-4">
+            <button type="button" data-close class="flex-1 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-muted transition-colors">
+              {i18n.cancel}
+            </button>
+            <button type="submit" id="upload-btn" class="flex-1 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
+              {i18n.upload}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
 
-    let currentPage=1,currentFolder='';
+  <!-- Detail Dialog -->
+  <div id="detail-dialog" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm">
+    <div class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-background rounded-lg shadow-lg border max-h-[90vh] overflow-hidden">
+      <div class="flex items-center justify-between p-6 border-b">
+        <h3 class="text-lg font-semibold">{i18n.mediaDetails}</h3>
+        <button data-close class="rounded-md p-1 hover:bg-muted">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="flex flex-col md:flex-row">
+        <div class="flex-1 p-6">
+          <div id="detail-preview" class="aspect-square bg-muted rounded-lg overflow-hidden mb-4">
+            <!-- Preview will be rendered here -->
+          </div>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-2">{i18n.filename}</label>
+              <input type="text" id="detail-filename" readonly class="w-full rounded-md border border-input bg-muted px-3 py-2 text-sm">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">{i18n.altText}</label>
+              <input type="text" id="detail-alt" placeholder={i18n.altTextPlaceholder} class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+            </div>
+          </div>
+        </div>
+        <div class="border-t md:border-t-0 md:border-l p-6 space-y-4">
+          <div class="flex gap-3">
+            <button id="detail-save-btn" class="flex-1 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
+              {i18n.save}
+            </button>
+            <button onclick="copyUrl(document.getElementById('detail-preview').querySelector('img')?.src || '')" class="flex-1 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-muted transition-colors">
+              {i18n.copyUrl}
+            </button>
+          </div>
+          <button onclick="delDetail()" class="w-full rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors">
+            {i18n.delete}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+  <script is:inline define:vars={{ i18n }}>
+    async function API(action, body) {
+      const response = await fetch(`/_actions/${action}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const json = await response.json().catch(() => ({}));
+      if (!response.ok || json?.error) {
+        throw new Error(json?.error?.message || 'Action failed');
+      }
+      return json.data ?? json;
+    }
+
+    function showError(message) {
+      showToast(message || 'Une erreur est survenue', 'error');
+    }
+
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      const bgClass = type === 'error' ? 'bg-destructive text-destructive-foreground' : 'bg-green-600 text-white';
+      toast.className = `fixed top-4 right-4 z-50 ${bgClass} px-4 py-3 rounded-md shadow-lg max-w-sm`;
+      toast.innerHTML = `<p class="text-sm font-medium">${message}</p>`;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 5000);
+    }
+
+    function escapeHtml(text) {
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+      return text.replace(/[&<>"']/g, ch => map[ch]);
+    }
+
+    // Detail dialog management
+    let currentDetailId = '';
+    window.showDetail = function(id, filename, fileUrl, altText, fileType) {
+      currentDetailId = id;
+      document.getElementById('detail-filename').value = filename;
+      document.getElementById('detail-alt').value = altText;
+      const preview = document.getElementById('detail-preview');
+      const isImage = fileType?.startsWith('image/');
+      preview.innerHTML = isImage 
+        ? `<img src="${escapeHtml(fileUrl)}" alt="${escapeHtml(altText||filename)}" class="w-full h-full object-cover rounded" />`
+        : `<div class="flex items-center justify-center h-full text-4xl">📄</div>`;
+      document.getElementById('detail-dialog').classList.remove('hidden');
+    };
+    
+    function closeDetail() {
+      document.getElementById('detail-dialog').classList.add('hidden');
+      currentDetailId = '';
+    }
+
+    function openU() { document.getElementById('upload-dialog')?.classList.remove('hidden'); }
+    function closeU() { document.getElementById('upload-dialog')?.classList.add('hidden'); }
+    document.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', closeU));
+
+    let currentPage = 1, currentFolder = '', searchQuery = '', currentSort = 'createdAt_desc';
     let result={items:[],total:0,totalPages:0};
 
+    // Event listeners
     document.getElementById('folder-filter')?.addEventListener('change',e=>{
       currentFolder=e.target.value;currentPage=1;load();
     });
+    document.getElementById('sort-select')?.addEventListener('change',e=>{
+      currentSort=e.target.value;currentPage=1;load();
+    });
+    document.getElementById('search-input')?.addEventListener('input',debounce(e=>{
+      searchQuery=e.target.value.trim();currentPage=1;load();
+    }, 300));
     document.getElementById('btn-upload')?.addEventListener('click',()=>{document.getElementById('upload-form')?.reset();openU()});
+    document.getElementById('btn-upload-empty')?.addEventListener('click',()=>{document.getElementById('upload-form')?.reset();openU()});
+    document.getElementById('media-grid')?.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const card = target.closest('[data-media-card]');
+      if (!card) return;
+      if (target.closest('button')) return;
+      const { id, filename, fileurl, alt, filetype } = card.dataset;
+      if (!id) return;
+      showDetail(id, filename || '', fileurl || '', alt || '', filetype || '');
+    });
     document.querySelectorAll('[data-copy-static]').forEach((el)=>{
       el.addEventListener('click',()=>{
         const url=el.getAttribute('data-copy-static');
         if(!url) return;
         navigator.clipboard?.writeText(window.location.origin+url)
-          .then(()=>alert(i18n.urlCopied))
+          .then(()=>showToast(i18n.urlCopied, 'success'))
           .catch(()=>{});
       });
     });
 
-    async function load(){
-      const p={page:currentPage,limit:30};if(currentFolder)p.folder=currentFolder;
-      const r=await API('listMedia',p);result=r.data??r;render();
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+
+    async function load() {
+      const p = { page: currentPage, limit: 30, sort: currentSort };
+      if (currentFolder) p.folder = currentFolder;
+      if (searchQuery) p.search = searchQuery;
+
+      try {
+        result = await API('listMedia', p);
+        render();
+      } catch (err) {
+        showError(err instanceof Error ? err.message : 'Erreur lors du chargement des médias');
+      }
     }
     function render(){
       const grid=document.getElementById('media-grid'),empty=document.getElementById('data-empty');
@@ -156,26 +357,31 @@ const staticAssets = Object.entries(staticAssetsModules)
       empty.classList.add('hidden');
       grid.innerHTML=items.map(r=>{
         const isImage=r.fileType?.startsWith('image/');
-        return `<div class="group relative rounded-lg border border-border bg-card overflow-hidden shadow-sm">
+        return `<div class="group relative rounded-lg border border-border bg-card overflow-hidden shadow-sm cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-[1.02]" data-media-card data-id="${escapeHtml(r.id)}" data-filename="${escapeHtml(r.originalFilename)}" data-fileurl="${escapeHtml(r.fileUrl)}" data-alt="${escapeHtml(r.altText||'')}" data-filetype="${escapeHtml(r.fileType)}">
           <div class="aspect-square bg-muted flex items-center justify-center overflow-hidden">
-            ${isImage?`<img src="${escapeHtml(r.fileUrl)}" alt="${escapeHtml(r.altText||r.originalFilename)}" class="w-full h-full object-cover" loading="lazy" />`:`<span class="text-2xl">📄</span>`}
+            ${isImage?`<img src="${escapeHtml(r.fileUrl)}" alt="${escapeHtml(r.altText||r.originalFilename)}" class="w-full h-full object-cover transition-transform group-hover:scale-105" loading="lazy" />`:`<span class="text-4xl">📄</span>`}
           </div>
-          <div class="p-2">
-            <p class="text-xs font-medium truncate" title="${escapeHtml(r.originalFilename)}">${escapeHtml(r.originalFilename)}</p>
-            <p class="text-xs text-muted-foreground">${escapeHtml(r.folder)} · ${(r.fileSize/1024).toFixed(0)} Ko</p>
+          <div class="p-3">
+            <p class="text-sm font-medium truncate mb-1" title="${escapeHtml(r.originalFilename)}">${escapeHtml(r.originalFilename)}</p>
+            <div class="flex items-center justify-between text-xs text-muted-foreground">
+              <span class="capitalize">${escapeHtml(r.folder)}</span>
+              <span>${(r.fileSize/1024).toFixed(0)} Ko</span>
+            </div>
           </div>
-          <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-            <button onclick="copyUrl('${escapeHtml(r.fileUrl)}')" class="rounded-md bg-white px-3 py-1.5 text-xs font-medium text-gray-900 hover:bg-gray-100">${i18n.copyUrl}</button>
-            <button onclick="del('${escapeHtml(r.id)}')" class="rounded-md bg-destructive px-3 py-1.5 text-xs font-medium text-destructive-foreground hover:bg-destructive/90">${i18n.delete}</button>
+          <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 rounded-lg">
+            <button onclick="copyUrl('${escapeHtml(r.fileUrl)}')" class="rounded-md bg-white/90 backdrop-blur px-3 py-2 text-xs font-medium text-gray-900 hover:bg-white shadow-lg">${i18n.copyUrl}</button>
+            <button onclick="del('${escapeHtml(r.id)}')" class="rounded-md bg-destructive/90 backdrop-blur px-3 py-2 text-xs font-medium text-destructive-foreground hover:bg-destructive shadow-lg">${i18n.delete}</button>
           </div>
         </div>`;
       }).join('');
-      document.getElementById('pagination').innerHTML=`<span>${result.total||0} ${i18n.countSuffix}</span><div class="flex gap-2">${currentPage>1?`<button onclick="goPage(${currentPage-1})" class="text-xs text-primary hover:underline">← ${i18n.previous}</button>`:''}${(result.totalPages||0)>currentPage?`<button onclick="goPage(${currentPage+1})" class="text-xs text-primary hover:underline">${i18n.next} →</button>`:''}</div>`;
+      document.getElementById('pagination').innerHTML=`<div class="flex items-center justify-between"><span class="text-sm text-muted-foreground">${result.total||0} média(s)</span><div class="flex gap-2">${currentPage>1?`<button onclick="goPage(${currentPage-1})" class="px-3 py-1 text-sm border rounded hover:bg-muted">← ${i18n.previous}</button>`:''}${(result.totalPages||0)>currentPage?`<button onclick="goPage(${currentPage+1})" class="px-3 py-1 text-sm border rounded hover:bg-muted">${i18n.next} →</button>`:''}</div></div>`;
     }
     window.goPage=p=>{currentPage=p;load()};
 
     window.copyUrl=function(url){
-      navigator.clipboard?.writeText(window.location.origin+url).then(()=>alert(i18n.urlCopied)).catch(()=>{});
+      navigator.clipboard?.writeText(window.location.origin+url).then(()=>{
+        showToast(i18n.urlCopied, 'success');
+      }).catch(()=>{});
     };
 
     // Upload via FormData (the uploadMedia action uses accept:'form')
@@ -188,12 +394,56 @@ const staticAssets = Object.entries(staticAssetsModules)
       try{
         const r=await fetch('/_actions/uploadMedia',{method:'POST',body:formData});
         const data=await r.json();
-        if(data.error){alert(i18n.errorUpload+': '+data.error.message);return;}
+        if(data.error){showToast(i18n.errorUpload+': '+data.error.message, 'error');return;}
         closeU();load();
-      }catch(err){alert(i18n.errorUpload);}finally{btn.textContent=i18n.upload;btn.disabled=false;}
+      }catch(err){showToast(i18n.errorUpload, 'error');}finally{btn.textContent=i18n.upload;btn.disabled=false;}
     });
 
-    window.del=async id=>{if(!confirm(i18n.confirmDelete))return;await API('deleteMedia',{id});load()};
+    window.del = async (id) => {
+      if (!confirm(i18n.confirmDelete)) return;
+      try {
+        await API('deleteMedia', { id });
+        load();
+      } catch (err) {
+        showError(err instanceof Error ? err.message : i18n.errorDelete);
+      }
+    };
+
+    document.getElementById('detail-form')?.addEventListener('submit', async e => {
+      e.preventDefault();
+      const altText = document.getElementById('detail-alt').value;
+      const btn = document.getElementById('detail-save-btn');
+      btn.disabled = true;
+      try {
+        await API('updateMedia', { id: currentDetailId, altText: altText || null });
+        showToast('Média mis à jour avec succès', 'success');
+        closeDetail();
+        load();
+      } catch (err) {
+        showError(err instanceof Error ? err.message : 'Erreur lors de la mise à jour');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    window.delDetail = async () => {
+      if (!confirm(i18n.confirmDelete)) return;
+      try {
+        await API('deleteMedia', { id: currentDetailId });
+        load();
+        closeDetail();
+      } catch (err) {
+        showError(err instanceof Error ? err.message : i18n.errorDelete);
+      }
+    };
+
+    document.querySelectorAll('[data-close]').forEach(el => {
+      el.addEventListener('click', () => {
+        if (el.closest('#detail-dialog')) closeDetail();
+        else closeU();
+      });
+    });
+
     load();
   </script>
 </AdminLayout>

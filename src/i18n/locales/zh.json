@@ -566,6 +566,13 @@
       "metaTitle": "Meta 标题 (SEO)",
       "metaDescription": "Meta 描述 (SEO)"
     },
+    "seo": {
+      "previewTitle": "SEO 预览",
+      "titleHint": "建议标题长度：50–60 个字符",
+      "descriptionHint": "建议描述长度：120–160 个字符",
+      "missingTitle": "缺少 SEO 标题",
+      "missingDescription": "缺少 SEO 描述"
+    },
     "table": {
       "title": "标题",
       "date": "日期",

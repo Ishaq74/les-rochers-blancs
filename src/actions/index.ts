@@ -57,6 +57,49 @@ const DEFAULT_SECTION_GALLERIES: Record<string, readonly string[]> = {
   restaurant: DEFAULT_RESTAURANT_GALLERY,
 };
 
+async function getMediaReferences(fileUrl: string) {
+  const references: string[] = [];
+  const search = `%${escapeLikePattern(fileUrl)}%`;
+
+  const [{ value: blogImages }] = await db.select({ value: count() }).from(schema.blogPosts).where(eq(schema.blogPosts.imageUrl, fileUrl));
+  if (blogImages > 0) references.push('blog post cover image(s)');
+
+  const [{ value: menuImages }] = await db.select({ value: count() }).from(schema.menuItems).where(eq(schema.menuItems.imageUrl, fileUrl));
+  if (menuImages > 0) references.push('menu item image(s)');
+
+  const [{ value: serviceImages }] = await db.select({ value: count() }).from(schema.services).where(eq(schema.services.imageUrl, fileUrl));
+  if (serviceImages > 0) references.push('service image(s)');
+
+  const [{ value: roomImages }] = await db.select({ value: count() }).from(schema.rooms).where(eq(schema.rooms.imageUrl, fileUrl));
+  if (roomImages > 0) references.push('room image(s)');
+
+  const [{ value: restaurantImages }] = await db.select({ value: count() }).from(schema.restaurantMenus).where(eq(schema.restaurantMenus.imageUrl, fileUrl));
+  if (restaurantImages > 0) references.push('restaurant menu image(s)');
+
+  const [{ value: galleryImages }] = await db.select({ value: count() }).from(schema.galleryImages).where(eq(schema.galleryImages.imageUrl, fileUrl));
+  if (galleryImages > 0) references.push('gallery image(s)');
+
+  const [{ value: blogContent }] = await db.select({ value: count() }).from(schema.blogPostTranslations).where(ilike(schema.blogPostTranslations.content, search));
+  if (blogContent > 0) references.push('blog post content');
+
+  const [{ value: cmsContentCount }] = await db.select({ value: count() }).from(schema.cmsContent).where(ilike(schema.cmsContent.content, search));
+  if (cmsContentCount > 0) references.push('CMS content');
+
+  const [{ value: menuTranslationCount }] = await db.select({ value: count() }).from(schema.menuItemTranslations).where(ilike(schema.menuItemTranslations.description, search));
+  if (menuTranslationCount > 0) references.push('menu item descriptions');
+
+  const [{ value: restaurantTranslationCount }] = await db.select({ value: count() }).from(schema.restaurantMenuTranslations).where(ilike(schema.restaurantMenuTranslations.description, search));
+  if (restaurantTranslationCount > 0) references.push('restaurant menu descriptions');
+
+  const [{ value: serviceTranslationCount }] = await db.select({ value: count() }).from(schema.serviceTranslations).where(ilike(schema.serviceTranslations.description, search));
+  if (serviceTranslationCount > 0) references.push('service descriptions');
+
+  const [{ value: roomTranslationCount }] = await db.select({ value: count() }).from(schema.roomTranslations).where(ilike(schema.roomTranslations.description, search));
+  if (roomTranslationCount > 0) references.push('room descriptions');
+
+  return references;
+}
+
 async function ensureDefaultGalleryIfEmpty(sectionKey: string, entityId?: string) {
   // Only auto-bootstrap top-level hotel/restaurant galleries.
   if (entityId) return;
@@ -1400,14 +1443,53 @@ export const server = {
   // MEDIA
   // -------------------------------------------------
   listMedia: defineAction({
-    input: z.object({ ...paginationInput, folder: mediaFolderField.optional() }),
+    input: z.object({
+      ...paginationInput,
+      folder: mediaFolderField.optional(),
+      search: z.string().optional(),
+      sort: z.enum(['createdAt_desc', 'createdAt_asc', 'originalFilename_asc', 'originalFilename_desc', 'fileSize_desc', 'fileSize_asc']).default('createdAt_desc')
+    }),
     handler: async (input, ctx) => {
       adminGuard(ctx);
       const { offset, limit } = paginate(input.page, input.limit);
-      const conditions = input.folder ? eq(schema.media.folder, input.folder) : undefined;
-      const rows = await db.select().from(schema.media).where(conditions)
-        .orderBy(desc(schema.media.createdAt)).limit(limit).offset(offset);
-      const [total] = await db.select({ value: count() }).from(schema.media).where(conditions);
+
+      // Build where conditions
+      const conditions = [];
+      if (input.folder) conditions.push(eq(schema.media.folder, input.folder));
+      if (input.search) conditions.push(ilike(schema.media.originalFilename, `%${input.search}%`));
+      const where = conditions.length > 0 ? and(...conditions) : undefined;
+
+      // Build order by
+      let orderBy;
+      switch (input.sort) {
+        case 'createdAt_asc': orderBy = asc(schema.media.createdAt); break;
+        case 'originalFilename_asc': orderBy = asc(schema.media.originalFilename); break;
+        case 'originalFilename_desc': orderBy = desc(schema.media.originalFilename); break;
+        case 'fileSize_asc': orderBy = asc(schema.media.fileSize); break;
+        case 'fileSize_desc': orderBy = desc(schema.media.fileSize); break;
+        default: orderBy = desc(schema.media.createdAt);
+      }
+
+      const rows = await db.select({
+        id: schema.media.id,
+        filename: schema.media.filename,
+        originalFilename: schema.media.originalFilename,
+        fileUrl: schema.media.fileUrl,
+        fileType: schema.media.fileType,
+        fileSize: schema.media.fileSize,
+        altText: schema.media.altText,
+        folder: schema.media.folder,
+        createdAt: schema.media.createdAt,
+      }).from(schema.media)
+        .where(where)
+        .orderBy(orderBy)
+        .limit(limit)
+        .offset(offset);
+
+      const [total] = where
+        ? await db.select({ value: count() }).from(schema.media).where(where)
+        : await db.select({ value: count() }).from(schema.media);
+
       return { items: rows, total: total.value, page: input.page, totalPages: Math.ceil(total.value / input.limit) };
     },
   }),
@@ -1463,7 +1545,14 @@ export const server = {
       adminGuard(ctx);
       const [item] = await db.select().from(schema.media).where(eq(schema.media.id, input.id));
       if (item) {
-        // Delete DB first, then attempt FS cleanup
+        const references = await getMediaReferences(item.fileUrl);
+        if (references.length > 0) {
+          throw new ActionError({
+            code: 'BAD_REQUEST',
+            message: `Impossible de supprimer cette image : elle est encore utilisée dans ${references.join(', ')}.`,
+          });
+        }
+
         await db.delete(schema.media).where(eq(schema.media.id, input.id));
         const { unlink } = await import('node:fs/promises');
         try {
@@ -1476,6 +1565,18 @@ export const server = {
         }
       }
       return { success: true };
+    },
+  }),
+
+  updateMedia: defineAction({
+    input: z.object({ id: uuidField, altText: z.string().optional().nullable() }),
+    handler: async (input, ctx) => {
+      adminGuard(ctx);
+      const [row] = await db.update(schema.media).set({
+        altText: input.altText ?? null,
+        updatedAt: new Date(),
+      }).where(eq(schema.media.id, input.id)).returning();
+      return row;
     },
   }),
 
@@ -1589,8 +1690,8 @@ export const server = {
         title: trans?.title ?? '',
         excerpt: trans?.excerpt ?? '',
         content: trans?.content ?? '',
-        metaTitle: trans?.metaTitle ?? '',
-        metaDescription: trans?.metaDescription ?? '',
+        metaTitle: trans?.metaTitle ?? trans?.title ?? '',
+        metaDescription: trans?.metaDescription ?? trans?.excerpt ?? '',
       };
     },
   }),
