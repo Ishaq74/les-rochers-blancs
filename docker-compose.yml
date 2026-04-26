@@ -5,6 +5,8 @@ services:
       context: .
       target: migrate
     command: sh -c "pnpm db:wait && pnpm db:baseline && pnpm db:migrate"
+    volumes:
+      - .env/:/app/.env
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - DB_WAIT_MAX_ATTEMPTS=${DB_WAIT_MAX_ATTEMPTS:-30}
