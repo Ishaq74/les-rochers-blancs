@@ -8,6 +8,8 @@ services:
       target: migrate
     command: sh -c "pnpm db:wait && pnpm db:baseline && pnpm db:migrate"
     env_file: .env
+    volumes:
+      - .:/app
     restart: "no"
     profiles: ["migrate"]
     depends_on:
