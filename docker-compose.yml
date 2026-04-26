@@ -1,19 +1,22 @@
 services:
-  # Migration Drizzle
+  # ============================================
+  # 1. MIGRATION DRIZZLE (une seule fois, pas à chaque démarrage)
+  # ============================================
   migrate:
     build:
       context: .
       target: migrate
     command: sh -c "pnpm db:wait && pnpm db:baseline && pnpm db:migrate"
-    volumes:
-      - .env/:/app/.env
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - DB_WAIT_MAX_ATTEMPTS=${DB_WAIT_MAX_ATTEMPTS:-30}
-      - DB_WAIT_DELAY_MS=${DB_WAIT_DELAY_MS:-2000}
+    env_file: .env
     restart: "no"
+    profiles: ["migrate"]                    # ← Ne se lance JAMAIS automatiquement
+    depends_on:
+      db:
+        condition: service_healthy
 
-  # Application principale
+  # ============================================
+  # 2. APPLICATION ASTRO (principale)
+  # ============================================
   app:
     build:
       context: .
@@ -21,34 +24,28 @@ services:
     container_name: astro-app
     expose:
       - "4321"
-    environment:
-      - HOST=0.0.0.0
-      - PORT=4321
-      - NODE_ENV=production
-      - DATABASE_URL=${DATABASE_URL}
-      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
-      - BETTER_AUTH_URL=http://${APP_DOMAIN}
-      - UPLOADS_DIR=/app/storage/uploads
+    env_file: .env
     volumes:
       - uploads_data:/app/storage/uploads
     depends_on:
       migrate:
         condition: service_completed_successfully
+      db:
+        condition: service_healthy
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:4321/api/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
+    # Healthcheck défini dans le Dockerfile (ne pas dupliquer ici)
+    # Le HEALTHCHECK du Dockerfile est déjà parfait
 
-  # Proxy Caddy
+  # ============================================
+  # 3. PROXY CADDY (HTTP + HTTPS automatique)
+  # ============================================
   proxy:
     image: caddy:2-alpine
     container_name: caddy-proxy
     ports:
       - "80:80"
-    environment:
-      - APP_DOMAIN=${APP_DOMAIN}
+      - "443:443"
+    env_file: .env
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
@@ -58,7 +55,9 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  # Base de données
+  # ============================================
+  # 4. BASE DE DONNÉES POSTGRESQL 17
+  # ============================================
   db:
     image: postgres:17-alpine
     container_name: postgres-db
