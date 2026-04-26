@@ -806,6 +806,7 @@
     "rooms": "Chambres",
     "restaurant": "Restaurant",
     "blog": "Blog",
+    "partners": "Partenaires",
     "newestFirst": "Plus récent d'abord",
     "oldestFirst": "Plus ancien d'abord",
     "nameAZ": "Nom A-Z",
@@ -843,7 +844,8 @@
       "general": "Général",
       "rooms": "Chambres",
       "restaurant": "Restaurant",
-      "blog": "Blog"
+      "blog": "Blog",
+      "partners": "Partenaires"
     },
     "toast": {
       "uploaded": "{{count}} fichier(s) uploadé(s)",

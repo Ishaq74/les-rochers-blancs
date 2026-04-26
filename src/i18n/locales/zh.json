@@ -698,7 +698,7 @@
     "uploading": "上传中…",
     "siteAssets": "网站资源（只读）",
     "form": { "file": "文件", "alt": "替代文本", "folder": "文件夹" },
-    "filter": { "all": "所有文件夹", "general": "通用", "rooms": "客房", "restaurant": "餐厅", "blog": "博客" },
+    "filter": { "all": "所有文件夹", "general": "通用", "rooms": "客房", "restaurant": "餐厅", "blog": "博客", "partners": "合作伙伴" },
     "toast": {
       "uploaded": "已上传 {{count}} 个文件",
       "urlCopied": "链接已复制",

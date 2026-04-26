@@ -807,7 +807,8 @@
       "general": "General",
       "rooms": "Rooms",
       "restaurant": "Restaurant",
-      "blog": "Blog"
+      "blog": "Blog",
+      "partners": "Partners"
     },
     "toast": {
       "uploaded": "{{count}} file(s) uploaded",

@@ -37,7 +37,7 @@ const ALLOWED_UPLOAD_TYPES = new Set([
   'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'application/pdf',
 ]);
 const MAX_UPLOAD_SIZE = 10 * 1024 * 1024; // 10 MB
-const ALLOWED_MEDIA_FOLDERS = ['general', 'rooms', 'restaurant', 'blog'] as const;
+const ALLOWED_MEDIA_FOLDERS = ['general', 'rooms', 'restaurant', 'blog', 'partners'] as const;
 const mediaFolderField = z.enum(ALLOWED_MEDIA_FOLDERS);
 
 function escapeLikePattern(value: string): string {

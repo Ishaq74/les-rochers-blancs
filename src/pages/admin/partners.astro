@@ -76,7 +76,15 @@ const i18n = {
         <div class="space-y-1"><label class="text-sm font-medium">{t('partners.form.name', lang)}</label><input name="name" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
         <div class="space-y-1"><label class="text-sm font-medium">{t('common.slug', lang)} *</label><input name="slug" required class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
         <div class="space-y-1"><label class="text-sm font-medium">{t('partners.form.url', lang)}</label><input name="websiteUrl" type="url" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
-        <div class="space-y-1"><label class="text-sm font-medium">{t('partners.form.logoUrl', lang)}</label><input name="logoUrl" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
+        <div class="space-y-1"><label class="text-sm font-medium">{t('partners.form.logoUrl', lang)}</label>
+          <div class="flex gap-2">
+            <input name="logoUrl" class="flex h-9 flex-1 rounded-md border border-input bg-background px-3 text-sm" />
+            <button type="button" id="btn-pick-media" class="shrink-0 inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 text-sm hover:bg-muted">
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3-3-6 6"/></svg>
+              Médiathèque
+            </button>
+          </div>
+        </div>
         <div class="space-y-1"><label class="text-sm font-medium">{t('partners.form.sortOrder', lang)}</label><input name="sortOrder" type="number" value="0" class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm" /></div>
         <div class="flex items-center gap-2">
           <input type="checkbox" name="isActive" id="is-active" checked class="rounded border-input" />
@@ -90,11 +98,32 @@ const i18n = {
     </div>
   </div>
 
+  <!-- Media picker -->
+  <div id="media-dialog" class="fixed inset-0 z-60 hidden">
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" data-close-media></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+      <div class="bg-card rounded-xl border border-border shadow-2xl p-6 space-y-4 w-full max-w-4xl max-h-[85vh] overflow-hidden">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold">Choisir une image de la médiathèque</h3>
+          <button type="button" data-close-media class="rounded-md p-1 hover:bg-muted text-muted-foreground">
+            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button>
+        </div>
+        <div id="media-picker-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 overflow-y-auto max-h-[65vh]"></div>
+      </div>
+    </div>
+  </div>
+
   <script is:inline define:vars={{ i18n, defaultPartnerLogos: DEFAULT_PARTNER_LOGOS }}>
     const API = (a, b) => fetch(`/_actions/${a}`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b) }).then(r=>r.json());
     function openD() { document.getElementById('edit-dialog')?.classList.remove('hidden'); }
     function closeD() { document.getElementById('edit-dialog')?.classList.add('hidden'); }
     document.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', closeD));
+
+    function escapeHtml(text) {
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+      return text.replace(/[&<>"']/g, ch => map[ch]);
+    }
 
     function normalizeImageUrl(url='') {
       const value = String(url || '').trim();
@@ -127,6 +156,45 @@ const i18n = {
       const normalized = normalizeSlug(row.slug || row.name || '');
       return defaultPartnerLogos?.[normalized] || '';
     }
+
+    // ──────────────────────────────────────────────
+    // MEDIA PICKER
+    // ──────────────────────────────────────────────
+    let mediaItems = [];
+    document.getElementById('btn-pick-media')?.addEventListener('click', async () => {
+      if (!mediaItems.length) {
+        const r = await API('listMedia', { page: 1, limit: 200 });
+        const p = r.data ?? r;
+        mediaItems = p.items ?? [];
+      }
+      renderMediaPicker();
+      document.getElementById('media-dialog')?.classList.remove('hidden');
+    });
+
+    function renderMediaPicker() {
+      const grid = document.getElementById('media-picker-grid');
+      const images = mediaItems.filter(m => (m.fileType || '').startsWith('image/'));
+      if (!images.length) {
+        grid.innerHTML = '<p class="col-span-full text-sm text-muted-foreground text-center py-8">Aucune image dans la médiathèque.<br>Allez dans <a href="/admin/media" class="text-primary underline">Médias</a> pour en uploader.</p>';
+        return;
+      }
+      grid.innerHTML = images.map(m => `
+        <button type="button" data-url="${escapeHtml(m.fileUrl)}"
+          class="border border-border rounded-lg overflow-hidden hover:border-primary hover:shadow-md transition-all text-left">
+          <div class="aspect-square bg-muted overflow-hidden">
+            <img src="${escapeHtml(m.fileUrl)}" alt="" class="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div class="p-1.5 text-[11px] truncate text-muted-foreground">${escapeHtml(m.originalFilename || m.fileUrl)}</div>
+        </button>
+      `).join('');
+      grid.querySelectorAll('[data-url]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelector('[name=logoUrl]').value = btn.dataset.url;
+          document.getElementById('media-dialog')?.classList.add('hidden');
+        });
+      });
+    }
+    document.querySelectorAll('[data-close-media]').forEach(el => el.addEventListener('click', () => document.getElementById('media-dialog')?.classList.add('hidden')));
 
     let data = [], filtered = [];
     async function load() { const r = await API('listPartners', {}); data = r.data ?? r ?? []; applyFilters(); }

@@ -744,7 +744,7 @@
     "uploadHint": "الحد الأقصى 10 ميغابايت. JPEG, PNG, WebP, GIF, SVG, PDF.",
     "staticCount": "صورة/صور",
     "form": { "file": "ملف", "alt": "نص بديل", "folder": "مجلد" },
-    "filter": { "all": "جميع المجلدات", "general": "عام", "rooms": "الغرف", "restaurant": "المطعم", "blog": "المدوّنة" },
+    "filter": { "all": "جميع المجلدات", "general": "عام", "rooms": "الغرف", "restaurant": "المطعم", "blog": "المدوّنة", "partners": "الشركاء" },
     "toast": {
       "uploaded": "تم رفع {{count}} ملف/ملفات",
       "urlCopied": "تم نسخ الرابط",
