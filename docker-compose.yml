@@ -1,6 +1,6 @@
 services:
   # ============================================
-  # 1. MIGRATION DRIZZLE (une seule fois, pas à chaque démarrage)
+  # 1. MIGRATION DRIZZLE (une seule fois)
   # ============================================
   migrate:
     build:
@@ -9,7 +9,7 @@ services:
     command: sh -c "pnpm db:wait && pnpm db:baseline && pnpm db:migrate"
     env_file: .env
     restart: "no"
-    profiles: ["migrate"]                    # ← Ne se lance JAMAIS automatiquement
+    profiles: ["migrate"]
     depends_on:
       db:
         condition: service_healthy
@@ -27,17 +27,21 @@ services:
     env_file: .env
     volumes:
       - uploads_data:/app/storage/uploads
+      - app_logs:/app/logs
     depends_on:
       migrate:
         condition: service_completed_successfully
       db:
         condition: service_healthy
     restart: unless-stopped
-    # Healthcheck défini dans le Dockerfile (ne pas dupliquer ici)
-    # Le HEALTHCHECK du Dockerfile est déjà parfait
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # ============================================
-  # 3. PROXY CADDY (HTTP + HTTPS automatique)
+  # 3. PROXY CADDY (HTTP + HTTPS + certificats persistants)
   # ============================================
   proxy:
     image: caddy:2-alpine
@@ -54,6 +58,11 @@ services:
       app:
         condition: service_healthy
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "3"
 
   # ============================================
   # 4. BASE DE DONNÉES POSTGRESQL 17
@@ -73,9 +82,42 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "3"
+
+  # ============================================
+  # 5. BACKUP AUTOMATIQUE DE LA DB (tous les jours)
+  # ============================================
+  backup:
+    image: postgres:17-alpine
+    container_name: db-backup
+    volumes:
+      - pgdata:/var/lib/postgresql/data:ro
+      - ./backups:/backups
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=rochers_blancs
+    command: >
+      sh -c "
+        mkdir -p /backups &&
+        pg_dump -U postgres -d rochers_blancs | gzip > /backups/backup_$(date +%Y%m%d_%H%M%S).sql.gz &&
+        find /backups -name 'backup_*.sql.gz' -mtime +30 -delete
+      "
+    restart: "no"
+    profiles: ["backup"]
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
 
 volumes:
   pgdata:
   uploads_data:
   caddy_data:
   caddy_config:
+  app_logs:
