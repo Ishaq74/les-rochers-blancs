@@ -29,8 +29,6 @@ services:
       - uploads_data:/app/storage/uploads
       - app_logs:/app/logs
     depends_on:
-      migrate:
-        condition: service_completed_successfully
       db:
         condition: service_healthy
     restart: unless-stopped
