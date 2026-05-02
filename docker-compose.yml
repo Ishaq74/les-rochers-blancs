@@ -3,20 +3,22 @@ services:
   # 1. MIGRATION DRIZZLE (one-shot)
   # ============================================
   migrate:
-    build:
-      context: .
-      target: migrate
-    command: sh -c "pnpm db:wait && pnpm db:baseline && pnpm db:migrate"
-    env_file: .env
-    volumes:
-      - ./.env:/app/.env:ro
-    restart: "no"
-    profiles: ["migrate"]
-    depends_on:
-      db:
-        condition: service_healthy
+      build:
+        context: .
+        target: migrate
+      command: sh -c "pnpm db:wait && pnpm db:baseline && pnpm db:migrate && pnpm seed:admin"
+      env_file: .env
+      environment:
+        - ADMIN_PASSWORD=Admin123!Secure2026
+      volumes:
+        - ./.env:/app/.env:ro
+      restart: "no"
+      profiles: ["migrate"]
+      depends_on:
+        db:
+          condition: service_healthy
 
-  # ============================================
+# ============================================
   # 2. APPLICATION ASTRO
   # ============================================
   app:
@@ -35,11 +37,11 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "wget --spider -q http://localhost:4321/ || exit 1"]
+      test: ["CMD-SHELL", "wget --spider -q --max-redirect=5 http://localhost:4321/fr || true"]
       interval: 30s
-      timeout: 5s
+      timeout: 10s
       retries: 3
-      start_period: 10s
+      start_period: 120s
     logging:
       driver: "json-file"
       options:
@@ -110,7 +112,7 @@ services:
           memory: 1G
 
   # ============================================
-  # 5. BACKUP (one-shot) - Version corrigée
+  # 5. BACKUP (one-shot)
   # ============================================
   backup:
     image: alpine:latest
