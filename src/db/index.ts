@@ -8,19 +8,20 @@ if (!connectionString) throw new Error('DATABASE_URL environment variable is req
 const parsedDatabaseUrl = new URL(connectionString);
 const sslMode = parsedDatabaseUrl.searchParams.get('sslmode')?.toLowerCase();
 
-function resolveSslMode(): false | 'require' {
-  if (sslMode === 'disable') return false;
-  if (sslMode === 'require' || sslMode === 'verify-ca' || sslMode === 'verify-full') {
-    return 'require';
+function resolveSslMode() {
+  // Désactive SSL dans Docker (le réseau interne n'utilise pas SSL)
+  if (process.env.DATABASE_URL?.includes('@db:')) {
+    return false;
   }
-
-  return (process.env.NODE_ENV === 'production' || import.meta.env.PROD) ? 'require' : false;
+  // En vrai production (hors Docker) on peut garder SSL si besoin
+  return process.env.NODE_ENV === 'production' ? 'require' : false;
 }
 
 const client = postgres(connectionString, {
-  ssl: resolveSslMode(),
+  ssl: false,
   max: 10,
   idle_timeout: 30,
+  connect_timeout: 10,
 });
 
 export const db = drizzle(client, { schema });

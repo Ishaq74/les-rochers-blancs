@@ -45,9 +45,16 @@ export const auth = betterAuth({
   session: {
     cookieCache: {
       enabled: true,
-      maxAge: 5 * 60, // 5 minutes
+      maxAge: 5 * 60,
     },
   },
   plugins: [admin() as BetterAuthPlugin],
-  trustedOrigins: [trustedBaseUrl.origin],
+  trustedOrigins: [
+    trustedBaseUrl.origin,
+    'http://localhost:4321',
+    'http://127.0.0.1:4321',
+    'http://localhost',
+    'https://lesrochersblancs.fr',
+    'https://www.lesrochersblancs.fr'
+  ],
 });

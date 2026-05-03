@@ -1,0 +1,22 @@
+{
+  "name": "Les Rochers Blancs - Dev Container",
+  "dockerComposeFile": [
+    "../docker-compose.yml",
+    "docker-compose.yml"
+  ],
+  "service": "app",
+  "workspaceFolder": "/app",
+  "remoteUser": "root",
+
+  "postCreateCommand": "pnpm db:wait && pnpm db:baseline && pnpm db:migrate && pnpm seed:admin || echo 'Migrations déjà faites'",
+
+  "forwardPorts": [4321],
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "ash"
+      }
+    }
+  }
+}
